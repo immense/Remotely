@@ -65,8 +65,8 @@
     </div>
 </div>
 @code {
-    private string _alertMessage;
-    private string _base64Icon;
+    private string? _alertMessage;
+    private string? _base64Icon;
     private InputModel _inputModel = new();
 
     private class InputModel
@@ -74,13 +74,13 @@
         [StringLength(25)]
         [Required]
         [Display(Name = "Product Name")]
-        public string ProductName { get; set; }
+        public string ProductName { get; set; } = string.Empty;
 
         public ColorPickerModel TitleForegroundColor { get; set; } = new();
         public ColorPickerModel TitleBackgroundColor { get; set; } = new();
         public ColorPickerModel TitleButtonColor { get; set; } = new();
 
-        public byte[] IconBytes { get; set; }
+        public byte[] IconBytes { get; set; } = Array.Empty<byte>();
     }
 
     protected override async Task OnInitializedAsync()
@@ -129,14 +129,26 @@
 
     private async Task LoadBrandingInfo()
     {
-        var organization = await DataService.GetOrganizationByUserName(User.UserName);
+        var orgResult = await DataService.GetOrganizationByUserName($"{UserName}");
 
-        var brandingInfo = await DataService.GetBrandingInfo(organization.ID);
+        if (!orgResult.IsSuccess)
+        {
+            ToastService.ShowToast2(orgResult.Reason, ToastType.Warning);
+            return;
+        }
 
+        var brandingResult= await DataService.GetBrandingInfo(orgResult.Value.ID);
+
+        if (!brandingResult.IsSuccess)
+        {
+            ToastService.ShowToast2(brandingResult.Reason, ToastType.Warning);
+            return;
+        }
+        var brandingInfo = brandingResult.Value;
 
         _inputModel.ProductName = brandingInfo.Product;
 
-        if (brandingInfo?.Icon?.Any() == true)
+        if (brandingResult.Value?.Icon?.Any() == true)
         {
             _base64Icon = Convert.ToBase64String(brandingInfo.Icon);
         }

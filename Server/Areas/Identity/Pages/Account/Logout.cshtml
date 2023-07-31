@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.SignalR
 @using Remotely.Server.Hubs
 @using Immense.RemoteControl.Server.Hubs
+@using Remotely.Shared.Entities
 
 @attribute [IgnoreAntiforgeryToken]
 @inject SignInManager<RemotelyUser> SignInManager
@@ -16,7 +17,7 @@
     {
         if (SignInManager.IsSignedIn(User))
         {
-            var activeSessions = RemoteControlSessionCache.Sessions.Where(x => x.RequesterUserName == HttpContext.User.Identity.Name);
+            var activeSessions = RemoteControlSessionCache.Sessions.Where(x => x.RequesterUserName == HttpContext.User.Identity?.Name);
             foreach (var session in activeSessions)
             {
                 await DesktopHubContext.Clients.Client(session.DesktopConnectionId).SendAsync("Disconnect", "User logged out.");

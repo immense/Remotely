@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Immense.RemoteControl.Shared.Extensions;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared;
+using Remotely.Shared.Dtos;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
-using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Net.Http;
@@ -46,7 +49,7 @@ public class ScriptExecutor : IScriptExecutor
             result.InputType = ScriptInputType.Api;
             result.SenderUserName = senderUsername;
 
-            await SendResultsToApi(result, authToken);
+            _ = await SendResultsToApi(result, authToken);
             await hubConnection.SendAsync("ScriptResultViaApi", requestID);
         }
         catch (Exception ex)
@@ -76,7 +79,7 @@ public class ScriptExecutor : IScriptExecutor
             {
                 return;
             }
-            await hubConnection.SendAsync("ScriptResult", responseResult.ID);
+            await hubConnection.SendAsync("ScriptResult", responseResult.Id);
         }
         catch (Exception ex)
         {
@@ -93,7 +96,7 @@ public class ScriptExecutor : IScriptExecutor
                 int scriptRunId,
                 string initiator,
                 ScriptInputType scriptInputType,
-                string authToken)
+                string expiringToken)
     {
         try
         {
@@ -103,11 +106,33 @@ public class ScriptExecutor : IScriptExecutor
                 scriptRunId,
                 initiator);
 
-            var connectionInfo = _configService.GetConnectionInfo();
-            var url = $"{connectionInfo.Host}/API/SavedScripts/{savedScriptId}";
+            var url = $"{_configService.GetConnectionInfo().Host}/API/SavedScripts/{savedScriptId}";
             using var hc = new HttpClient();
-            hc.DefaultRequestHeaders.Add("Authorization", authToken);
-            var savedScript = await hc.GetFromJsonAsync<SavedScript>(url);
+            hc.DefaultRequestHeaders.Add(AppConstants.ExpiringTokenHeaderName, expiringToken);
+            var response = await hc.GetAsync(url);
+            if (!response.IsSuccessStatusCode)
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    return;
+                }
+                _logger.LogWarning("Failed to get saved script.  Status Code: {responseStatusCode}", response.StatusCode);
+                return;
+            }
+
+            var savedScript = await response.Content.ReadFromJsonAsync<SavedScript>();
+
+            if (savedScript is null)
+            {
+                _logger.LogWarning("Failed to deserialize saved script.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(savedScript.Content))
+            {
+                _logger.LogWarning("Script content is empty.  Aborting script run.");
+                return;
+            }
 
             var result = await ExecuteScriptContent(savedScript.Shell,
                 Guid.NewGuid().ToString(),
@@ -119,7 +144,7 @@ public class ScriptExecutor : IScriptExecutor
             result.InputType = scriptInputType;
             result.SavedScriptId = savedScriptId;
 
-            var responseResult = await SendResultsToApi(result, authToken);
+            _ = await SendResultsToApi(result, expiringToken);
         }
         catch (Exception ex)
         {
@@ -127,7 +152,7 @@ public class ScriptExecutor : IScriptExecutor
         }
     }
 
-    private async Task<ScriptResult> ExecuteScriptContent(
+    private async Task<ScriptResultDto> ExecuteScriptContent(
         ScriptingShell shell,
         string terminalSessionId,
         string command,
@@ -170,14 +195,14 @@ public class ScriptExecutor : IScriptExecutor
             default:
                 break;
         }
-        return null;
+        throw new InvalidOperationException($"Unknown shell type: {shell}");
     }
-    private async Task<ScriptResult> SendResultsToApi(object result, string authToken)
+    private async Task<ScriptResultResponse?> SendResultsToApi(ScriptResultDto result, string expiringToken)
     {
         var targetURL = _configService.GetConnectionInfo().Host + $"/API/ScriptResults";
 
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("Authorization", authToken);
+        httpClient.DefaultRequestHeaders.Add(AppConstants.ExpiringTokenHeaderName, expiringToken);
 
         using var response = await httpClient.PostAsJsonAsync(targetURL, result);
 
@@ -188,6 +213,6 @@ public class ScriptExecutor : IScriptExecutor
         }
 
         var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<ScriptResult>(content, JsonSerializerHelper.CaseInsensitiveOptions);
+        return JsonSerializer.Deserialize<ScriptResultResponse>(content, JsonSerializerHelper.CaseInsensitiveOptions);
     }
 }

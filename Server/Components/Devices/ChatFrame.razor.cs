@@ -15,10 +15,10 @@ public partial class ChatFrame : AuthComponentBase, IDisposable
 {
 
     [Inject]
-    private IClientAppState AppState { get; set; }
+    private IClientAppState AppState { get; init; } = null!;
 
     [Inject]
-    private ICircuitConnection CircuitConnection { get; set; }
+    private ICircuitConnection CircuitConnection { get; init; } = null!;
 
     public void Dispose()
     {
@@ -34,7 +34,7 @@ public partial class ChatFrame : AuthComponentBase, IDisposable
         CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
     }
 
-    private void CircuitConnection_MessageReceived(object sender, Models.CircuitEvent e)
+    private void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
     {
         if (e.EventName == Models.CircuitEventName.ChatReceived)
         {
@@ -71,7 +71,7 @@ public partial class ChatFrame : AuthComponentBase, IDisposable
         }
     }
 
-    private void AppState_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(AppState.DevicesFrameChatSessions))
         {

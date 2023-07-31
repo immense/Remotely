@@ -24,9 +24,8 @@ namespace Remotely.Tests;
 [TestClass]
 public class AgentHubTests
 {
-    private TestData _testData;
-
-    public IDataService DataService { get; private set; }
+    private TestData _testData = null!;
+    private IDataService _dataService = null!;
 
     [TestMethod]
     [DoNotParallelize]
@@ -42,10 +41,10 @@ public class AgentHubTests
         var serviceSessionCache = new Mock<IAgentHubSessionCache>();
         var logger = new Mock<ILogger<AgentHub>>();
 
-        appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.DeviceName });
+        appConfig.Setup(x => x.BannedDevices).Returns(new string[] { $"{_testData.Org1Device1.DeviceName}" });
 
         var hub = new AgentHub(
-            DataService, 
+            _dataService, 
             appConfig.Object, 
             serviceSessionCache.Object, 
             viewerHub.Object, 
@@ -82,7 +81,7 @@ public class AgentHubTests
         appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.ID });
 
         var hub = new AgentHub(
-            DataService,
+            _dataService,
             appConfig.Object,
             serviceSessionCache.Object,
             viewerHub.Object,
@@ -111,18 +110,17 @@ public class AgentHubTests
     {
         _testData = new TestData();
         await _testData.Init();
-        DataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
+        _dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
     }
 
     private class CallerContext : HubCallerContext
     {
         public override string ConnectionId => "test-id";
 
-        public override string UserIdentifier => null;
+        public override string? UserIdentifier => null;
+        public override ClaimsPrincipal? User => null;
 
-        public override ClaimsPrincipal User => null;
-
-        public override IDictionary<object, object> Items { get; } = new Dictionary<object, object>();
+        public override IDictionary<object, object?> Items { get; } = new Dictionary<object, object?>();
 
         public override IFeatureCollection Features { get; } = new FeatureCollection();
 

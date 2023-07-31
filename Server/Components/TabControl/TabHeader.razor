@@ -8,21 +8,21 @@
 
 @code {
     [CascadingParameter]
-    public TabControl Parent { get; set; }
+    public TabControl? Parent { get; set; }
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
     [Parameter]
-    public Action OnActivated { get; set; }
+    public Action? OnActivated { get; set; }
 
     [Parameter]
-    public string NavigationUri { get; set; }
+    public string? NavigationUri { get; set; }
 
     [Parameter]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
-    private string ActiveClass => Parent.ActiveTab == Name ? "active" : "";
+    private string ActiveClass => Parent?.ActiveTab == Name ? "active" : "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,13 +32,13 @@
             throw new Exception("TabHeader must be contained in a TabControl.");
         }
 
-        if (!string.IsNullOrWhiteSpace(NavigationUri))
+        if (Parent.ActiveTab == Name)
         {
             OnActivated?.Invoke();
         }
     }
-    
-    private void SetActiveTab()
+
+    private async Task SetActiveTab()
     {
         if (!string.IsNullOrWhiteSpace(NavigationUri))
         {
@@ -46,8 +46,8 @@
         }
         else
         {
-            Parent.SetActiveTab(this);
-            StateHasChanged();
+            Parent?.SetActiveTab(this);
+            await InvokeAsync(StateHasChanged);
             OnActivated?.Invoke();
         }
     }

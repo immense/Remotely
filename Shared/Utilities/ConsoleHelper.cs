@@ -28,7 +28,7 @@ public static class ConsoleHelper
         Console.Write("Enter Response: ");
         Console.ForegroundColor = ConsoleColor.Gray;
 
-        return Console.ReadLine().Trim();
+        return Console.ReadLine()?.Trim() ?? string.Empty;
     }
 
     public static string ReadLine(string prompt, ConsoleColor promptColor = ConsoleColor.Cyan, string subprompt = "")
@@ -50,7 +50,7 @@ public static class ConsoleHelper
         var response = Console.ReadLine();
         Console.WriteLine();
 
-        return response;
+        return response ?? string.Empty;
     }
 
     public static bool TryParseBoolLike(string value, out bool result)

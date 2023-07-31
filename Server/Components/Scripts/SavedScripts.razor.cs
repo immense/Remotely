@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.CodeAnalysis.Scripting;
 using Remotely.Server.Pages;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,24 +17,24 @@ namespace Remotely.Server.Components.Scripts;
 public partial class SavedScripts : AuthComponentBase
 {
     [CascadingParameter]
-    private ScriptsPage ParentPage { get; set; }
+    private ScriptsPage ParentPage { get; set; } = null!;
 
-    private SavedScript _selectedScript = new();
-    private string _alertMessage;
-    private string _alertOptionsShowClass;
-    private string _environmentVarsShowClass;
-
-    [Inject]
-    public IDataService DataService { get; set; }
+    private SavedScript _selectedScript = new() { Name = string.Empty };
+    private string _alertMessage = string.Empty;
+    private string _alertOptionsShowClass = string.Empty;
+    private string _environmentVarsShowClass = string.Empty;
 
     [Inject]
-    public IToastService ToastService { get; set; }
+    public IDataService DataService { get; set; } = null!;
 
     [Inject]
-    public IJsInterop JsInterop { get; set; }
+    public IToastService ToastService { get; set; } = null!;
 
     [Inject]
-    public IModalService ModalService { get; set; }
+    public IJsInterop JsInterop { get; set; } = null!;
+
+    [Inject]
+    public IModalService ModalService { get; set; } = null!;
 
     private bool CanModifyScript => _selectedScript.Id == Guid.Empty || 
         _selectedScript.CreatorId == User.Id || User.IsAdministrator;
@@ -72,7 +72,10 @@ public partial class SavedScripts : AuthComponentBase
 
     private void CreateNew()
     {
-        _selectedScript = new();
+        _selectedScript = new()
+        {
+            Name = string.Empty
+        };
     }
 
     private async Task DeleteSelectedScript()
@@ -90,7 +93,10 @@ public partial class SavedScripts : AuthComponentBase
             ToastService.ShowToast("Script deleted.");
             _alertMessage = "Script deleted.";
             await ParentPage.RefreshScripts();
-            _selectedScript = new();
+            _selectedScript = new()
+            {
+                Name = string.Empty
+            };
         }
     }
 
@@ -98,12 +104,18 @@ public partial class SavedScripts : AuthComponentBase
     {
         if (viewModel.Script is not null)
         {
-            _selectedScript = await DataService.GetSavedScript(User.Id, viewModel.Script.Id) ?? new();
+            var result = await DataService.GetSavedScript(User.Id, viewModel.Script.Id);
+            if (result.IsSuccess)
+            {
+                _selectedScript = result.Value;
+                return;
+            }
         }
-        else
+
+        _selectedScript = new()
         {
-            _selectedScript = new();
-        }
+            Name = string.Empty
+        };
     }
 
     private void ToggleEnvironmentVarsShown()

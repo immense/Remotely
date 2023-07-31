@@ -7,13 +7,17 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Services;
+using Remotely.Shared;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account;
@@ -26,6 +30,7 @@ public class RegisterModel : PageModel
     private readonly ILogger<RegisterModel> _logger;
     private readonly IEmailSenderEx _emailSender;
     private readonly IDataService _dataService;
+    private readonly IWebHostEnvironment _hostEnvironment;
     private readonly IApplicationConfig _appConfig;
 
     public RegisterModel(
@@ -34,6 +39,7 @@ public class RegisterModel : PageModel
         ILogger<RegisterModel> logger,
         IEmailSenderEx emailSender,
         IDataService dataService,
+        IWebHostEnvironment hostEnvironment,
         IApplicationConfig appConfig)
     {
         _userManager = userManager;
@@ -41,43 +47,45 @@ public class RegisterModel : PageModel
         _logger = logger;
         _emailSender = emailSender;
         _dataService = dataService;
+        _hostEnvironment = hostEnvironment;
         _appConfig = appConfig;
     }
 
     [BindProperty]
-    public InputModel Input { get; set; }
-    public int OrganizationCount { get; set; }
-    public string ReturnUrl { get; set; }
+    public InputModel Input { get; set; } = null!;
 
-    public IList<AuthenticationScheme> ExternalLogins { get; set; }
+    public int OrganizationCount { get; set; }
+    public string? ReturnUrl { get; set; }
+
+    public IList<AuthenticationScheme>? ExternalLogins { get; set; }
 
     public class InputModel
     {
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
-        public string Email { get; set; }
+        public required string Email { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
-        public string Password { get; set; }
+        public required string Password { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; }
+        public string? ConfirmPassword { get; set; }
     }
 
-    public async Task OnGetAsync(string returnUrl = null)
+    public async Task OnGetAsync(string? returnUrl = null)
     {
         OrganizationCount = _dataService.GetOrganizationCount();
         ReturnUrl = returnUrl;
         ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
     }
 
-    public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+    public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
     {
         var organizationCount = _dataService.GetOrganizationCount();
         if (_appConfig.MaxOrganizationCount > 0 && organizationCount >= _appConfig.MaxOrganizationCount)
@@ -94,11 +102,20 @@ public class RegisterModel : PageModel
                 UserName = Input.Email,
                 Email = Input.Email,
                 IsServerAdmin = organizationCount == 0,
-                Organization = new Organization(),
+                Organization = new Organization()
+                { 
+                    OrganizationName = string.Empty,
+                    IsDefaultOrganization = organizationCount == 0
+                },
                 UserOptions = new RemotelyUserOptions(),
                 IsAdministrator = true,
                 LockoutEnabled = true
             };
+
+            if (organizationCount == 0 && _hostEnvironment.IsDevelopment())
+            {
+                user.Organization.ID = AppConstants.DebugOrgId;
+            }
 
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)
@@ -110,15 +127,20 @@ public class RegisterModel : PageModel
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
                     pageHandler: null,
-                    values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+                    values: new { area = "Identity", userId = user.Id, code, returnUrl },
                     protocol: Request.Scheme);
+
+                if (string.IsNullOrWhiteSpace(callbackUrl))
+                {
+                    return BadRequest($"{nameof(callbackUrl)} cannot be empty.");
+                }
 
                 await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl });
                 }
                 else
                 {

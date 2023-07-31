@@ -9,34 +9,40 @@ namespace Remotely.Server.Components.TreeView;
 public partial class TreeViewItem<T> : ComponentBase
 {
     [CascadingParameter]
-    public TreeView<T> ParentTree { get; set; }
+    public required TreeView<T> ParentTree { get; set; }
 
     [Parameter]
-    public T Source { get; set; }
+    [EditorRequired]
+    public required T Source { get; set; }
 
     [Parameter]
-    public Func<T, List<T>> ChildItemSelector { get; set; }
+    [EditorRequired]
+    public required Func<T, List<T>> ChildItemSelector { get; set; }
 
     [Parameter]
-    public Func<T, string> HeaderSelector { get; set; }
+    [EditorRequired]
+    public required Func<T, string> HeaderSelector { get; set; }
 
     [Parameter]
-    public Func<T, string> ItemIconCssSelector { get; set; }
+    [EditorRequired]
+    public required Func<T, string> ItemIconCssSelector { get; set; }
 
     [Parameter]
-    public string Style { get; set; }
+    public string? Style { get; set; }
 
     [Parameter]
     public int IndentLevel { get; set; }
 
     [Parameter]
-    public Func<T, TreeItemType> ItemTypeSelector { get; set; }
+    [EditorRequired]
+    public required Func<T, TreeItemType> ItemTypeSelector { get; set; }
 
     [Parameter]
     public EventCallback<T> ItemSelected { get; set; }
 
     [Parameter]
-    public Func<T, string> KeySelector { get; set; }
+    [EditorRequired]
+    public required Func<T, string> KeySelector { get; set; }
 
 
     public bool IsExpanded { get; set; }

@@ -14,7 +14,12 @@
                 You've successfully joined the organization!
             </p>
         }
-
+        else if (string.IsNullOrWhiteSpace(Model.Input.InviteID))
+        {
+            <div>
+                <strong class="text-danger">Invitation ID is missing from the request.</strong>
+            </div>
+        }
         else
         {
             <form method="post">

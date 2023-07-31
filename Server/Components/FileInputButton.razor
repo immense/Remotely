@@ -8,14 +8,14 @@
 
 @code {
     [Parameter]
-    public string ClassNames { get; set; }
+    public string? ClassNames { get; set; }
 
     [Parameter]
-    public RenderFragment ButtonContent { get; set; }
+    public RenderFragment? ButtonContent { get; set; }
 
 
     [Parameter]
-    public Func<InputFileChangeEventArgs, Task> OnChanged { get; set; }
+    public Func<InputFileChangeEventArgs, Task>? OnChanged { get; set; }
 
     [Parameter]
     public bool Multiple { get; set; }

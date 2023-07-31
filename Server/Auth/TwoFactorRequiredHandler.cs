@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +22,10 @@ public class TwoFactorRequiredHandler : AuthorizationHandler<TwoFactorRequiredRe
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, TwoFactorRequiredRequirement requirement)
     {
-        if (context.User.Identity.IsAuthenticated && _appConfig.Require2FA)
+        if (context.User.Identity?.IsAuthenticated == true && _appConfig.Require2FA)
         {
             var user = await _userManager.GetUserAsync(context.User);
-            if (!user.TwoFactorEnabled)
+            if (user?.TwoFactorEnabled != true)
             {
                 context.Fail();
                 return;

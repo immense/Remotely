@@ -12,15 +12,15 @@
 
 @code {
     [Parameter]
-    public RenderFragment TabHeaders { get; set; }
+    public RenderFragment? TabHeaders { get; set; }
 
     [Parameter]
-    public RenderFragment TabContents { get; set; }
+    public RenderFragment? TabContents { get; set; }
 
     [Parameter]
-    public string InitialActiveTab { get; set; }
+    public string? InitialActiveTab { get; set; }
 
-    public string ActiveTab { get; set; }
+    public string? ActiveTab { get; set; }
 
     protected override void OnInitialized()
     {

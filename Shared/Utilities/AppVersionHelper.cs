@@ -34,7 +34,7 @@ public static class AppVersionHelper
         }
     }
 
-    private static bool TryGetFileVersion(string filePath, out string version)
+    private static bool TryGetFileVersion(string? filePath, out string version)
     {
         try
         {

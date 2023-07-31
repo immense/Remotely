@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Immense.RemoteControl.Shared.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Build.Framework;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,27 +17,49 @@ namespace Remotely.Server.API;
 public class BrandingController : ControllerBase
 {
     private readonly IDataService _dataService;
+    private readonly ILogger<BrandingController> _logger;
 
-    public BrandingController(IDataService dataService)
+    public BrandingController(
+        IDataService dataService,
+        ILogger<BrandingController> logger)
     {
         _dataService = dataService;
+        _logger = logger;
     }
 
 
     [HttpGet("{organizationId}")]
-    public async Task<BrandingInfo> Get(string organizationId)
+    public async Task<ActionResult<BrandingInfo>> Get(string organizationId)
     {
-        return await _dataService.GetBrandingInfo(organizationId);
+        var result = await _dataService.GetBrandingInfo(organizationId);
+        _logger.LogResult(result);
+        if (!result.IsSuccess)
+        {
+            return NotFound();
+        }
+        return result.Value;
     }
 
     [HttpGet]
     public async Task<BrandingInfo> GetDefault()
     {
-        var defaultOrg = await _dataService.GetDefaultOrganization();
-        if (defaultOrg is null)
+        var orgResult = await _dataService.GetDefaultOrganization();
+        _logger.LogResult(orgResult);
+
+        if (!orgResult.IsSuccess)
         {
-            return new BrandingInfo();
+            return new();
         }
-        return await _dataService.GetBrandingInfo(defaultOrg.ID);
+
+        var brandingResult = await _dataService.GetBrandingInfo(orgResult.Value.ID);
+        _logger.LogResult(brandingResult);
+
+        if (!orgResult.IsSuccess || 
+            brandingResult.Value is null)
+        {
+            return new();
+        }
+
+        return brandingResult.Value;
     }
 }

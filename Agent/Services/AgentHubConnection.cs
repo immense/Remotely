@@ -1,20 +1,25 @@
 ﻿using Immense.RemoteControl.Desktop.Native.Windows;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Extensions;
 using Remotely.Agent.Interfaces;
+using Remotely.Shared;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using Timer = System.Timers.Timer;
 
 namespace Remotely.Agent.Services;
 
@@ -35,14 +40,15 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
     private readonly IHttpClientFactory _httpFactory;
     private readonly IWakeOnLanService _wakeOnLanService;
     private readonly ILogger<AgentHubConnection> _logger;
-    private readonly ILogger _fileLogger;
+    private readonly IFileLogsManager _fileLogsManager;
+    private readonly IHostApplicationLifetime _appLifetime;
     private readonly IScriptExecutor _scriptExecutor;
     private readonly IUninstaller _uninstaller;
     private readonly IUpdater _updater;
 
-    private ConnectionInfo _connectionInfo;
-    private HubConnection _hubConnection;
-    private Timer _heartbeatTimer;
+    private ConnectionInfo? _connectionInfo;
+    private HubConnection? _hubConnection;
+    private Timer? _heartbeatTimer;
     private bool _isServerVerified;
 
     public AgentHubConnection(
@@ -55,7 +61,8 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         IDeviceInformationService deviceInfoService,
         IHttpClientFactory httpFactory,
         IWakeOnLanService wakeOnLanService,
-        IEnumerable<ILoggerProvider> loggerProviders,
+        IFileLogsManager fileLogsManager,
+        IHostApplicationLifetime appLifetime,
         ILogger<AgentHubConnection> logger)
     {
         _configService = configService;
@@ -68,23 +75,40 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         _httpFactory = httpFactory;
         _wakeOnLanService = wakeOnLanService;
         _logger = logger;
-        _fileLogger = loggerProviders
-            .OfType<FileLoggerProvider>()
-            .FirstOrDefault()
-            ?.CreateLogger(nameof(AgentHubConnection));
+        _fileLogsManager = fileLogsManager;
+        _appLifetime = appLifetime;
     }
 
     public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
 
     public async Task Connect()
     {
-        while (true)
+        using var throttle = new SemaphoreSlim(1, 1);
+
+        for (var i = 1; true; i++)
         {
             try
             {
+                var waitSeconds = Math.Min(60, Math.Pow(i, 2));
+                // This will allow the first attempt to go through immediately, but
+                // subsequent attempts will have an exponential delay.
+                _ = await throttle.WaitAsync(TimeSpan.FromSeconds(waitSeconds));
+
                 _logger.LogInformation("Attempting to connect to server.");
 
                 _connectionInfo = _configService.GetConnectionInfo();
+
+                if (string.IsNullOrWhiteSpace(_connectionInfo.OrganizationID))
+                {
+                    _logger.LogError("Organization ID is not set.  Please set it in the config file.");
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(_connectionInfo.Host))
+                {
+                    _logger.LogError("Host (server URL) is not set.  Please set it in the config file.");
+                    continue;
+                }
 
                 if (_hubConnection is not null)
                 {
@@ -115,13 +139,11 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
                     // The above can be caused by temporary issues on the server.  So we'll do
                     // nothing here and wait for it to get resolved.
                     _logger.LogError("There was an issue registering with the server.  The server might be undergoing maintenance, or the supplied organization ID might be incorrect.");
-                    await Task.Delay(TimeSpan.FromMinutes(1));
                     continue;
                 }
 
                 if (!await VerifyServer())
                 {
-                    await Task.Delay(TimeSpan.FromMinutes(1));
                     continue;
                 }
 
@@ -143,10 +165,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while connecting to server.");
-                await Task.Delay(5_000);
             }
-
-
         }
     }
 
@@ -160,6 +179,17 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
     {
         try
         {
+            if (_connectionInfo is null || _hubConnection is null)
+            {
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(_connectionInfo.OrganizationID))
+            {
+                _logger.LogError("Organization ID is not set.  Please set it in the config file.");
+                return;
+            }
+
             var currentInfo = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
             await _hubConnection.SendAsync("DeviceHeartbeat", currentInfo);
         }
@@ -171,6 +201,11 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
     private async Task<bool> CheckForServerMigration()
     {
+        if (_connectionInfo is null || _hubConnection is null)
+        {
+            return false;
+        }
+
         var serverUrl = await _hubConnection.InvokeAsync<string>("GetServerUrl");
 
         if (Uri.TryCreate(serverUrl, UriKind.Absolute, out var serverUri) &&
@@ -186,17 +221,22 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         return false;
     }
 
-    private async void HeartbeatTimer_Elapsed(object sender, ElapsedEventArgs e)
+    private async void HeartbeatTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
         await SendHeartbeat();
     }
 
-    private async Task HubConnection_Reconnected(string arg)
+    private async Task HubConnection_Reconnected(string? arg)
     {
+        if (_connectionInfo is null || _hubConnection is null)
+        {
+            return;
+        }
+
         _logger.LogInformation("Reconnected to server.");
         await _updater.CheckForUpdates();
 
-        var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, _connectionInfo.OrganizationID);
+        var device = await _deviceInfoService.CreateDevice(_connectionInfo.DeviceID, $"{_connectionInfo.OrganizationID}");
 
         if (!await _hubConnection.InvokeAsync<bool>("DeviceCameOnline", device))
         {
@@ -213,6 +253,10 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
     private void RegisterMessageHandlers()
     {
+        if (_hubConnection is null)
+        {
+            throw new InvalidOperationException("Hub connection is null.");
+        }
 
         _hubConnection.On("ChangeWindowsSession", async (string viewerConnectionId, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, int targetSessionID) =>
         {
@@ -262,10 +306,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
         _hubConnection.On("DeleteLogs", () =>
        {
-           if (_fileLogger is FileLogger logger)
-           {
-               logger.DeleteLogs();
-           }
+           _fileLogsManager.DeleteLogs(_appLifetime.ApplicationStopping);
        });
 
 
@@ -328,26 +369,24 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
         _hubConnection.On("GetLogs", async (string senderConnectionId) =>
         {
-            if (_fileLogger is not FileLogger logger)
+            try
             {
-                await _hubConnection.InvokeAsync("SendLogs", "Logger is not of expected type.", senderConnectionId).ConfigureAwait(false);
-                return;
+                if (!await _fileLogsManager.AnyLogsExist(_appLifetime.ApplicationStopping))
+                {
+                    var message = "There are no log entries written.";
+                    await _hubConnection.InvokeAsync("SendLogs", message, senderConnectionId).ConfigureAwait(false);
+                    return;
+                }
+
+                await foreach (var chunk in _fileLogsManager.ReadAllBytes(_appLifetime.ApplicationStopping))
+                {
+                    var lines = Encoding.UTF8.GetString(chunk);
+                    await _hubConnection.InvokeAsync("SendLogs", lines, senderConnectionId).ConfigureAwait(false);
+                }
             }
-
-            var logBytes = await logger.ReadAllBytes();
-
-            if (!logBytes.Any())
+            catch (Exception ex)
             {
-                var message = "There are no log entries written.";
-
-                await _hubConnection.InvokeAsync("SendLogs", message, senderConnectionId).ConfigureAwait(false);
-                return;
-            }
-
-            for (var i = 0; i < logBytes.Length; i += 50_000)
-            {
-                var chunk = Encoding.UTF8.GetString(logBytes.Skip(i).Take(50_000).ToArray());
-                await _hubConnection.InvokeAsync("SendLogs", chunk, senderConnectionId).ConfigureAwait(false);
+                _logger.LogError(ex, "Error while retrieving logs.");
             }
         });
 
@@ -449,7 +488,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
             }
         });
 
-        _hubConnection.On("TransferFileFromBrowserToAgent", async (string transferID, List<string> fileIDs, string requesterID, string authToken) =>
+        _hubConnection.On("TransferFileFromBrowserToAgent", async (string transferID, List<string> fileIDs, string requesterID, string expiringToken) =>
         {
             try
             {
@@ -465,13 +504,14 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
                 foreach (var fileID in fileIDs)
                 {
-                    var url = $"{_connectionInfo.Host}/API/FileSharing/{fileID}";
+                    var url = $"{_connectionInfo?.Host}/API/FileSharing/{fileID}";
                     using var client = _httpFactory.CreateClient();
-                    client.DefaultRequestHeaders.Add("Authorization", authToken);
+                    client.DefaultRequestHeaders.Add(AppConstants.ExpiringTokenHeaderName, expiringToken);
                     using var response = await client.GetAsync(url);
 
-                    var filename = response.Content.Headers.ContentDisposition.FileName;
-                    var legalChars = filename.ToCharArray().Where(x => !Path.GetInvalidFileNameChars().Any(y => x == y));
+                    var filename = response.Content.Headers.ContentDisposition?.FileName ?? Path.GetRandomFileName();
+                    var invalidChars = Path.GetInvalidFileNameChars().ToHashSet();
+                    var legalChars = filename.ToCharArray().Where(x => !invalidChars.Contains(x));
 
                     filename = new string(legalChars.ToArray());
 
@@ -500,6 +540,11 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
     private async Task<bool> VerifyServer()
     {
+        if (_connectionInfo is null || _hubConnection is null)
+        {
+            return false;
+        }
+
         if (string.IsNullOrWhiteSpace(_connectionInfo.ServerVerificationToken))
         {
             _isServerVerified = true;

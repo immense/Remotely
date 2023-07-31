@@ -30,7 +30,7 @@ public class DeviceInfoGeneratorWin : DeviceInfoGeneratorBase, IDeviceInformatio
             var (usedStorage, totalStorage) = GetSystemDriveInfo();
             var (usedMemory, totalMemory) = GetMemoryInGB();
 
-            device.CurrentUser = Win32Interop.GetActiveSessions().LastOrDefault()?.Username;
+            device.CurrentUser = Win32Interop.GetActiveSessions().LastOrDefault()?.Username ?? string.Empty;
             device.Drives = GetAllDrives();
             device.UsedStorage = usedStorage;
             device.TotalStorage = totalStorage;

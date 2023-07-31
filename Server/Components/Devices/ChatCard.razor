@@ -6,9 +6,9 @@
         <h6 class="mt-3">
             <i class="oi oi-chat mr-1"></i>
             <span class="badge badge-info badge-pill mr-1">
-                @Session?.MissedChats
+                @Session.MissedChats
             </span>
-            @Session?.DeviceName
+            @Session.DeviceName
         </h6>
         <div class="text-right">
             <button class="btn btn-sm btn-secondary" title="Close" @onclick="CloseChatCard" @onclick:stopPropagation>

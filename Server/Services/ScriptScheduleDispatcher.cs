@@ -1,8 +1,8 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Hubs;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
-using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;

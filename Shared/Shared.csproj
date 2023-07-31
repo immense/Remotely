@@ -3,9 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <TargetLatestRuntimePatch>true</TargetLatestRuntimePatch>
-    <AssemblyName>Remotely_Shared</AssemblyName>
+    <AssemblyName></AssemblyName>
     <Platforms>AnyCPU;x64;x86</Platforms>
     <RootNamespace>Remotely.Shared</RootNamespace>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,11 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Models\ScriptResult.cs">
+    <Compile Update="Entities\ScriptResult.cs">
       <LastGenOutput>ScriptResult.cs.d.ts</LastGenOutput>
       <Generator>DtsGenerator</Generator>
     </Compile>
-    <Compile Update="Models\Device.cs">
+    <Compile Update="Entities\Device.cs">
       <Generator></Generator>
     </Compile>
     <Compile Update="Models\RemotelyUserOptions.cs">

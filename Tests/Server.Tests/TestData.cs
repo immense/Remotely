@@ -6,6 +6,7 @@ using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
 using Remotely.Shared.Dtos;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 using System;
 using System.Linq;
@@ -17,22 +18,22 @@ namespace Remotely.Tests;
 public class TestData
 {
     #region Organization1
-    public Organization Org1 => Org1Admin1.Organization;
+    public Organization Org1 => Org1Admin1.Organization!;
 
     public RemotelyUser Org1Admin1 { get; } = new()
     {
         UserName = "org1admin1@test.com",
         IsAdministrator = true,
         IsServerAdmin = true,
-        Organization = new Organization(),
+        Organization = new Organization() { OrganizationName = "Org1" },
         UserOptions = new RemotelyUserOptions()
     };
 
-    public RemotelyUser Org1Admin2 { get; private set; }
+    public RemotelyUser Org1Admin2 { get; private set; } = null!;
 
-    public Device Org1Device1 { get; private set; }
+    public Device Org1Device1 { get; private set; } = null!;
 
-    public Device Org1Device2 { get; private set; }
+    public Device Org1Device2 { get; private set; } = null!;
 
     public DeviceGroup Org1Group1 { get; private set; } = new DeviceGroup()
     {
@@ -45,29 +46,29 @@ public class TestData
     };
 
     public string Org1Id => Org1.ID;
-    public RemotelyUser Org1User1 { get; private set; }
-    public RemotelyUser Org1User2 { get; private set; }
+    public RemotelyUser Org1User1 { get; private set; } = null!;
+    public RemotelyUser Org1User2 { get; private set; } = null!;
     #endregion
 
 
 
     #region Organization2
-    public Organization Org2 => Org2Admin1.Organization;
+    public Organization Org2 => Org2Admin1.Organization!;
 
     public RemotelyUser Org2Admin1 { get; } = new()
     {
         UserName = "org2admin1@test.com",
         IsAdministrator = true,
         IsServerAdmin = false,
-        Organization = new Organization(),
+        Organization = new Organization() { OrganizationName = "Org2" },
         UserOptions = new RemotelyUserOptions()
     };
 
-    public RemotelyUser Org2Admin2 { get; private set; }
+    public RemotelyUser Org2Admin2 { get; private set; } = null!;
 
-    public Device Org2Device1 { get; private set; }
+    public Device Org2Device1 { get; private set; } = null!;
 
-    public Device Org2Device2 { get; private set; }
+    public Device Org2Device2 { get; private set; } = null!;
 
     public DeviceGroup Org2Group1 { get; private set; } = new DeviceGroup()
     {
@@ -80,8 +81,8 @@ public class TestData
     };
 
     public string Org2Id => Org2.ID;
-    public RemotelyUser Org2User1 { get; private set; }
-    public RemotelyUser Org2User2 { get; private set; }
+    public RemotelyUser Org2User1 { get; private set; } = null!;
+    public RemotelyUser Org2User2 { get; private set; } = null!;
     #endregion
 
     public void ClearData()
@@ -106,13 +107,13 @@ public class TestData
         await userManager.CreateAsync(Org1Admin1);
 
         await dataService.CreateUser("org1admin2@test.com", true, Org1Admin1.OrganizationID);
-        Org1Admin2 = dataService.GetUserByNameWithOrg("org1admin2@test.com");
+        Org1Admin2 = (await dataService.GetUserByName("org1admin2@test.com")).Value!;
 
         await dataService.CreateUser("org1testuser1@test.com", false, Org1Admin1.OrganizationID);
-        Org1User1 = dataService.GetUserByNameWithOrg("org1testuser1@test.com");
+        Org1User1 = (await dataService.GetUserByName("org1testuser1@test.com")).Value!;
 
         await dataService.CreateUser("org1testuser2@test.com", false, Org1Admin1.OrganizationID);
-        Org1User2 = dataService.GetUserByNameWithOrg("org1testuser2@test.com");
+        Org1User2 = (await dataService.GetUserByName("org1testuser2@test.com")).Value!;
 
         var device1 = new DeviceClientDto()
         {
@@ -126,12 +127,12 @@ public class TestData
             DeviceName = "Org1Device2Name",
             OrganizationID = Org1Id
         };
-        Org1Device1 = (await dataService.AddOrUpdateDevice(device1)).Value;
-        Org1Device2 = (await dataService.AddOrUpdateDevice(device2)).Value;
+        Org1Device1 = (await dataService.AddOrUpdateDevice(device1)).Value!;
+        Org1Device2 = (await dataService.AddOrUpdateDevice(device2)).Value!;
 
-        dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group1, out _, out _);
-        dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group2, out _, out _);
-        var deviceGroups1 = dataService.GetDeviceGroups(Org1Admin1.UserName);
+        await dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group1);
+        await dataService.AddDeviceGroup(Org1Admin1.OrganizationID, Org1Group2);
+        var deviceGroups1 = dataService.GetDeviceGroups(Org1Admin1.UserName!);
         Org1Group1 = deviceGroups1.First(x => x.Name == Org1Group1.Name);
         Org1Group2 = deviceGroups1.First(x => x.Name == Org1Group2.Name);
 
@@ -140,13 +141,13 @@ public class TestData
         await userManager.CreateAsync(Org2Admin1);
 
         await dataService.CreateUser("org2admin2@test.com", true, Org2Admin1.OrganizationID);
-        Org2Admin2 = dataService.GetUserByNameWithOrg("org2admin2@test.com");
+        Org2Admin2 = (await dataService.GetUserByName("org2admin2@test.com")).Value!;
 
         await dataService.CreateUser("org2testuser1@test.com", false, Org2Admin1.OrganizationID);
-        Org2User1 = dataService.GetUserByNameWithOrg("org2testuser1@test.com");
+        Org2User1 = (await dataService.GetUserByName("org2testuser1@test.com")).Value!;
 
         await dataService.CreateUser("org2testuser2@test.com", false, Org2Admin1.OrganizationID);
-        Org2User2 = dataService.GetUserByNameWithOrg("org2testuser2@test.com");
+        Org2User2 = (await dataService.GetUserByName("org2testuser2@test.com")).Value!;
 
         var device3 = new DeviceClientDto()
         {
@@ -160,12 +161,12 @@ public class TestData
             DeviceName = "Org2Device2Name",
             OrganizationID = Org2Id
         };
-        Org2Device1 = (await dataService.AddOrUpdateDevice(device3)).Value;
-        Org2Device2 = (await dataService.AddOrUpdateDevice(device4)).Value;
+        Org2Device1 = (await dataService.AddOrUpdateDevice(device3)).Value!;
+        Org2Device2 = (await dataService.AddOrUpdateDevice(device4)).Value!;
 
-        dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group1, out _, out _);
-        dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group2, out _, out _);
-        var deviceGroups2 = dataService.GetDeviceGroups(Org2Admin1.UserName);
+        await dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group1);
+        await dataService.AddDeviceGroup(Org2Admin1.OrganizationID, Org2Group2);
+        var deviceGroups2 = dataService.GetDeviceGroups(Org2Admin1.UserName!);
         Org2Group1 = deviceGroups2.First(x => x.Name == Org2Group1.Name);
         Org2Group2 = deviceGroups2.First(x => x.Name == Org2Group2.Name);
     }

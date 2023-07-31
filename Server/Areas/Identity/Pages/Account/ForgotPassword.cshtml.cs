@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Remotely.Shared.Models;
 using Remotely.Server.Services;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Entities;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account;
 
@@ -37,13 +37,13 @@ public class ForgotPasswordModel : PageModel
     }
 
     [BindProperty]
-    public InputModel Input { get; set; }
+    public InputModel Input { get; set; } = new();
 
     public class InputModel
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -65,7 +65,7 @@ public class ForgotPasswordModel : PageModel
                 "/Account/ResetPassword",
                 pageHandler: null,
                 values: new { area = "Identity", code },
-                protocol: Request.Scheme);
+                protocol: Request.Scheme)!;
 
             _logger.LogInformation(
                 "Sending password reset for user {username}. Reset URL: {callbackUrl}", user.UserName, callbackUrl);

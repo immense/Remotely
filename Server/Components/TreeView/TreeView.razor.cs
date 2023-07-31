@@ -9,35 +9,41 @@ namespace Remotely.Server.Components.TreeView;
 public partial class TreeView<T> : ComponentBase
 {
     [Parameter]
-    public IEnumerable<T> DataSource { get; set; }
+    [EditorRequired]
+    public required IEnumerable<T> DataSource { get; set; }
 
     [Parameter]
-    public Func<T, List<T>> ChildItemSelector { get; set; }
+    [EditorRequired]
+    public required Func<T, List<T>> ChildItemSelector { get; set; }
 
     [Parameter]
-    public Func<T, string> ItemHeaderSelector { get; set; }
+    [EditorRequired]
+    public required Func<T, string> ItemHeaderSelector { get; set; }
 
     [Parameter]
-    public Func<T, string> KeySelector { get; set; }
+    [EditorRequired]
+    public required Func<T, string> KeySelector { get; set; }
 
     [Parameter]
     public EventCallback<T> ItemSelected { get; set; }
 
     [Parameter]
-    public string WrapperStyle { get; set; }
+    public string? WrapperStyle { get; set; }
 
     [Parameter]
-    public string ChildItemStyle { get; set; }
+    public string? ChildItemStyle { get; set; }
 
     [Parameter]
     public int IndentLevel { get; set; }
 
     [Parameter]
-    public Func<T, TreeItemType> ItemTypeSelector { get; set; }
+    [EditorRequired]
+    public required Func<T, TreeItemType> ItemTypeSelector { get; set; }
 
     [Parameter]
-    public Func<T, string> ItemIconCssSelector { get; set; }
+    [EditorRequired]
+    public required Func<T, string>? ItemIconCssSelector { get; set; }
 
-    public TreeViewItem<T> SelectedNode { get; set; }
+    public TreeViewItem<T>? SelectedNode { get; set; }
 
 }

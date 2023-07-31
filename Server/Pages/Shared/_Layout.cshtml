@@ -1,7 +1,9 @@
 ﻿@using Microsoft.AspNetCore.Hosting
 @using Microsoft.AspNetCore.Mvc.ViewEngines
+@using Microsoft.EntityFrameworkCore;
 @using Remotely.Server.Services
 @using Remotely.Shared.Models
+@using Remotely.Shared.Entities
 @inject IApplicationConfig AppConfig
 @inject IWebHostEnvironment Environment
 @inject ICompositeViewEngine Engine
@@ -9,14 +11,18 @@
 
 @{
     var organizationName = "Remotely";
-    var user = DataService.GetUserByNameWithOrg(User?.Identity?.Name);
+    var userResult = await DataService.GetUserByName(
+        $"{User?.Identity?.Name}",
+        query => query.Include(x => x.Organization));
+
+    var user = userResult.Value;
 
     if (user is null)
     {
-        var defaultOrg = await DataService.GetDefaultOrganization();
-        if (!string.IsNullOrWhiteSpace(defaultOrg?.OrganizationName))
+        var orgResult = await DataService.GetDefaultOrganization();
+        if (orgResult.IsSuccess)
         {
-            organizationName = defaultOrg.OrganizationName;
+            organizationName = orgResult.Value.OrganizationName;
         }
     }
     else if (!string.IsNullOrWhiteSpace(user.Organization?.OrganizationName))
@@ -43,7 +49,7 @@
     @if (user is RemotelyUser)
     {
 
-        switch (user.UserOptions.Theme)
+        switch (user.UserOptions?.Theme ?? default)
         {
             case Remotely.Shared.Enums.Theme.Light:
                 <link rel="stylesheet" href="~/css/Themes/yeti.min.css" />

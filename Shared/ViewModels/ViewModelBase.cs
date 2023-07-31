@@ -15,31 +15,32 @@ public interface IInvokePropertyChanged
 
 public class ViewModelBase : INotifyPropertyChanged, IInvokePropertyChanged
 {
-    private readonly Dictionary<string, object> _propertyBackingDictionary = new();
+    private readonly Dictionary<string, object?> _propertyBackingDictionary = new();
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public void InvokePropertyChanged(string propertyName = "")
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected T Get<T>([CallerMemberName] string propertyName = null)
+    protected T? Get<T>([CallerMemberName] string? propertyName = null)
     {
         if (string.IsNullOrWhiteSpace(propertyName))
         {
             throw new ArgumentNullException(nameof(propertyName));
         }
 
-        if (_propertyBackingDictionary.TryGetValue(propertyName, out var value))
+        if (_propertyBackingDictionary.TryGetValue(propertyName, out var value) &&
+            value is T typedValue)
         {
-            return (T)value;
+            return typedValue;
         }
 
-        return default(T);
+        return default;
     }
 
-    protected bool Set<T>(T newValue, [CallerMemberName] string propertyName = null)
+    protected bool Set<T>(T? newValue, [CallerMemberName] string? propertyName = null)
     {
         if (string.IsNullOrWhiteSpace(propertyName))
         {

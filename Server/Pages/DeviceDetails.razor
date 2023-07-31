@@ -29,11 +29,11 @@
         </div>
     </div>
 }
-else if (Device is null)
+else if (_device is null)
 {
     <h3>Device not found.</h3>
 }
-else if (!DataService.DoesUserHaveAccessToDevice(Device.ID, User))
+else if (!DataService.DoesUserHaveAccessToDevice(_device.ID, User))
 {
     <h3>Unauthorized.</h3>
 }
@@ -59,7 +59,7 @@ else
                         Device Details
                     </h3>
 
-                    <EditForm Model="Device" OnValidSubmit="HandleValidSubmit" @onkeydown="EditFormKeyDown">
+                    <EditForm Model="_device" OnValidSubmit="HandleValidSubmit" @onkeydown="EditFormKeyDown">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
 
@@ -72,31 +72,31 @@ else
                         <div class="form-group row">
                             <label for="device-name" class="col-sm-2 col-form-label">Device:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="device-name" readonly value="@Device.DeviceName" />
+                                <input type="text" class="form-control" name="device-name" readonly value="@_device.DeviceName" />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="device-id" class="col-sm-2 col-form-label">Device ID:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="device-id" readonly value="@Device.ID" />
+                                <input type="text" class="form-control" name="device-id" readonly value="@_device.ID" />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="agent-version" class="col-sm-2 col-form-label">Agent Version:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="agent-version" readonly value="@Device.AgentVersion" />
+                                <input type="text" class="form-control" name="agent-version" readonly value="@_device.AgentVersion" />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="agent-platform" class="col-sm-2 col-form-label">Platform:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="agent-platform" readonly value="@Device.Platform" />
+                                <input type="text" class="form-control" name="agent-platform" readonly value="@_device.Platform" />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="agent-os-description" class="col-sm-2 col-form-label">Platform:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="agent-os-description" readonly value="@Device.OSDescription" />
+                                <input type="text" class="form-control" name="agent-os-description" readonly value="@_device.OSDescription" />
                             </div>
                         </div>
                         <div class="form-group row">
@@ -107,7 +107,7 @@ else
                                 </button>
                             </label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="agent-storage-percent" readonly value="@(MathHelper.GetFormattedPercent(Device.UsedStoragePercent))" />
+                                <input type="text" class="form-control" name="agent-storage-percent" readonly value="@(MathHelper.GetFormattedPercent(_device.UsedStoragePercent))" />
                             </div>
                         </div>
                         <div class="form-group row">
@@ -115,7 +115,7 @@ else
                                 Total Storage:
                             </label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="agent-storage-total" readonly value="@(Device.TotalStorage)" />
+                                <input type="text" class="form-control" name="agent-storage-total" readonly value="@(_device.TotalStorage)" />
                             </div>
                         </div>
                         <div class="form-group row">
@@ -123,7 +123,7 @@ else
                                 Memory:
                             </label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="agent-memory-percent" readonly value="@(MathHelper.GetFormattedPercent(Device.UsedMemoryPercent))" />
+                                <input type="text" class="form-control" name="agent-memory-percent" readonly value="@(MathHelper.GetFormattedPercent(_device.UsedMemoryPercent))" />
                             </div>
                         </div>
                         <div class="form-group row">
@@ -131,7 +131,7 @@ else
                                 Total Memory:
                             </label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="agent-memory-total" readonly value="@(Device.TotalMemory)" />
+                                <input type="text" class="form-control" name="agent-memory-total" readonly value="@(_device.TotalMemory)" />
                             </div>
                         </div>
                         <div class="form-group row">
@@ -139,7 +139,7 @@ else
                                 Public IP:
                             </label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" name="agent-memory-total" readonly value="@(Device.PublicIP)" />
+                                <input type="text" class="form-control" name="agent-memory-total" readonly value="@(_device.PublicIP)" />
                             </div>
                         </div>
                         <div class="form-group row">
@@ -152,42 +152,42 @@ else
                                     class="form-control" 
                                     name="agent-memory-total" 
                                     readonly
-                                       value="@(string.Join(", ", Device.MacAddresses ?? Array.Empty<string>()))" />
+                                       value="@(string.Join(", ", _device.MacAddresses ?? Array.Empty<string>()))" />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="device-alias" class="col-sm-2 col-form-label">Device Alias:</label>
                             <div class="col-sm-10">
-                                <InputText class="form-control" @bind-Value="@Device.Alias" />
-                                <ValidationMessage For="() => Device.Alias" />
+                                <InputText class="form-control" @bind-Value="@_device.Alias" />
+                                <ValidationMessage For="() => _device.Alias" />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="device-groups" class="col-sm-2 col-form-label">Device Group:</label>
                             <div class="col-sm-10">
-                                <InputSelect @bind-Value="Device.DeviceGroupID" class="form-control">
+                                <InputSelect @bind-Value="_device.DeviceGroupID" class="form-control">
                                     <option value="">None</option>
 
-                                    @foreach (var group in DataService.GetDeviceGroups(Username))
+                                    @foreach (var group in DataService.GetDeviceGroups(UserName))
                                     {
                                         <option @key="group.ID" value="@group.ID">@group.Name</option>
                                     }
                                 </InputSelect>
-                                <ValidationMessage For="() => Device.DeviceGroupID" />
+                                <ValidationMessage For="() => _device.DeviceGroupID" />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="tags" class="col-sm-2 col-form-label">Tags:</label>
                             <div class="col-sm-10">
-                                <InputText @bind-Value="Device.Tags" class="form-control" />
-                                <ValidationMessage For="() => Device.Tags" />
+                                <InputText @bind-Value="_device.Tags" class="form-control" />
+                                <ValidationMessage For="() => _device.Tags" />
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="notes" class="col-sm-2 col-form-label">Notes:</label>
                             <div class="col-sm-10">
-                                <InputTextArea @bind-Value="Device.Notes" style="width:100%; height: 10em;"></InputTextArea>
-                                <ValidationMessage For="() => Device.Notes" />
+                                <InputTextArea @bind-Value="_device.Notes" style="width:100%; height: 10em;"></InputTextArea>
+                                <ValidationMessage For="() => _device.Notes" />
                             </div>
                         </div>
                         <div class="text-right">
@@ -199,7 +199,7 @@ else
 
             <TabContent Name="remote-logs">
                 <div class="py-3">
-                    @if (!Device.IsOnline)
+                    @if (!_device.IsOnline)
                     {
                         <h5 class="text-center mt-5">Device must be online to retrieve logs.</h5>
                     }

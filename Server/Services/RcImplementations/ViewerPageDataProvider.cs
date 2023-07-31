@@ -68,21 +68,22 @@ public class ViewerPageDataProvider : IViewerPageDataProvider
         //return Task.FromResult(appTheme);
     }
 
-    public Task<string> GetUserDisplayName(PageModel pageModel)
+    public async Task<string> GetUserDisplayName(PageModel pageModel)
     {
         if (string.IsNullOrWhiteSpace(pageModel?.User?.Identity?.Name))
         {
-            return Task.FromResult(string.Empty);
+            return string.Empty;
         }
 
-        var user = _dataService.GetUserByNameWithOrg(pageModel.User.Identity.Name);
+        var userResult = await _dataService.GetUserByName(pageModel.User.Identity.Name);
 
-        if (user is null)
+        if (!userResult.IsSuccess)
         {
-            return Task.FromResult(string.Empty);
+            return string.Empty;
         }
 
+        var user = userResult.Value;
         var displayName = user.UserOptions?.DisplayName ?? user.UserName ?? string.Empty;
-        return Task.FromResult(displayName);
+        return displayName;
     }
 }

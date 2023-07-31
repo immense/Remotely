@@ -4,17 +4,15 @@ using Microsoft.AspNetCore.SignalR;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
 using Remotely.Shared.Utilities;
-using Remotely.Shared.Models;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Shared.Enums;
 using Remotely.Server.Auth;
-using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Shared.Helpers;
 using Remotely.Shared;
+using Remotely.Server.Extensions;
+using Remotely.Shared.Entities;
 
 namespace Remotely.Server.API;
 
@@ -47,6 +45,11 @@ public class ScriptingController : ControllerBase
     [HttpPost("[action]/{mode}/{deviceID}")]
     public async Task<ActionResult<ScriptResult>> ExecuteCommand(string mode, string deviceID)
     {
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return Unauthorized();
+        }
+
         if (!Enum.TryParse<ScriptingShell>(mode, true, out var shell))
         {
             return BadRequest("Unable to parse shell type.  Use either PSCore, WinPS, Bash, or CMD.");
@@ -59,19 +62,21 @@ public class ScriptingController : ControllerBase
         }
 
         var userID = string.Empty;
-        if (Request.HttpContext.User.Identity.IsAuthenticated)
+        if (Request.HttpContext.User.Identity?.IsAuthenticated == true)
         {
             var username = Request.HttpContext.User.Identity.Name;
-            var user = await _userManager.FindByNameAsync(username);
-            userID = user.Id;
-            if (!_dataService.DoesUserHaveAccessToDevice(deviceID, user))
+            var userResult = await _dataService.GetUserByName($"{username}");
+
+            if (!userResult.IsSuccess)
             {
                 return Unauthorized();
             }
 
+            if (!_dataService.DoesUserHaveAccessToDevice(deviceID, userResult.Value))
+            {
+                return Unauthorized();
+            }
         }
-
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
 
         if (!_serviceSessionCache.TryGetByDeviceId(deviceID, out var device))
         {
@@ -83,7 +88,7 @@ public class ScriptingController : ControllerBase
             return NotFound();
         }
 
-        if (device.OrganizationID != orgID)
+        if (device.OrganizationID != orgId)
         {
             return Unauthorized();
         }
@@ -99,9 +104,14 @@ public class ScriptingController : ControllerBase
         {
             return NotFound();
         }
-        AgentHub.ApiScriptResults.TryGetValue(requestID, out var commandID);
+        AgentHub.ApiScriptResults.TryGetValue(requestID, out var commandId);
         AgentHub.ApiScriptResults.Remove(requestID);
-        var result = _dataService.GetScriptResult(commandID.ToString(), orgID);
-        return result;
+
+        var scriptResult = await _dataService.GetScriptResult($"{commandId}", orgId);
+        if (!scriptResult.IsSuccess)
+        {
+            return NotFound();
+        }
+        return scriptResult.Value;
     }
 }

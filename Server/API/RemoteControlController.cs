@@ -1,22 +1,19 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Remotely.Server.Attributes;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Shared.Utilities;
-using Remotely.Shared.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Server.Auth;
 using Immense.RemoteControl.Server.Services;
-using Remotely.Server.Services.RcImplementations;
 using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Shared.Helpers;
-using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
+using Remotely.Server.Extensions;
+using Remotely.Shared.Entities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -62,11 +59,16 @@ public class RemoteControlController : ControllerBase
     [ServiceFilter(typeof(ApiAuthorizationFilter))]
     public async Task<IActionResult> Get(string deviceID)
     {
-        Request.Headers.TryGetValue("OrganizationID", out var orgID);
-        return await InitiateRemoteControl(deviceID, orgID);
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            return Unauthorized();
+        }
+        
+        return await InitiateRemoteControl(deviceID, orgId);
     }
 
     [HttpPost]
+    [Obsolete("This method is deprecated. Use the GET method along with API keys instead.")]
     public async Task<IActionResult> Post([FromBody] RemoteControlRequest rcRequest)
     {
         if (!_appConfig.AllowApiLogin)
@@ -74,11 +76,24 @@ public class RemoteControlController : ControllerBase
             return NotFound();
         }
 
-        var orgId = _dataService.GetUserByNameWithOrg(rcRequest.Email)?.OrganizationID;
+        if (string.IsNullOrWhiteSpace(rcRequest.Email) ||
+            string.IsNullOrWhiteSpace(rcRequest.Password) ||
+            string.IsNullOrWhiteSpace(rcRequest.DeviceID))
+        {
+            return BadRequest("Request body is missing required values.");
+        }
+
+        var userResult = await _dataService.GetUserByName(rcRequest.Email);
+        if (!userResult.IsSuccess)
+        {
+            return NotFound();
+        }
+
+        var orgId = userResult.Value.OrganizationID;
 
         var result = await _signInManager.PasswordSignInAsync(rcRequest.Email, rcRequest.Password, false, true);
         if (result.Succeeded &&
-            _dataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, _dataService.GetUserByNameWithOrg(rcRequest.Email)))
+            _dataService.DoesUserHaveAccessToDevice(rcRequest.DeviceID, userResult.Value))
         {
             _logger.LogInformation("API login successful for {rcRequestEmail}.", rcRequest.Email);
             return await InitiateRemoteControl(rcRequest.DeviceID, orgId);
@@ -97,7 +112,7 @@ public class RemoteControlController : ControllerBase
         return BadRequest();
     }
 
-    private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgID)
+    private async Task<IActionResult> InitiateRemoteControl(string deviceID, string orgId)
     {
         if (!_serviceSessionCache.TryGetByDeviceId(deviceID, out var targetDevice) ||
             !_serviceSessionCache.TryGetConnectionId(deviceID, out var serviceConnectionId))
@@ -105,21 +120,29 @@ public class RemoteControlController : ControllerBase
             return NotFound("The target device couldn't be found.");
         }
 
-        if (targetDevice.OrganizationID != orgID)
+        if (targetDevice.OrganizationID != orgId)
         {
             return Unauthorized();
         }
 
-        if (User.Identity.IsAuthenticated &&
-           !_dataService.DoesUserHaveAccessToDevice(targetDevice.ID, _dataService.GetUserByNameWithOrg(User.Identity.Name)))
+        if (User.Identity?.IsAuthenticated == true)
         {
-            return Unauthorized();
-        }
+            var userResult = await _dataService.GetUserByName($"{User.Identity.Name}");
 
+            if (!userResult.IsSuccess)
+            {
+                return Unauthorized();
+            }
+
+            if (!_dataService.DoesUserHaveAccessToDevice(targetDevice.ID, userResult.Value))
+            {
+                return Unauthorized();
+            }
+        }
 
         var sessionCount = _remoteControlSessionCache.Sessions
                .OfType<RemoteControlSessionEx>()
-               .Count(x => x.OrganizationId == orgID);
+               .Count(x => x.OrganizationId == orgId);
 
         if (sessionCount > _appConfig.RemoteControlSessionLimit)
         {
@@ -135,7 +158,7 @@ public class RemoteControlController : ControllerBase
             UserConnectionId = HttpContext.Connection.Id,
             AgentConnectionId = serviceConnectionId,
             DeviceId = deviceID,
-            OrganizationId = orgID
+            OrganizationId = orgId
         };
 
         _remoteControlSessionCache.AddOrUpdate($"{sessionId}", session, (k, v) =>
@@ -149,15 +172,20 @@ public class RemoteControlController : ControllerBase
             return session;
         });
 
-        var orgName = _dataService.GetOrganizationNameById(orgID);
+        var orgNameResult = await _dataService.GetOrganizationNameById(orgId);
+
+        if (!orgNameResult.IsSuccess)
+        {
+            return BadRequest("Failed to resolve organization name.");
+        }
 
         await _serviceHub.Clients.Client(serviceConnectionId).SendAsync("RemoteControl", 
             sessionId,
             accessKey,
             HttpContext.Connection.Id,
             string.Empty,
-            orgName,
-            orgID);
+            orgNameResult.Value,
+            orgId);
 
         var waitResult = await session.WaitForSessionReady(TimeSpan.FromSeconds(30));
         if (!waitResult)

@@ -39,7 +39,7 @@
     private bool _showOnlyMyScripts = true;
 
     [Parameter]
-    public string ActiveTab { get; set; }
+    public string? ActiveTab { get; set; }
 
     public bool ShowOnlyMyScripts
     {
@@ -56,7 +56,7 @@
     {
         get
         {
-            if (_treeNodes?.Any() == true)
+            if (_treeNodes.Any() == true)
             {
                 return _treeNodes;
             }

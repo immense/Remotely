@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Auth;
+using Remotely.Server.Extensions;
 using Remotely.Server.Services;
 using Remotely.Shared;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,14 +23,18 @@ public class FileSharingController : ControllerBase
 
     [HttpGet("{id}")]
     [ServiceFilter(typeof(ExpiringTokenFilter))]
-    public ActionResult Get(string id)
+    public async Task<IActionResult> Get(string id)
     {
-        var sharedFile = _dataService.GetSharedFiled(id);
-        if (sharedFile != null)
+        var sharedFileResult = await _dataService.GetSharedFiled(id);
+
+        if (!sharedFileResult.IsSuccess)
         {
-            return File(sharedFile.FileContents, sharedFile.ContentType, sharedFile.FileName);
+            return NotFound();
         }
-        return NotFound();
+
+        var sharedFile = sharedFileResult.Value;
+        var contentType = sharedFile.ContentType ?? "application/octet-stream";
+        return File(sharedFile.FileContents, contentType, sharedFile.FileName);
     }
 
     [HttpPost]
@@ -36,18 +42,23 @@ public class FileSharingController : ControllerBase
     [RequestSizeLimit(AppConstants.MaxUploadFileSize)]
     public async Task<IEnumerable<string>> Post()
     {
-        if (Request?.Form?.Files?.Count !> 0)
+        if (Request.Form.Files.Count !> 0)
         {
             return Array.Empty<string>();
         }
 
-        var fileIDs = new List<string>();
+        var fileIds = new List<string>();
+
+        if (!Request.Headers.TryGetOrganizationId(out var orgId))
+        {
+            orgId = string.Empty;
+        }
+
         foreach (var file in Request.Form.Files)
         {
-            var orgID = User.Identity.IsAuthenticated ? _dataService.GetUserByNameWithOrg(User.Identity.Name).OrganizationID : null;
-            var id = await _dataService.AddSharedFile(file, orgID);
-            fileIDs.Add(id);
+            var id = await _dataService.AddSharedFile(file, orgId);
+            fileIds.Add(id);
         }
-        return fileIDs;
+        return fileIds;
     }
 }

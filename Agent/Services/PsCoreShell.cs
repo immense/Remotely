@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
@@ -12,10 +13,10 @@ namespace Remotely.Agent.Services;
 
 public interface IPsCoreShell
 {
-    string SenderConnectionId { get; set; }
+    string? SenderConnectionId { get; set; }
 
     CommandCompletion GetCompletions(string inputText, int currentIndex, bool? forward);
-    Task<ScriptResult> WriteInput(string input);
+    Task<ScriptResultDto> WriteInput(string input);
 }
 
 public class PsCoreShell : IPsCoreShell
@@ -25,15 +26,16 @@ public class PsCoreShell : IPsCoreShell
     private readonly ConnectionInfo _connectionInfo;
     private readonly ILogger<PsCoreShell> _logger;
     private readonly PowerShell _powershell;
-    private CommandCompletion _lastCompletion;
-    private string _lastInputText;
+    private CommandCompletion? _lastCompletion;
+    private string? _lastInputText;
+
     public PsCoreShell(
         IConfigService configService,
         ILogger<PsCoreShell> logger)
     {
         _configService = configService;
-        _logger = logger;
         _connectionInfo = _configService.GetConnectionInfo();
+        _logger = logger;
 
         _powershell = PowerShell.Create();
 
@@ -47,7 +49,8 @@ public class PsCoreShell : IPsCoreShell
         _powershell.Invoke();
     }
 
-    public string SenderConnectionId { get; set; }
+    public string? SenderConnectionId { get; set; }
+
     // TODO: Turn into cache and factory.
     public static IPsCoreShell GetCurrent(string senderConnectionId)
     {
@@ -81,7 +84,7 @@ public class PsCoreShell : IPsCoreShell
         return _lastCompletion;
     }
 
-    public async Task<ScriptResult> WriteInput(string input)
+    public async Task<ScriptResultDto> WriteInput(string input)
     {
         var deviceId = _configService.GetConnectionInfo().DeviceID;
         var sw = Stopwatch.StartNew();
@@ -99,7 +102,10 @@ public class PsCoreShell : IPsCoreShell
             ps.AddScript("$args[0] | Out-String");
             ps.AddArgument(results);
             var result = await ps.InvokeAsync();
-            var hostOutput = result[0].BaseObject.ToString();
+            
+            var hostOutput = result.Count > 0 ? 
+                $"{result[0].BaseObject}" : 
+                string.Empty;
 
             var verboseOut = _powershell.Streams.Verbose.ReadAll().Select(x => x.Message);
             var debugOut = _powershell.Streams.Debug.ReadAll().Select(x => x.Message);
@@ -110,12 +116,13 @@ public class PsCoreShell : IPsCoreShell
             var standardOut = hostOutput.Split(Environment.NewLine)
                 .Concat(infoOut)
                 .Concat(debugOut)
-                .Concat(verboseOut);
+                .Concat(verboseOut)
+                .Select(x => $"{x}");
 
             var errorAndWarningOut = errorOut.Concat(warningOut).ToArray();
 
 
-            return new ScriptResult()
+            return new ScriptResultDto()
             {
                 DeviceID = _configService.GetConnectionInfo().DeviceID,
                 SenderConnectionID = SenderConnectionId,
@@ -130,7 +137,7 @@ public class PsCoreShell : IPsCoreShell
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while writing input to PSCore.");
-            return new ScriptResult()
+            return new ScriptResultDto()
             {
                 DeviceID = deviceId,
                 SenderConnectionID = SenderConnectionId,

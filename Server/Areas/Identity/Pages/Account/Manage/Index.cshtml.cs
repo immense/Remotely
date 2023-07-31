@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage;
 
@@ -23,19 +23,19 @@ public partial class IndexModel : PageModel
         _signInManager = signInManager;
     }
 
-    public string Username { get; set; }
+    public string? Username { get; set; }
 
     [TempData]
-    public string StatusMessage { get; set; }
+    public string? StatusMessage { get; set; }
 
     [BindProperty]
-    public InputModel Input { get; set; }
+    public InputModel Input { get; set; } = new();
 
     public class InputModel
     {
         [Phone]
         [Display(Name = "Phone number")]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
     }
 
     private async Task LoadAsync(RemotelyUser user)

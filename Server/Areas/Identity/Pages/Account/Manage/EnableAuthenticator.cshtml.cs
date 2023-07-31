@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 
 namespace Remotely.Server.Areas.Identity.Pages.Account.Manage;
 
@@ -32,18 +32,19 @@ public class EnableAuthenticatorModel : PageModel
         _urlEncoder = urlEncoder;
     }
 
-    public string SharedKey { get; set; }
+    public string? SharedKey { get; set; }
 
-    public string AuthenticatorUri { get; set; }
+    public string? AuthenticatorUri { get; set; }
 
-    [TempData]
-    public string[] RecoveryCodes { get; set; }
 
     [TempData]
-    public string StatusMessage { get; set; }
+    public string[]? RecoveryCodes { get; set; }
+
+    [TempData]
+    public string? StatusMessage { get; set; }
 
     [BindProperty]
-    public InputModel Input { get; set; }
+    public InputModel Input { get; set; } = new();
 
     public class InputModel
     {
@@ -51,7 +52,7 @@ public class EnableAuthenticatorModel : PageModel
         [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Text)]
         [Display(Name = "Verification Code")]
-        public string Code { get; set; }
+        public string Code { get; set; } = string.Empty;
     }
 
     public async Task<IActionResult> OnGetAsync()
@@ -103,7 +104,7 @@ public class EnableAuthenticatorModel : PageModel
         if (await _userManager.CountRecoveryCodesAsync(user) == 0)
         {
             var recoveryCodes = await _userManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
-            RecoveryCodes = recoveryCodes.ToArray();
+            RecoveryCodes = recoveryCodes?.ToArray();
             return RedirectToPage("./ShowRecoveryCodes");
         }
         else
@@ -122,10 +123,10 @@ public class EnableAuthenticatorModel : PageModel
             unformattedKey = await _userManager.GetAuthenticatorKeyAsync(user);
         }
 
-        SharedKey = FormatKey(unformattedKey);
+        SharedKey = FormatKey($"{unformattedKey}");
 
         var email = await _userManager.GetEmailAsync(user);
-        AuthenticatorUri = GenerateQrCodeUri(email, unformattedKey);
+        AuthenticatorUri = GenerateQrCodeUri($"{email}", $"{unformattedKey}");
     }
 
     private string FormatKey(string unformattedKey)

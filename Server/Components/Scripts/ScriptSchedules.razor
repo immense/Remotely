@@ -13,12 +13,12 @@
         </div>
 
         <div class="col-12">
-            <AlertBanner Message="@_alertMessage" OnClose="() => _alertMessage = null" />
+            <AlertBanner Message="@_alertMessage" OnClose="() => _alertMessage = string.Empty" />
         </div>
 
         <div class="mt-2 col-12">
             <div>
-                <button type="submit" class="btn btn-primary align-middle mr-3" disabled="@(!CanModifyScript)">
+                <button type="submit" class="btn btn-primary align-middle mr-3" disabled="@(!CanModifySchedule)">
                     Save
                 </button>
 
@@ -26,7 +26,7 @@
                     New
                 </button>
                 <button class="btn btn-danger mr-4" type="button"
-                        disabled="@(!CanDeleteScript)"
+                        disabled="@(!CanDeleteSchedule)"
                         @onclick="DeleteSelectedSchedule">
                     Delete
                 </button>

@@ -57,7 +57,7 @@
     private readonly List<Alert> _alerts = new();
     private bool _isOpen;
 
-    private string FrameClass => _isOpen ? "open" : null;
+    private string? FrameClass => _isOpen ? "open" : null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,7 +93,8 @@
 
     private void ShowAlertDetails(Alert alert)
     {
-        ModalService.ShowModal($"Alert Details for {alert.Device?.DeviceName}", alert.Details.Split('\n'));
+        var body = alert.Details?.Split('\n') ?? Array.Empty<string>();
+        ModalService.ShowModal($"Alert Details for {alert.Device?.DeviceName}", body);
     }
 
     private void ToggleOpen()

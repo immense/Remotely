@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
@@ -19,14 +20,14 @@ namespace Remotely.Tests;
 [TestClass]
 public class ScriptScheduleDispatcherTests
 {
-    private ScriptSchedule _schedule1;
-    private Mock<IDataService> _dataService;
-    private Mock<ICircuitConnection> _circuitConnection;
-    private Mock<IAgentHubSessionCache> _serviceSessionCache;
-    private Mock<ILogger<ScriptScheduleDispatcher>> _logger;
-    private ScriptScheduleDispatcher _dispatcher;
-    private TestData _testData;
-    private SavedScript _savedScript;
+    private ScriptSchedule _schedule1 = null!;
+    private Mock<IDataService> _dataService = null!;
+    private Mock<ICircuitConnection> _circuitConnection = null!;
+    private Mock<IAgentHubSessionCache> _serviceSessionCache = null!;
+    private Mock<ILogger<ScriptScheduleDispatcher>> _logger = null!;
+    private ScriptScheduleDispatcher _dispatcher = null!;
+    private TestData _testData = null!;
+    private SavedScript _savedScript = null!;
 
     [TestInitialize]
     public async Task Init()
@@ -36,7 +37,8 @@ public class ScriptScheduleDispatcherTests
 
         _savedScript = new SavedScript()
         {
-            Id = Guid.NewGuid()
+            Id = Guid.NewGuid(),
+            Name = "Test Script",
         };
 
         _schedule1 = new()
@@ -51,6 +53,7 @@ public class ScriptScheduleDispatcherTests
             {
                 new DeviceGroup()
                 {
+                    Name = "Group1",
                     Devices = new List<Device>()
                     {
                         _testData.Org1Device2
@@ -110,8 +113,8 @@ public class ScriptScheduleDispatcherTests
             x.Contains(_schedule1.Devices.First().ID))));
         _dataService.Verify(x => x.AddScriptRun(It.Is<ScriptRun>(x => 
             x.ScheduleId == _schedule1.Id &&
-            x.Devices.Exists(d => d.ID == _testData.Org1Device1.ID) &&
-            x.Devices.Exists(d => d.ID == _testData.Org1Device2.ID))));
+            x.Devices!.Exists(d => d.ID == _testData.Org1Device1.ID) &&
+            x.Devices!.Exists(d => d.ID == _testData.Org1Device2.ID))));
         _dataService.VerifyNoOtherCalls();
 
         _circuitConnection.Verify(x => x.RunScript(

@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using Remotely.Server.Services
 @using Remotely.Shared.Models
+@using Remotely.Shared.Entities
 @namespace Remotely.Server.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @inject IDataService DataService
@@ -8,7 +9,8 @@
 
 @{
     Layout = null;
-    var user = DataService.GetUserByNameWithOrg(User?.Identity?.Name);
+    var userResult = await DataService.GetUserByName($"{User?.Identity?.Name}");
+    var user = userResult.Value;
 }
 
 <!DOCTYPE html>
@@ -26,7 +28,7 @@
     @if (user is RemotelyUser)
     {
 
-        switch (user.UserOptions.Theme)
+        switch (user.UserOptions?.Theme ?? default)
         {
             case Remotely.Shared.Enums.Theme.Light:
                 <link rel="stylesheet" href="~/css/Themes/yeti.min.css" />

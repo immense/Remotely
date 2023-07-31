@@ -7,6 +7,7 @@ using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Attributes;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -34,29 +35,26 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
     private readonly List<PropertyInfo> _sortableProperties = new();
     private int _currentPage = 1;
     private int _devicesPerPage = 25;
-    private string _filter;
+    private string? _filter;
     private bool _hideOfflineDevices = true;
-    private string _selectedGroupId;
+    private string? _selectedGroupId;
     private string _selectedSortProperty = "DeviceName";
     private ListSortDirection _sortDirection;
 
     [Inject]
-    private IClientAppState AppState { get; set; }
+    private IClientAppState AppState { get; init; } = null!;
 
     [Inject]
-    private ICircuitConnection CircuitConnection { get; set; }
+    private ICircuitConnection CircuitConnection { get; init; } = null!;
 
     [Inject]
-    private IDataService DataService { get; set; }
+    private IDataService DataService { get; init; } = null!;
 
     [Inject]
-    private IJsInterop JsInterop { get; set; }
+    private IJsInterop JsInterop { get; init; } = null!;
 
     [Inject]
-    private ILogger<DevicesFrame> Logger { get; set; }
-
-    [Inject]
-    private IToastService ToastService { get; set; }
+    private IToastService ToastService { get; init; } = null!;
 
     private int TotalPages => (int)Math.Max(1, Math.Ceiling((decimal)_filteredDevices.Count / _devicesPerPage));
 
@@ -82,7 +80,7 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
         _deviceGroups.Clear();
 
-        _deviceGroups.AddRange(DataService.GetDeviceGroups(User.UserName));
+        _deviceGroups.AddRange(DataService.GetDeviceGroups(UserName));
 
         _selectedGroupId = _deviceGroupAll;
 
@@ -105,23 +103,31 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
         return shouldRender;
     }
 
-    private void AddScriptResult(ScriptResult result)
+    private async Task AddScriptResult(ScriptResult result)
     {
-        var device = DataService.GetDevice(result.DeviceID);
-        AppState.AddTerminalLine($"{device?.DeviceName} @ {result.TimeStamp}", "font-weight-bold");
+        var deviceResult = await DataService.GetDevice(result.DeviceID);
+        if (!deviceResult.IsSuccess)
+        {
+            return;
+        }
 
-        foreach (var line in result.StandardOutput)
+        AppState.AddTerminalLine($"{deviceResult.Value.DeviceName} @ {result.TimeStamp}", "font-weight-bold");
+
+        var stdOut = result.StandardOutput ?? Array.Empty<string>();
+        var stdErr = result.ErrorOutput ?? Array.Empty<string>();
+
+        foreach (var line in stdOut)
         {
             AppState.AddTerminalLine(line, "text-info");
         }
-        foreach (var line in result.ErrorOutput)
+        foreach (var line in stdErr)
         {
             AppState.AddTerminalLine(line, "text-danger");
         }
         AppState.InvokePropertyChanged(nameof(AppState.TerminalLines));
     }
 
-    private void AppState_PropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void AppState_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(AppState.DevicesFrameFocusedCardState) ||
             e.PropertyName == nameof(AppState.DevicesFrameFocusedDevice) ||
@@ -131,7 +137,7 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
         }
     }
 
-    private void CircuitConnection_MessageReceived(object sender, CircuitEvent args)
+    private async void CircuitConnection_MessageReceived(object? sender, CircuitEvent args)
     {
         switch (args.EventName)
         {
@@ -165,13 +171,15 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
                     var className = (string)args.Params[2];
                     AppState.AddTerminalLine(terminalMessage);
                     ToastService.ShowToast(toastMessage, classString: className);
-                    InvokeAsync(StateHasChanged);
+                    await InvokeAsync(StateHasChanged);
                 }
                 break;
             case CircuitEventName.ScriptResult:
                 {
-                    var result = (ScriptResult)args.Params[0];
-                    AddScriptResult(result);
+                    if (args.Params[0] is ScriptResult result)
+                    {
+                        await AddScriptResult(result);
+                    }
                 }
                 break;
             default:
@@ -181,7 +189,7 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
     private void ClearSelectedCard()
     {
-        AppState.DevicesFrameFocusedDevice = null;
+        AppState.DevicesFrameFocusedDevice = string.Empty;
         AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
     }
 
@@ -238,8 +246,8 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
                     var propInfo = _sortableProperties.Find(x => x.Name == _selectedSortProperty);
 
-                    var valueA = propInfo.GetValue(a);
-                    var valueB = propInfo.GetValue(b);
+                    var valueA = propInfo?.GetValue(a);
+                    var valueB = propInfo?.GetValue(b);
 
                     return Comparer.Default.Compare(valueA, valueB) * direction;
                 });
@@ -280,7 +288,7 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
         {
             _allDevices.Clear();
 
-            var devices = DataService.GetDevicesForUser(Username)
+            var devices = DataService.GetDevicesForUser(UserName)
                 .OrderByDescending(x => x.IsOnline)
                 .ToList();
 
@@ -340,7 +348,7 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
     private async Task WakeDevices()
     {
         var offlineDevices = DataService
-           .GetDevicesForUser(Username)
+           .GetDevicesForUser(UserName)
            .Where(x => !x.IsOnline);
 
         if (_selectedGroupId == _deviceGroupNone)

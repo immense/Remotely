@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -18,7 +19,7 @@ namespace Remotely.Server.Data;
 public class AppDb : IdentityDbContext
 {
     private static readonly ValueComparer<string[]> _stringArrayComparer = new(
-                (a, b) => a.SequenceEqual(b),
+                (a, b) => (a ?? Array.Empty<string>()).SequenceEqual(b ?? Array.Empty<string>()),
                 c => c.Aggregate(0, (a, b) => HashCode.Combine(a, b.GetHashCode())),
                 c => c.ToArray());
 
@@ -41,7 +42,7 @@ public class AppDb : IdentityDbContext
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
-        //options.LogTo((message) => System.Diagnostics.Debug.Write(message));
+        options.LogTo((message) => System.Diagnostics.Debug.Write(message));
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -66,7 +67,8 @@ public class AppDb : IdentityDbContext
           .WithOne(x => x.Organization);
         builder.Entity<Organization>()
           .HasMany(x => x.SharedFiles)
-          .WithOne(x => x.Organization);
+          .WithOne(x => x.Organization)
+          .IsRequired(false);
         builder.Entity<Organization>()
           .HasMany(x => x.ApiTokens)
           .WithOne(x => x.Organization);
@@ -132,11 +134,12 @@ public class AppDb : IdentityDbContext
             .HasMany(x => x.ScriptRuns)
             .WithMany(x => x.Devices);
         builder.Entity<Device>()
-            .HasMany(x => x.ScriptRunsCompleted)
-            .WithMany(x => x.DevicesCompleted);
-        builder.Entity<Device>()
             .HasMany(x => x.ScriptSchedules)
             .WithMany(x => x.Devices);
+        builder.Entity<Device>()
+            .HasOne(x => x.DeviceGroup)
+            .WithMany(x => x.Devices)
+            .IsRequired(false);
         builder.Entity<Device>()
             .Property(x => x.MacAddresses)
             .HasConversion(
@@ -145,7 +148,9 @@ public class AppDb : IdentityDbContext
                 valueComparer: _stringArrayComparer);
 
         builder.Entity<DeviceGroup>()
-            .HasMany(x => x.Devices);
+            .HasMany(x => x.Devices)
+            .WithOne(x => x.DeviceGroup)
+            .IsRequired(false);
         builder.Entity<DeviceGroup>()
             .HasMany(x => x.ScriptSchedules)
             .WithMany(x => x.DeviceGroups);
@@ -154,8 +159,13 @@ public class AppDb : IdentityDbContext
             .HasMany(x => x.Devices)
             .WithMany(x => x.ScriptRuns);
         builder.Entity<ScriptRun>()
-            .HasMany(x => x.DevicesCompleted)
-            .WithMany(x => x.ScriptRunsCompleted);
+            .HasMany(x => x.Results)
+            .WithOne(x => x.ScriptRun)
+            .IsRequired(false);
+        builder.Entity<ScriptRun>()
+            .HasOne(x => x.SavedScript)
+            .WithMany(x => x.ScriptRuns)
+            .IsRequired(false);
 
         builder.Entity<ScriptResult>()
           .Property(x => x.ErrorOutput)
@@ -172,6 +182,14 @@ public class AppDb : IdentityDbContext
               x => DeserializeStringArray(x, jsonOptions))
           .Metadata
           .SetValueComparer(_stringArrayComparer);
+        builder.Entity<ScriptResult>()
+            .HasOne(x => x.ScriptRun)
+            .WithMany(x => x.Results)
+            .IsRequired(false);
+        builder.Entity<ScriptResult>()
+           .HasOne(x => x.SavedScript)
+           .WithMany(x => x.ScriptResults)
+           .IsRequired(false);
 
         builder.Entity<Alert>()
             .HasOne(x => x.User)

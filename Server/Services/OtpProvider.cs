@@ -30,7 +30,8 @@ public class OtpProvider : IOtpProvider
 
     public bool OtpMatchesDevice(string otp, string deviceId)
     {
-        if (_otpCache.TryGetValue(otp, out string cachedDevice) &&
+        if (_otpCache.TryGetValue(otp, out var cachedItem) &&
+            cachedItem is string cachedDevice &&
             cachedDevice == deviceId)
         {
             return true;

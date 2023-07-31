@@ -1,24 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Remotely.Server.Models;
 using Remotely.Server.Services;
+using Remotely.Shared;
 using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Auth;
 
-public class ExpiringTokenFilter : ActionFilterAttribute, IAuthorizationFilter
+public class ExpiringTokenFilter : ActionFilterAttribute, IAsyncAuthorizationFilter
 {
     private readonly IDataService _dataService;
     private readonly IExpiringTokenService _expiringTokenService;
     private readonly ILogger<ExpiringTokenFilter> _logger;
 
-    public ExpiringTokenFilter(IExpiringTokenService expiringTokenService,
+    public ExpiringTokenFilter(
+        IExpiringTokenService expiringTokenService,
         IDataService dataService,
         ILogger<ExpiringTokenFilter> logger)
     {
@@ -27,41 +26,80 @@ public class ExpiringTokenFilter : ActionFilterAttribute, IAuthorizationFilter
         _logger = logger;
     }
 
-    public void OnAuthorization(AuthorizationFilterContext context)
+    public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        if (context.HttpContext.User.Identity.IsAuthenticated)
+        try
         {
-            return;
+            await Authorize(context);
         }
-
-        if (!context.HttpContext.Request.Headers.TryGetValue("Authorization", out var authorization))
+        catch (Exception ex)
         {
-            context.Result = new UnauthorizedResult();
-            return;
+            _logger.LogError(ex, "Error while authorizing expiring token.");
         }
+    }
 
-        if (authorization.ToString().Contains(":"))
+    private async Task Authorize(AuthorizationFilterContext context)
+    {
+        var http = context.HttpContext;
+        http.Request.Headers["OrganizationID"] = string.Empty;
+
+        if (http.User.Identity?.IsAuthenticated == true)
         {
-            var keyId = authorization.ToString().Split(":")[0]?.Trim();
-            var apiSecret = authorization.ToString().Split(":")[1]?.Trim();
-
-            if (_dataService.ValidateApiKey(keyId, apiSecret, context.HttpContext.Request.Path, context.HttpContext.Connection.RemoteIpAddress.ToString()))
+            var userResult = await _dataService.GetUserByName($"{http.User.Identity.Name}");
+            if (!userResult.IsSuccess)
             {
-                var orgID = _dataService.GetApiKey(keyId)?.OrganizationID;
-                context.HttpContext.Request.Headers["OrganizationID"] = orgID;
+                http.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                context.Result = new UnauthorizedResult();
+                return;
+            }
+
+            http.Request.Headers["OrganizationID"] = userResult.Value.OrganizationID;
+            return;
+        }
+
+        if (http.Request.Headers.TryGetValue(AppConstants.ApiKeyHeaderName, out var apiHeaderValue))
+        {
+            var headerComponents = apiHeaderValue.ToString().Split(":");
+            if (headerComponents.Length < 2)
+            {
+                http.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                context.Result = new UnauthorizedResult();
+                return;
+            };
+
+            var keyId = headerComponents[0].Trim();
+            var secret = headerComponents[1].Trim();
+
+            var isValid = await _dataService.ValidateApiKey(
+                       keyId,
+                       secret,
+                       http.Request.Path,
+                       $"{http.Connection.RemoteIpAddress}");
+
+            if (isValid)
+            {
+                var keyResult = await _dataService.GetApiKey(keyId);
+
+                if (keyResult.IsSuccess)
+                {
+                    _logger.LogDebug("Expiring token authorized via API key.  Key ID: {keyId}.", keyId);
+                    http.Request.Headers["OrganizationID"] = keyResult.Value.OrganizationID;
+                    return;
+                }
+            }
+        }
+
+        if (http.Request.Headers.TryGetValue(AppConstants.ExpiringTokenHeaderName, out var expiringToken))
+        {
+            if (_expiringTokenService.TryGetExpiration(expiringToken.ToString(), out var expiration) &&
+                expiration > Time.Now)
+            {
+                _logger.LogDebug("Expiring token authorized.  Token: {token}.  Expiration: {expiration}", expiringToken, expiration);
                 return;
             }
         }
 
-
-        if (_expiringTokenService.TryGetExpiration(authorization.ToString(), out var expiration) &&
-            expiration > DateTimeOffset.Now)
-        {
-            _logger.LogDebug("Expiring token authorized.  Token: {token}.  Expiration: {expiration}", authorization, expiration);
-            return;
-        }
-
-        _logger.LogDebug("Expiring token not authorized.  Token: {token}.", authorization);
+        _logger.LogDebug("Expiring token not authorization failed.");
         context.Result = new UnauthorizedResult();
     }
 }

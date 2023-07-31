@@ -76,7 +76,7 @@ public class AppLauncherLinux : IAppLauncher
             xauthority,
             display,
             args);
-        return Process.Start(psi).Id;
+        return Process.Start(psi)?.Id ?? throw new InvalidOperationException("Failed to launch desktop app.");
     }
 
     private string GetXorgAuth()

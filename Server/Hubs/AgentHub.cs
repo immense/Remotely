@@ -6,13 +6,12 @@ using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared;
 using Remotely.Shared.Dtos;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -48,11 +47,16 @@ public class AgentHub : Hub
     // TODO: Replace with new invoke capability in .NET 7 in ScriptingController.
     public static IMemoryCache ApiScriptResults { get; } = new MemoryCache(new MemoryCacheOptions());
 
-    private Device Device
+    private Device? Device
     {
         get
         {
-            return Context.Items["Device"] as Device;
+            if (Context.Items["Device"] is Device device) 
+            {
+                return device;
+            }
+            _logger.LogWarning("Device has not been set in the context items.");
+            return null;
         }
         set
         {
@@ -62,9 +66,14 @@ public class AgentHub : Hub
 
     public Task Chat(string message, bool disconnected, string browserConnectionId)
     {
+        if (Device is null)
+        {
+            return Task.CompletedTask;
+        }
+
         if (_circuitManager.TryGetConnection(browserConnectionId, out var connection))
         {
-            return connection.InvokeCircuitEvent(CircuitEventName.ChatReceived, Device.ID, Device.DeviceName, message, disconnected);
+            return connection.InvokeCircuitEvent(CircuitEventName.ChatReceived, Device.ID, $"{Device.DeviceName}", message, disconnected);
         }
         else
         {
@@ -75,6 +84,11 @@ public class AgentHub : Hub
 
     public async Task CheckForPendingScriptRuns()
     {
+        if (Device is null)
+        {
+            return;
+        }
+
         var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
         var scriptRuns = await _dataService.GetPendingScriptRuns(Device.ID);
         foreach (var run in scriptRuns)
@@ -102,7 +116,7 @@ public class AgentHub : Hub
             {
                 ip = ip.MapToIPv4();
             }
-            device.PublicIP = ip?.ToString();
+            device.PublicIP = $"{ip}";
 
             if (CheckForDeviceBan(device.PublicIP))
             {
@@ -157,7 +171,7 @@ public class AgentHub : Hub
         {
             ip = ip.MapToIPv4();
         }
-        device.PublicIP = ip?.ToString();
+        device.PublicIP = $"{ip}";
 
         if (CheckForDeviceBan(device.PublicIP))
         {
@@ -216,10 +230,10 @@ public class AgentHub : Hub
 
     public string GetServerVerificationToken()
     {
-        return Device.ServerVerificationToken;
+        return $"{Device?.ServerVerificationToken}";
     }
 
-    public override Task OnDisconnectedAsync(Exception exception)
+    public override Task OnDisconnectedAsync(Exception? exception)
     {
         try
         {
@@ -255,12 +269,17 @@ public class AgentHub : Hub
         return _circuitManager.InvokeOnConnection(senderConnectionId, CircuitEventName.PowerShellCompletions, completion, intent);
     }
 
-    public Task ScriptResult(string scriptResultId)
+    public async Task ScriptResult(string scriptResultId)
     {
-        var result = _dataService.GetScriptResult(scriptResultId);
-        return _circuitManager.InvokeOnConnection(result.SenderConnectionID,
+        var result = await _dataService.GetScriptResult(scriptResultId);
+        if (!result.IsSuccess)
+        {
+            return;
+        }
+
+        _ = await _circuitManager.InvokeOnConnection($"{result.Value.SenderConnectionID}",
             CircuitEventName.ScriptResult,
-            result);
+            result.Value);
     }
 
     public void ScriptResultViaApi(string commandID, string requestID)
@@ -278,6 +297,10 @@ public class AgentHub : Hub
     }
     public void SetServerVerificationToken(string verificationToken)
     {
+        if (Device is null)
+        {
+            return;
+        }
         Device.ServerVerificationToken = verificationToken;
         _dataService.SetServerVerificationToken(Device.ID, verificationToken);
     }

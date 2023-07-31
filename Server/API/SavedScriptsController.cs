@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Auth;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +23,14 @@ public class SavedScriptsController : ControllerBase
 
     [ServiceFilter(typeof(ExpiringTokenFilter))]
     [HttpGet("{scriptId}")]
-    public async Task<SavedScript> GetScript(Guid scriptId)
+    public async Task<ActionResult<SavedScript>> GetScript(Guid scriptId)
     {
-        return await _dataService.GetSavedScript(scriptId);
+        var result =  await _dataService.GetSavedScript(scriptId);
+        if (!result.IsSuccess)
+        {
+            return NotFound();
+        }
+
+        return result.Value;
     }
 }

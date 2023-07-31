@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Remotely.Server.API;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
-using Remotely.Shared.Models;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
@@ -21,25 +21,25 @@ namespace Remotely.Tests;
 [TestClass]
 public class IoCActivator
 {
-    public static IServiceProvider ServiceProvider { get; set; }
-    private static IWebHostBuilder builder;
+    public static IServiceProvider ServiceProvider { get; set; } = null!;
+    private static IWebHostBuilder? _builder;
 
     public static void Activate()
     {
-        if (builder is null)
+        if (_builder is null)
         {
-            builder = WebHost.CreateDefaultBuilder()
+            _builder = WebHost.CreateDefaultBuilder()
                .UseStartup<Startup>()
                .CaptureStartupErrors(true)
                .ConfigureAppConfiguration(config =>
                {
-                   config.AddInMemoryCollection(new Dictionary<string, string>()
+                   config.AddInMemoryCollection(new Dictionary<string, string?>()
                    {
                        ["ApplicationOptions:DBProvider"] = "InMemory"
                    });
                });
 
-            builder.Build();
+            _builder.Build();
         }
     }
 

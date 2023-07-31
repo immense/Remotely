@@ -6,8 +6,8 @@ namespace Remotely.Shared.ViewModels;
 public class ChatSession
 {
     public ConcurrentList<ChatHistoryItem> ChatHistory { get; } = new();
-    public string DeviceId { get; set; }
-    public string DeviceName { get; set; }
+    public string? DeviceId { get; set; }
+    public string? DeviceName { get; set; }
     public string ExpandedClass => IsExpanded ? "expanded" : "";
     public bool IsExpanded { get; set; }
 

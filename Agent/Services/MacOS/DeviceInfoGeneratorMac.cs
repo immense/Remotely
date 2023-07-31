@@ -114,6 +114,6 @@ public class DeviceInfoGeneratorMac : DeviceInfoGeneratorBase, IDeviceInformatio
     private string GetCurrentUser()
     {
         var users = _processInvoker.InvokeProcessOutput("users", "");
-        return users?.Split()?.FirstOrDefault()?.Trim();
+        return users?.Split()?.FirstOrDefault()?.Trim() ?? string.Empty;
     }
 }

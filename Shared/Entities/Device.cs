@@ -1,5 +1,6 @@
 ﻿using Remotely.Shared.Attributes;
 using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -7,22 +8,21 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 
-namespace Remotely.Shared.Models;
+namespace Remotely.Shared.Entities;
 
 public class Device
 {
-    public static Device Empty { get; } = new();
 
     [Sortable]
     [Display(Name = "Agent Version")]
-    public string AgentVersion { get; set; }
+    public string? AgentVersion { get; set; }
 
-    public ICollection<Alert> Alerts { get; set; }
+    public ICollection<Alert>? Alerts { get; set; }
+
     [StringLength(100)]
-
     [Sortable]
     [Display(Name = "Alias")]
-    public string Alias { get; set; }
+    public string? Alias { get; set; }
 
     [Sortable]
     [Display(Name = "CPU Utilization")]
@@ -30,18 +30,18 @@ public class Device
 
     [Sortable]
     [Display(Name = "Current User")]
-    public string CurrentUser { get; set; }
+    public string? CurrentUser { get; set; }
 
-    public DeviceGroup DeviceGroup { get; set; }
-    public string DeviceGroupID { get; set; }
+    public DeviceGroup? DeviceGroup { get; set; }
+    public string? DeviceGroupID { get; set; }
 
     [Sortable]
     [Display(Name = "Device Name")]
-    public string DeviceName { get; set; }
-    public List<Drive> Drives { get; set; }
+    public string? DeviceName { get; set; }
+    public List<Drive>? Drives { get; set; }
 
     [Key]
-    public string ID { get; set; }
+    public string ID { get; set; } = Guid.NewGuid().ToString();
 
     public bool Is64Bit { get; set; }
     public bool IsOnline { get; set; }
@@ -55,44 +55,43 @@ public class Device
     public string[] MacAddresses { get; set; } = Array.Empty<string>();
 
     [StringLength(5000)]
-    public string Notes { get; set; }       
+    public string? Notes { get; set; }
 
     [JsonIgnore]
-    public Organization Organization { get; set; }
+    public Organization? Organization { get; set; }
 
-    public string OrganizationID { get; set; }
+    public string OrganizationID { get; set; } = null!;
     public Architecture OSArchitecture { get; set; }
 
     [Sortable]
     [Display(Name = "OS Description")]
-    public string OSDescription { get; set; }
+    public string? OSDescription { get; set; }
 
     [Sortable]
     [Display(Name = "Platform")]
-    public string Platform { get; set; }
+    public string? Platform { get; set; }
 
     [Sortable]
     [Display(Name = "Processor Count")]
     public int ProcessorCount { get; set; }
 
-    public string PublicIP { get; set; }
-    [JsonIgnore]
-    public List<ScriptResult> ScriptResults { get; set; }
+    public string? PublicIP { get; set; }
 
     [JsonIgnore]
-    public List<ScriptRun> ScriptRuns { get; set; }
+    public List<ScriptResult> ScriptResults { get; set; } = new();
 
     [JsonIgnore]
-    public List<ScriptRun> ScriptRunsCompleted { get; set; }
+    public List<ScriptRun> ScriptRuns { get; set; } = new();
 
     [JsonIgnore]
-    public List<ScriptSchedule> ScriptSchedules { get; set; }
+    public List<ScriptSchedule> ScriptSchedules { get; set; } = new();
 
-    public string ServerVerificationToken { get; set; }
+    public string? ServerVerificationToken { get; set; }
+
     [StringLength(200)]
     [Sortable]
     [Display(Name = "Tags")]
-    public string Tags { get; set; } = "";
+    public string? Tags { get; set; }
 
     [Sortable]
     [Display(Name = "Memory Total")]

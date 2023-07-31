@@ -1,19 +1,15 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Remotely.Server.Hubs;
+using Remotely.Server.RateLimiting;
 using Remotely.Server.Services;
-using Remotely.Shared.Enums;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.API;
@@ -22,10 +18,6 @@ namespace Remotely.Server.API;
 [ApiController]
 public class AgentUpdateController : ControllerBase
 {
-    private static readonly MemoryCache _downloadingAgents = new(new MemoryCacheOptions()
-    { ExpirationScanFrequency = TimeSpan.FromSeconds(10) });
-
-
     private readonly IHubContext<AgentHub> _agentHubContext;
     private readonly ILogger<AgentUpdateController> _logger;
     private readonly IApplicationConfig _appConfig;
@@ -45,60 +37,18 @@ public class AgentUpdateController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet("[action]/{downloadId}")]
-    public ActionResult ClearDownload(string downloadId)
-    {
-        _logger.LogDebug("Clearing download ID {downloadId}.", downloadId);
-        _downloadingAgents.Remove(downloadId);
-        return Ok();
-    }
-
-    [HttpGet("[action]/{platform}/{downloadId}")]
-    public async Task<ActionResult> DownloadPackage(string platform, string downloadId)
+    [HttpGet("[action]/{platform}")]
+    [EnableRateLimiting(PolicyNames.AgentUpdateDownloads)]
+    public async Task<ActionResult> DownloadPackage(string platform)
     {
         try
         {
-            var remoteIp = Request?.HttpContext?.Connection?.RemoteIpAddress.ToString();
+            var remoteIp = $"{Request?.HttpContext?.Connection?.RemoteIpAddress}";
 
             if (await CheckForDeviceBan(remoteIp))
             {
                 return BadRequest();
             }
-
-            var startWait = DateTimeOffset.Now;
-
-            while (_downloadingAgents.Count >= _appConfig.MaxConcurrentUpdates)
-            {
-                await Task.Delay(new Random().Next(100, 10000));
-
-                // A get operation is necessary to evaluate item eviction.
-                _downloadingAgents.TryGetValue(string.Empty, out _);
-            }
-
-            var entryExpirationTime = TimeSpan.FromMinutes(3);
-            var tokenExpirationTime = entryExpirationTime.Add(TimeSpan.FromSeconds(15));
-
-            var expirationToken = new CancellationChangeToken(
-                new CancellationTokenSource(tokenExpirationTime).Token);
-
-            var cacheOptions = new MemoryCacheEntryOptions()
-                .SetAbsoluteExpiration(entryExpirationTime)
-                .AddExpirationToken(expirationToken);
-
-            _downloadingAgents.Set(downloadId, string.Empty, cacheOptions);
-
-            var waitTime = DateTimeOffset.Now - startWait;
-            _logger.LogDebug(
-                "Download started after wait time of {waitTime}.  " + 
-                "ID: {downloadId}. " +
-                "IP: {remoteIp}. " +
-                "Current Downloads: {_downloadingAgentsCount}.  Max Allowed: {_appConfigMaxConcurrentUpdates}",
-                waitTime,
-                downloadId,
-                remoteIp,
-                _downloadingAgents.Count,
-                _appConfig.MaxConcurrentUpdates);
-
 
             string filePath;
 
@@ -133,10 +83,18 @@ public class AgentUpdateController : ControllerBase
         }
         catch (Exception ex)
         {
-            _downloadingAgents.Remove(downloadId);
             _logger.LogError(ex, "Error while downloading package.");
             return StatusCode((int)HttpStatusCode.InternalServerError);
         }
+    }
+
+
+    [HttpGet("[action]/{platform}/{downloadId}")]
+    [EnableRateLimiting(PolicyNames.AgentUpdateDownloads)]
+    [Obsolete("This method is only for backwards compatibility.  Remove after a few releases.")]
+    public async Task<ActionResult> DownloadPackage(string platform, string downloadId)
+    {
+        return await DownloadPackage(platform);
     }
 
     private async Task<bool> CheckForDeviceBan(string deviceIp)

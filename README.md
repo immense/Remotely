@@ -209,13 +209,13 @@ Remotely has a basic API, which can be browsed at https://remotely.lucency.co/sw
 
 When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.  For example, if I wanted to create a login form on https://lucency.co that logged into the Remotely API, I'd need to add "https://lucency.co" to the TrustedCorsOrigins.
 
-The API key and secret must first be combined [ApiKey]:[ApiSecret] and then encoded with Base64 as [EncodedAuhorization]. After that you can add the encoded string to the request's Authorization header in the form "Basic [EncodedAuhorization]"
+Each request to the API must have a header named "X-Api-Key".  The value should be the API key's ID and secret, separated by a colon (i.e. [ApiKey]:[ApiSecret]).
 
 Below is an example API request:
 
 	POST https://localhost:5001/API/Scripting/ExecuteCommand/PSCore/f2b0a595-5ea8-471b-975f-12e70e0f3497 HTTP/1.1
 	Content-Type: application/json
-	Authorization: 31fb288d-af97-4ce1-ae7b-ceebb98281ac:HLkrKaZGExYvozSPvcACZw9awKkhHnNK
+	X-Api-Key: 31fb288d-af97-4ce1-ae7b-ceebb98281ac:HLkrKaZGExYvozSPvcACZw9awKkhHnNK
 	User-Agent: PostmanRuntime/7.22.0
 	Accept: */*
 	Cache-Control: no-cache
@@ -286,7 +286,7 @@ Register-ScheduledJob -ScriptBlock {
     $FreeSpace = $OsDrive.Free / ($OsDrive.Used + $OsDrive.Free)
     if ($FreeSpace -lt .1) {
         Invoke-WebRequest -Uri "https://localhost:5001/api/Alerts/Create/" -Method Post -Headers @{ 
-            Authorization="3e9d8273-1dc1-4303-bd50-7a133e36b9b7:S+82XKZdvg278pSFHWtUklqHENuO5IhH"
+            X-Api-Key="3e9d8273-1dc1-4303-bd50-7a133e36b9b7:S+82XKZdvg278pSFHWtUklqHENuO5IhH"
         } -Body @"
             {
                 "AlertDeviceID": "f2b0a595-5ea8-471b-975f-12e70e0f3497",

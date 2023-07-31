@@ -2,22 +2,25 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Remotely.Server.Services;
+using System.Threading.Tasks;
 
 namespace Remotely.Server.Pages;
 
 [Authorize]
 public class InviteModel : PageModel
 {
+    private readonly IDataService _dataService;
+
     public InviteModel(IDataService dataService)
     {
-        DataService = dataService;
+        _dataService = dataService;
     }
-    private IDataService DataService { get; }
+
     public bool Success { get; set; }
 
     public class InputModel
     {
-        public string InviteID { get; set; }
+        public string? InviteID { get; set; }
     }
 
     [BindProperty]
@@ -28,12 +31,13 @@ public class InviteModel : PageModel
         if (string.IsNullOrWhiteSpace(id))
         {
             ModelState.AddModelError("MissingID", "No invititation ID is specified.");
+            return;
         }
 
         Input.InviteID = id;
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPost()
     {
         if (string.IsNullOrWhiteSpace(Input?.InviteID))
         {
@@ -42,8 +46,8 @@ public class InviteModel : PageModel
             return Page();
         }
 
-        var result = DataService.JoinViaInvitation(User.Identity.Name, Input.InviteID);
-        if (result == false)
+        var result = await _dataService.JoinViaInvitation($"{User.Identity?.Name}", Input.InviteID);
+        if (!result.IsSuccess)
         {
             Success = false;
             ModelState.AddModelError("InviteIDNotFound", "The invitation ID wasn't found or is for another account.");

@@ -14,25 +14,25 @@
 </div>
 
 @code {
-    private System.Timers.Timer _collapseTimer;
-    private string _showClass;
+    private System.Timers.Timer? _collapseTimer;
+    private string? _showClass;
     private bool _isExpanded;
 
     [Parameter]
-    public string ButtonClass { get; set; }
+    public string? ButtonClass { get; set; }
 
     [Parameter]
-    public RenderFragment ButtonContent { get; set; }
+    public RenderFragment? ButtonContent { get; set; }
 
     [Parameter]
-    public string DropDownClass { get; set; }
+    public string? DropDownClass { get; set; }
 
     [Parameter]
-    public string DropDownMenuClass { get; set; }
+    public string? DropDownMenuClass { get; set; }
 
 
     [Parameter]
-    public RenderFragment ChildListItems { get; set; }
+    public RenderFragment? ChildListItems { get; set; }
 
     private void ToggleShown()
     {

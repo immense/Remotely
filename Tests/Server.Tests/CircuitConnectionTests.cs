@@ -133,7 +133,7 @@ public class CircuitConnectionTests
         var addToGroupResult = _dataService.AddUserToDeviceGroup(
             _testData.Org1Id,
             _testData.Org1Group1.ID,
-            _testData.Org1User1.UserName,
+            $"{_testData.Org1User1.UserName}",
             out _);
 
         var updateResult = await _dataService.AddOrUpdateDevice(_testData.Org1Device1.ToDto());
@@ -199,7 +199,7 @@ public class CircuitConnectionTests
         var addToGroupResult = _dataService.AddUserToDeviceGroup(
             _testData.Org1Id,
             _testData.Org1Group1.ID,
-            _testData.Org1User1.UserName,
+            $"{_testData.Org1User1.UserName}",
             out _);
 
         var updateResult = await _dataService.AddOrUpdateDevice(_testData.Org1Device1.ToDto());
@@ -278,7 +278,7 @@ public class CircuitConnectionTests
         var addToGroupResult = _dataService.AddUserToDeviceGroup(
             _testData.Org1Id,
             _testData.Org1Group1.ID,
-            _testData.Org1User1.UserName,
+            $"{_testData.Org1User1.UserName}",
             out _);
 
         var updateResult = await _dataService.AddOrUpdateDevice(_testData.Org1Device1.ToDto());
@@ -346,7 +346,7 @@ public class CircuitConnectionTests
         var addToGroupResult = _dataService.AddUserToDeviceGroup(
             _testData.Org1Id,
             _testData.Org1Group1.ID,
-            _testData.Org1User1.UserName,
+            $"{_testData.Org1User1.UserName}",
             out _);
 
         var updateResult = await _dataService.AddOrUpdateDevice(_testData.Org1Device1.ToDto());
@@ -417,7 +417,7 @@ public class CircuitConnectionTests
         var addToGroupResult = _dataService.AddUserToDeviceGroup(
             _testData.Org1Id,
             _testData.Org1Group1.ID,
-            _testData.Org1User1.UserName,
+            $"{_testData.Org1User1.UserName}",
             out _);
 
         var updateResult = await _dataService.AddOrUpdateDevice(_testData.Org1Device1.ToDto());
