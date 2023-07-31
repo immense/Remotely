@@ -1,6 +1,7 @@
 ﻿using Immense.RemoteControl.Desktop.Native.Windows;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Extensions;
 using Remotely.Agent.Interfaces;
@@ -40,6 +41,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
     private readonly IWakeOnLanService _wakeOnLanService;
     private readonly ILogger<AgentHubConnection> _logger;
     private readonly IFileLogsManager _fileLogsManager;
+    private readonly IHostApplicationLifetime _appLifetime;
     private readonly IScriptExecutor _scriptExecutor;
     private readonly IUninstaller _uninstaller;
     private readonly IUpdater _updater;
@@ -60,6 +62,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         IHttpClientFactory httpFactory,
         IWakeOnLanService wakeOnLanService,
         IFileLogsManager fileLogsManager,
+        IHostApplicationLifetime appLifetime,
         ILogger<AgentHubConnection> logger)
     {
         _configService = configService;
@@ -73,6 +76,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         _wakeOnLanService = wakeOnLanService;
         _logger = logger;
         _fileLogsManager = fileLogsManager;
+        _appLifetime = appLifetime;
     }
 
     public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
@@ -302,7 +306,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
         _hubConnection.On("DeleteLogs", () =>
        {
-           _fileLogsManager.DeleteLogs();
+           _fileLogsManager.DeleteLogs(_appLifetime.ApplicationStopping);
        });
 
 
@@ -367,14 +371,14 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         {
             try
             {
-                if (!await _fileLogsManager.AnyLogsExist())
+                if (!await _fileLogsManager.AnyLogsExist(_appLifetime.ApplicationStopping))
                 {
                     var message = "There are no log entries written.";
                     await _hubConnection.InvokeAsync("SendLogs", message, senderConnectionId).ConfigureAwait(false);
                     return;
                 }
 
-                await foreach (var chunk in _fileLogsManager.ReadAllBytes())
+                await foreach (var chunk in _fileLogsManager.ReadAllBytes(_appLifetime.ApplicationStopping))
                 {
                     var lines = Encoding.UTF8.GetString(chunk);
                     await _hubConnection.InvokeAsync("SendLogs", lines, senderConnectionId).ConfigureAwait(false);
