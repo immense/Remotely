@@ -13,14 +13,14 @@ public partial class Enable_NullableReferences : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         // These relationships weren't enforced previously.
-        migrationBuilder.Sql("delete from ScriptResults where DeviceID is null;");
-        migrationBuilder.Sql("delete from ScriptResults where DeviceID not in (select ID from Devices);");
-        migrationBuilder.Sql("delete from ScriptResults where OrganizationID is null;");
-        migrationBuilder.Sql("delete from ScriptResults where OrganizationID not in (select ID from Organizations);");
-        migrationBuilder.Sql("delete from ScriptResults where SavedScriptId not in (select Id from SavedScripts);");
-        migrationBuilder.Sql("delete from ScriptRuns where OrganizationID is null;");
-        migrationBuilder.Sql("delete from ScriptRuns where OrganizationID not in (select ID from Organizations);");
-        migrationBuilder.Sql("delete from ScriptRuns where SavedScriptId not in (select Id from SavedScripts);");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"DeviceID\" is null;");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"DeviceID\" not in (select \"ID\" from \"Devices\");");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"OrganizationID\" is null;");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"OrganizationID\" not in (select \"ID\" from \"Organizations\");");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"SavedScriptId\" not in (select \"Id\" from \"SavedScripts\");");
+        migrationBuilder.Sql("delete from \"ScriptRuns\" where \"OrganizationID\" is null;");
+        migrationBuilder.Sql("delete from \"ScriptRuns\" where \"OrganizationID\" not in (select \"ID\" from \"Organizations\");");
+        migrationBuilder.Sql("delete from \"ScriptRuns\" where \"SavedScriptId\" not in (select \"Id\" from \"SavedScripts\");");
 
         migrationBuilder.DropForeignKey(
         name: "FK_Alerts_Devices_DeviceID",
