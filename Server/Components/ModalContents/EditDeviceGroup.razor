@@ -1,7 +1,5 @@
 ﻿@attribute [Authorize]
-@inherits AuthComponentBase
-@inject IDataService DataService
-@inject IToastService ToastService  
+@inherits AuthComponentBase 
 
 <h5 class="text-info">
     Editing @EditUser?.UserName
@@ -10,55 +8,12 @@
 @foreach (var group in DeviceGroups ?? Array.Empty<DeviceGroup>())
 {
     <div @key="group.ID">
-        <input id="@group.ID" type="checkbox" class="align-middle mr-2" checked="@(DoesGroupContainUser(group))" @onchange="ev => GroupCheckChanged(ev, group)" />
+        <input 
+            id="@group.ID" 
+            type="checkbox" 
+            class="align-middle mr-2" 
+            checked="@(DoesGroupContainUser(group))" 
+            @onchange="ev => GroupCheckChanged(ev, group)" />
         <label class="align-middle mb-0" for="@group.ID">@group.Name</label>
     </div>
-}
-
-
-@code {
-    public static string EditUserPropName => nameof(EditUser);
-    public static string DeviceGroupsPropName => nameof(DeviceGroups);
-
-    [Parameter]
-    public required RemotelyUser EditUser { get; set; }
-
-    [Parameter]
-    public required DeviceGroup[] DeviceGroups { get; set; }
-
-
-    private bool DoesGroupContainUser(DeviceGroup group)
-    {
-        return group.Users.Any(x => x.Id == EditUser.Id);
-    }
-
-    private async Task GroupCheckChanged(ChangeEventArgs args, DeviceGroup group)
-    {
-        if (!string.IsNullOrWhiteSpace(EditUser.UserName) &&
-            args.Value is bool boolValue && 
-            boolValue)
-        {
-            if (!DataService.AddUserToDeviceGroup(EditUser.OrganizationID, group.ID, EditUser.UserName, out var result))
-            {
-                ToastService.ShowToast(result, classString: "bg-warning");
-            }
-            else
-            {
-                ToastService.ShowToast("User added to group.");
-            }
-
-        }
-        else
-        {
-            var result = await DataService.RemoveUserFromDeviceGroup(EditUser.OrganizationID, group.ID, EditUser.Id);
-            if (!result)
-            {
-                ToastService.ShowToast("Failed to remove from group.", classString: "bg-warning");
-            }
-            else
-            {
-                ToastService.ShowToast("Removed user from group.");
-            }
-        }
-    }
 }

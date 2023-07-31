@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Remotely.Server.Data;
 using System;
@@ -11,6 +12,11 @@ namespace Remotely.Server.Data;
 
 public class TestingDbContext : AppDb
 {
+    public TestingDbContext(IWebHostEnvironment hostEnvironment) 
+        : base(hostEnvironment)
+    {
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
         options.UseInMemoryDatabase("Remotely");

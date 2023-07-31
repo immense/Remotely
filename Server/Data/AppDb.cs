@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
@@ -23,6 +25,13 @@ public class AppDb : IdentityDbContext
                 c => c.Aggregate(0, (a, b) => HashCode.Combine(a, b.GetHashCode())),
                 c => c.ToArray());
 
+    private readonly IWebHostEnvironment _hostEnv;
+
+    public AppDb(IWebHostEnvironment hostEnvironment)
+    {
+        _hostEnv = hostEnvironment;
+    }
+
     public DbSet<Alert> Alerts { get; set; }
 
     public DbSet<ApiToken> ApiTokens { get; set; }
@@ -31,10 +40,10 @@ public class AppDb : IdentityDbContext
     public DbSet<Device> Devices { get; set; }
     public DbSet<InviteLink> InviteLinks { get; set; }
     public DbSet<Organization> Organizations { get; set; }
-    public DbSet<ScriptRun> ScriptRuns { get; set; }
     public DbSet<SavedScript> SavedScripts { get; set; }
-    public DbSet<ScriptSchedule> ScriptSchedules { get; set; }
     public DbSet<ScriptResult> ScriptResults { get; set; }
+    public DbSet<ScriptRun> ScriptRuns { get; set; }
+    public DbSet<ScriptSchedule> ScriptSchedules { get; set; }
     public DbSet<SharedFile> SharedFiles { get; set; }
     public new DbSet<RemotelyUser> Users { get; set; }
 
@@ -43,6 +52,12 @@ public class AppDb : IdentityDbContext
     {
         options.ConfigureWarnings(x => x.Ignore(RelationalEventId.MultipleCollectionIncludeWarning));
         options.LogTo((message) => System.Diagnostics.Debug.Write(message));
+
+        if (_hostEnv.IsDevelopment())
+        {
+            options.EnableDetailedErrors();
+            options.EnableSensitiveDataLogging();
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
