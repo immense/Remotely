@@ -5,12 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Remotely.Server.Converters;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
-using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -210,29 +208,42 @@ public class AppDb : IdentityDbContext
             .HasOne(x => x.User)
             .WithMany(x => x.Alerts);
 
-
-        if (Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
+        var isSqlite = Database.IsSqlite();
+        var isPostgres = Database.IsNpgsql();
+        
+        if (isSqlite || isPostgres)
         {
-            // SQLite does not have proper support for DateTimeOffset via Entity Framework Core, see the limitations
-            // here: https://docs.microsoft.com/en-us/ef/core/providers/sqlite/limitations#query-limitations
-            // To work around this, when the SQLite database provider is used, all model properties of type DateTimeOffset
-            // use the DateTimeOffsetToBinaryConverter
-            // Based on: https://github.com/aspnet/EntityFrameworkCore/issues/10784#issuecomment-415769754
-            // This only supports millisecond precision, but should be sufficient for most use cases.
+            // SQLite and PostgreSQL don't support DateTimeOffset natively (or don't support
+            // it correctly), so we need to use a converter.
             foreach (var entityType in builder.Model.GetEntityTypes())
             {
                 if (entityType.IsKeyless)
                 {
                     continue;
                 }
-                var properties = entityType.ClrType.GetProperties().Where(p => p.PropertyType == typeof(DateTimeOffset)
-                                                                            || p.PropertyType == typeof(DateTimeOffset?));
+
+                var properties = entityType.ClrType
+                    .GetProperties()
+                    .Where(p => 
+                        p.PropertyType == typeof(DateTimeOffset) ||
+                        p.PropertyType == typeof(DateTimeOffset?));
+
                 foreach (var property in properties)
                 {
-                    builder
-                         .Entity(entityType.Name)
-                         .Property(property.Name)
-                         .HasConversion(new DateTimeOffsetToStringConverter());
+                    if (isSqlite)
+                    {
+                        builder
+                             .Entity(entityType.Name)
+                             .Property(property.Name)
+                             .HasConversion(new DateTimeOffsetToStringConverter());
+                    }
+                    else if (isPostgres)
+                    {
+                        builder
+                             .Entity(entityType.Name)
+                             .Property(property.Name)
+                             .HasConversion(new PostgresDateTimeOffsetConverter());
+                    }
                 }
             }
         }
