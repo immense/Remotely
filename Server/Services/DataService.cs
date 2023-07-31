@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Data;
+using Remotely.Server.Extensions;
 using Remotely.Server.Models;
 using Remotely.Shared;
 using Remotely.Shared.Dtos;
@@ -118,7 +119,7 @@ public interface IDataService
 
     Task<Result<Device>> GetDevice(
           string deviceId,
-          Action<IQueryable<Device>>? includesBuilder = null);
+          Action<IQueryable<Device>>? queryBuilder = null);
 
     Task<Result<Device>> GetDevice(string orgId, string deviceId);
 
@@ -178,7 +179,7 @@ public interface IDataService
 
     Task<Result<RemotelyUser>> GetUserByName(
         string userName, 
-        Action<IQueryable<RemotelyUser>>? includesBuilder = null);
+        Action<IQueryable<RemotelyUser>>? queryBuilder = null);
 
     Task<Result<RemotelyUserOptions>> GetUserOptions(string userName);
 
@@ -947,7 +948,9 @@ public class DataService : IDataService
             .Include(x => x.Organization)
             .Include(x => x.Alerts)
             .Include(x => x.SavedScripts)
+            .ThenInclude(x => x.ScriptRuns)
             .Include(x => x.ScriptSchedules)
+            .ThenInclude(x => x.ScriptRuns)
             .FirstOrDefault(x =>
                 x.Id == targetUserId &&
                 x.OrganizationID == orgId);
@@ -962,10 +965,21 @@ public class DataService : IDataService
             deviceGroup.Users.Remove(target);
         }
 
-        foreach (var alert in target.Alerts)
+        foreach (var run in target.ScriptSchedules.SelectMany(x => x.ScriptRuns))
         {
-            dbContext.Alerts.Remove(alert);
+            dbContext.ScriptRuns.Remove(run);
         }
+
+        foreach (var script in target.SavedScripts)
+        {
+            if (script.ScriptRuns is not null)
+            {
+                dbContext.ScriptRuns.RemoveRange(script.ScriptRuns);
+            }
+        }
+
+        dbContext.Alerts.RemoveRange(target.Alerts);
+        dbContext.ScriptSchedules.RemoveRange(target.ScriptSchedules);
 
         target.Organization = null;
         org.RemotelyUsers.Remove(target);
@@ -1298,17 +1312,14 @@ public class DataService : IDataService
 
     public async Task<Result<Device>> GetDevice(
         string deviceId,
-        Action<IQueryable<Device>>? includesBuilder = null)
+        Action<IQueryable<Device>>? queryBuilder = null)
     {
         using var dbContext = _appDbFactory.GetContext();
-        
-        var query = dbContext.Devices
+
+        var device = await dbContext.Devices
             .AsNoTracking()
-            .AsQueryable();
-
-        includesBuilder?.Invoke(query);
-
-        var device = await query.FirstOrDefaultAsync(x => x.ID == deviceId);
+            .Apply(queryBuilder)
+            .FirstOrDefaultAsync(x => x.ID == deviceId);
 
         if (device is null)
         {
@@ -1762,7 +1773,7 @@ public class DataService : IDataService
 
     public async Task<Result<RemotelyUser>> GetUserByName(
         string userName,
-        Action<IQueryable<RemotelyUser>>? includesBuilder = null)
+        Action<IQueryable<RemotelyUser>>? queryBuilder = null)
     {
         if (string.IsNullOrWhiteSpace(userName))
         {
@@ -1771,14 +1782,11 @@ public class DataService : IDataService
 
         using var dbContext = _appDbFactory.GetContext();
 
-        var query = dbContext.Users
+        var user = await dbContext.Users
             .AsNoTracking()
-            .AsQueryable();
-
-        includesBuilder?.Invoke(query);
-
-        var user = await query.FirstOrDefaultAsync(x => 
-            x.UserName!.ToLower().Trim() == userName.ToLower().Trim());
+            .Apply(queryBuilder)
+            .FirstOrDefaultAsync(x =>
+                x.UserName!.ToLower().Trim() == userName.ToLower().Trim());
 
         if (user is null)
         {
