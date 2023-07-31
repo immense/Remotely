@@ -75,26 +75,26 @@ After changing the above, you must restart the container for the changes to take
 
 ## Build and Debug Instructions (Windows 11)  
 The following steps will configure your Windows 11 machine for building the Remotely server and clients.
-* Install Visual Studio 2022.
-    * Link: https://visualstudio.microsoft.com/downloads/
-	* You should have the following Workloads selected:
-	    * ASP.NET and web development
-		* .NET desktop development
-		* .NET Core cross-platform development
-	* You should have the following Individual Components selected:
-	    * .NET SDK (latest version).
-		* MSBuild (which auto-selects Roslyn compilers).
-		* NuGet targets and build tasks.
-		* .NET Framework 4.8 SDK.
-	    * For debugging and development, you'll need all relevant workloads.
-* Install Git for Windows.
-    * Link: https://git-scm.com/downloads
-* Install the latest LTS Node:
-	* Link: https://nodejs.org/
-* Clone the git repository: `git clone https://github.com/immense/Remotely --recurse`
-* When debugging, the agent will use a pre-defined device ID and connect to https://localhost:5001.
-* In development environment, the server will assign all connecting agents to the first organization.
-* The above two allow you to debug the agent and server together, and see your device in the list.
+- Install Visual Studio 2022.
+    - Link: https://visualstudio.microsoft.com/downloads/
+	- You should have the following Workloads selected:
+	    - ASP.NET and web development
+		- .NET desktop development
+		- .NET Core cross-platform development
+	- You should have the following Individual Components selected:
+	    - .NET SDK (latest version).
+		- MSBuild (which auto-selects Roslyn compilers).
+		- NuGet targets and build tasks.
+		- .NET Framework 4.8 SDK.
+	    - For debugging and development, you'll need all relevant workloads.
+- Install Git for Windows.
+    - Link: https://git-scm.com/downloads
+- Install the latest LTS Node:
+	- Link: https://nodejs.org/
+- Clone the git repository: `git clone https://github.com/immense/Remotely --recurse`
+- When debugging, the agent will use a pre-defined device ID and connect to https://localhost:5001.
+- In development environment, the server will assign all connecting agents to the first organization.
+- The above two allow you to debug the agent and server together, and see your device in the list.
 
 ## Admin Accounts
 The first account created will be an admin for both the server and the organization that's created for the account.
@@ -111,26 +111,29 @@ The following settings are available in appsettings.json, under the ApplicationO
 
 For more information on configuring ASP.NET Core, see https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/.
 
-* AllowApiLogin: Whether to allow logging in via the API controller.  API access tokens are recommended over this approach.
-* BannedDevices: An array of device IDs, names, or IP addresses to ban.  When they try to connect, an uninstall command will immediately be sent back.
-* DataRetentionInDays: How long logs and other data will be kept on the server.  Set to -1 to retain indefinitely (not recommended).
-* DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
-* EnableWindowsEventLog: Whether to also add server log entries to the Windows Event Log.
-* EnforceAttendedAccess: Clients will be prompted to allow unattended remote control attempts.
-* KnownProxies: If your reverse proxy is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the reverse proxy server to this array.
-* MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
-    * Set this to -1 or increase it to a specific number to allow multi-tenancy.
-* RedirectToHttps: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Caddy, Nginx, and IIS configurations that do the same.
-* RemoteControlNotifyUsers: Whether to show a notification to the end user when an unattended remote control session starts.
-* RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
-* RemoteControlRequiresAuthentication: Whether the remote control page requires authentication to establish a connection.
-* Require2FA: Require users to set up 2FA before they can use the main app.
-* Smpt*: SMTP settings for auto-generated system emails (such as registration and password reset).
-* Theme: The color theme to use for the site.  Values are "Light" or "Dark".  This can also be configured per-user in Account - Options.
-* TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
-* UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
-* UseHttpLogging: Enables logging for all HTTP requests.  Also enables additional log entries in `ClientDownloadsController` regarding the effective scheme, host, and remote IP address as a result of processing forwarded headers.
-    * You must explicitly set a log level for `Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware` for this to work.  See the [appsettings.json](https://github.com/immense/Remotely/blob/master/Server/appsettings.json) for an example.
+- AllowApiLogin: Whether to allow logging in via the API controller.  API access tokens are recommended over this approach.
+- BannedDevices: An array of device IDs, names, or IP addresses to ban.  When they try to connect, an uninstall command will immediately be sent back.
+- DataRetentionInDays: How long logs and other data will be kept on the server.  Set to -1 to retain indefinitely (not recommended).
+- DBProvider: Determines which of the three connection strings (at the top) will be used.  The appropriate DB provider for the database type is automatically loaded in code.
+- EnableWindowsEventLog: Whether to also add server log entries to the Windows Event Log.
+- EnforceAttendedAccess: Clients will be prompted to allow unattended remote control attempts.
+- EnableRemoteControlRecording: Whether to save recordings of remote control sessions on the server.
+  - They will be saved in `/remotely-data/recordings`.
+  - Their retention is governed by `DataRetentionInDays`.
+- KnownProxies: If your reverse proxy is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the reverse proxy server to this array.
+- MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
+    - Set this to -1 or increase it to a specific number to allow multi-tenancy.
+- RedirectToHttps: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS.  This is independent of Caddy, Nginx, and IIS configurations that do the same.
+- RemoteControlNotifyUsers: Whether to show a notification to the end user when an unattended remote control session starts.
+- RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
+- RemoteControlRequiresAuthentication: Whether the remote control page requires authentication to establish a connection.
+- Require2FA: Require users to set up 2FA before they can use the main app.
+- Smpt-: SMTP settings for auto-generated system emails (such as registration and password reset).
+- Theme: The color theme to use for the site.  Values are "Light" or "Dark".  This can also be configured per-user in Account - Options.
+- TrustedCorsOrigins: For cross-origin API requests via JavaScript.  The websites listed in this array with be allowed to make requests to the API.  This does not grant authentication, which is still required on most endpoints.
+- UseHsts: Whether ASP.NET Core will use HTTP Strict Transport Security.
+- UseHttpLogging: Enables logging for all HTTP requests.  Also enables additional log entries in `ClientDownloadsController` regarding the effective scheme, host, and remote IP address as a result of processing forwarded headers.
+    - You must explicitly set a log level for `Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware` for this to work.  See the [appsettings.json](https://github.com/immense/Remotely/blob/master/Server/appsettings.json) for an example.
 
 
 ## Changing the Database
@@ -139,32 +142,31 @@ By default, Remotely uses a SQLite database.  When first run, it creates a file 
 You can change database by changing `DBProvider` in `ApplicationOptions` to `SQLServer` or `PostgreSQL`.
 
 ## Logging
-* On clients, logs are kept in `%ProgramData%\Remotely\Logs`
-* Within the server container, logs will be written to `/var/www/remotely` which if using our Docker command above will be mounted to `/remotely-data` 
-* Built-in ASP.NET Core logs are written to the console (stdout).  You can redirect this to a file if desired.
-	* In IIS, this can be done in the web.config file by setting stdoutLogEnabled to true.
-* On Windows Servers, the above logs can also be written to the Windows Event Log.
-	* This is enabled in appsettings.json by setting EnableWindowsEventLog to true.
-* You can configure logging levels and other settings in appsetttings.json.
-	* More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/
+- On clients, logs are kept in `%ProgramData%\Remotely\Logs`
+- Within the server container, logs will be written to `/var/www/remotely` which if using our Docker command above will be mounted to `/remotely-data` 
+- Built-in ASP.NET Core logs are written to the console (stdout).  You can redirect this to a file if desired.
+	- In IIS, this can be done in the web.config file by setting stdoutLogEnabled to true.
+- On Windows Servers, the above logs can also be written to the Windows Event Log.
+	- This is enabled in appsettings.json by setting EnableWindowsEventLog to true.
+- You can configure logging levels and other settings in appsetttings.json.
+	- More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/
 
 ## Remote Control Client Requirements
-* Windows: Only the latest version of Windows 11 is tested.  Windows 7 and 8.1 should work, though performance will be reduced on Windows 7.
-	* Windows 2019/2022 should work as well, but isn't tested regularly.
-* Linux: Only the latest LTS version of Ubuntu is tested.
-* For the Ubuntu's "quick support" client, you must first install the following dependencies:
-    * libx11-dev
-	* libxrandr-dev
-    * libc6-dev
-    * libxtst-dev
-    * xclip
+- Windows: Only the latest version of Windows 11 is tested.  Windows 7 and 8.1 should work, though performance will be reduced on Windows 7.
+	- Windows 2019/2022 should work as well, but isn't tested regularly.
+- Linux: Only the latest LTS version of Ubuntu is tested.
+- For the Ubuntu's "quick support" client, you must first install the following dependencies:
+    - libx11-dev
+	- libxrandr-dev
+    - libc6-dev
+    - libxtst-dev
+    - xclip
 
 ## Remote Control on Mobile
 Ideally, you'd be doing remote control from an actual computer or laptop.  However, I've tried to make the remote control at least somewhat usable from a mobile device.  Here are the controls:
-* Left-click: Single tap
-* Right-click: Tap and hold
-* Click-and-drag: Tap and hold with one finger, tap and release a second finger (without pinch-zooming)
-	* The click-and-drag operation will begin where finger one is held.
+- Left-click: Single tap
+- Right-click: Long-press, then release
+- Click-and-drag: Long-press, then drag
 
 ## End User Support Page
 There's a page at `/GetSupport` where end users can request support.  When the form is submitted, an alert appears on the main page, above the grid.
@@ -172,18 +174,18 @@ There's a page at `/GetSupport` where end users can request support.  When the f
 A shortcut to this page is placed in the `\Program Files\Remotely\` folder.  You can copy it anywhere you like.  You can also have it copied to the desktop automatically by using the `-supportshortcut` switch on the installer.
 	
 ## .NET Deployments
-* .NET has two methods of deployment: framework-dependent and self-contained.
-	* Framework-dependent deployments require the .NET runtime to be installed on the target computers.  It must be the same version that was used to build the app.
-	* Self-contained deployments include a copy of the runtime, so you don't need to install it on the target computers.  As a result, the total file size is much larger.
-* .NET uses runtime identifiers that are targeted when building.
-	* Link: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+- .NET has two methods of deployment: framework-dependent and self-contained.
+	- Framework-dependent deployments require the .NET runtime to be installed on the target computers.  It must be the same version that was used to build the app.
+	- Self-contained deployments include a copy of the runtime, so you don't need to install it on the target computers.  As a result, the total file size is much larger.
+- .NET uses runtime identifiers that are targeted when building.
+	- Link: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
 
 
 ## Shortcut Keys
 There are a few shortcut keys available when using the console.
-* / : Slash will allow you to switch between shells.  The names are configurable in the Options page.
-* Up/Down: Use arrow up/down to cycle through input history.
-* Ctrl + Q: Clear the output window.
+- / : Slash will allow you to switch between shells.  The names are configurable in the Options page.
+- Up/Down: Use arrow up/down to cycle through input history.
+- Ctrl + Q: Clear the output window.
 
 ## Port Configuration
 You can change the local port that the Remotely .NET server listens on by adding the below to `appsettings.Production.json`:
