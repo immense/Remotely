@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +14,8 @@ public class SqlServerDbContext : AppDb
 {
     private readonly IConfiguration _configuration;
 
-    public SqlServerDbContext(IConfiguration configuration)
+    public SqlServerDbContext(IConfiguration configuration, IWebHostEnvironment hostEnv)
+        : base(hostEnv)
     {
         _configuration = configuration;
     }

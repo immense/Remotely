@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -26,14 +23,10 @@ using Remotely.Server.Services;
 using System.IO;
 using System.Linq;
 using System.Net;
-using Remotely.Shared.Utilities;
 using Immense.RemoteControl.Server.Extensions;
 using Remotely.Server.Services.RcImplementations;
-using Immense.RemoteControl.Server.Abstractions;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Remotely.Shared.Services;
 using System;
-using Immense.RemoteControl.Server.Services;
 using Serilog;
 using Nihs.SimpleMessenger;
 using Microsoft.AspNetCore.RateLimiting;
@@ -63,37 +56,15 @@ if (string.IsNullOrWhiteSpace(dbProvider))
 
 if (dbProvider == "sqlite")
 {
-    services.AddDbContext<AppDb, SqliteDbContext>(options =>
-    {
-        options.UseSqlite(configuration.GetConnectionString("SQLite"));
-    });
+    services.AddDbContext<AppDb, SqliteDbContext>();
 }
 else if (dbProvider == "sqlserver")
 {
-    services.AddDbContext<AppDb, SqlServerDbContext>(options =>
-    {
-        options.UseSqlServer(configuration.GetConnectionString("SQLServer"));
-    });
+    services.AddDbContext<AppDb, SqlServerDbContext>();
 }
 else if (dbProvider == "postgresql")
 {
-    services.AddDbContext<AppDb, PostgreSqlDbContext>(options =>
-    {
-        // Password should be set in User Secrets in dev environment.
-        // See https://docs.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-3.1
-        if (!string.IsNullOrWhiteSpace(configuration.GetValue<string>("PostgresPassword")))
-        {
-            var connectionBuilder = new NpgsqlConnectionStringBuilder(configuration.GetConnectionString("PostgreSQL"))
-            {
-                Password = configuration["PostgresPassword"]
-            };
-            options.UseNpgsql(connectionBuilder.ConnectionString);
-        }
-        else
-        {
-            options.UseNpgsql(configuration.GetConnectionString("PostgreSQL"));
-        }
-    });
+    services.AddDbContext<AppDb, PostgreSqlDbContext>();
 }
 
 services.AddIdentity<RemotelyUser, IdentityRole>(options =>
