@@ -8,7 +8,6 @@ using Remotely.Server.Components;
 using Remotely.Server.Components.ModalContents;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
-using Remotely.Shared.Models;
 using Remotely.Shared.ViewModels;
 using System;
 using System.Collections.Generic;

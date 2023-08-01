@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
-using Remotely.Shared.Models;
 using System.Linq;
 using System.Threading.Tasks;
 

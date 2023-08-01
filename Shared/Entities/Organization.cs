@@ -1,6 +1,5 @@
 ﻿using Immense.RemoteControl.Shared.Models;
 using Remotely.Shared.Enums;
-using Remotely.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +14,7 @@ public class Organization
     public ICollection<ApiToken> ApiTokens { get; set; } = new List<ApiToken>();
 
     public BrandingInfo? BrandingInfo { get; set; }
+    public string? BrandingInfoId { get; set; }
 
     public ICollection<ScriptResult> ScriptResults { get; set; } = new List<ScriptResult>();
 
