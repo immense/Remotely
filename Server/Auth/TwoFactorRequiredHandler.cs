@@ -11,21 +11,25 @@ namespace Remotely.Server.Auth;
 
 public class TwoFactorRequiredHandler : AuthorizationHandler<TwoFactorRequiredRequirement>
 {
-    private readonly UserManager<RemotelyUser> _userManager;
+    private readonly IDataService _dataService;
     private readonly IApplicationConfig _appConfig;
 
-    public TwoFactorRequiredHandler(UserManager<RemotelyUser> userManager, IApplicationConfig appConfig)
+    public TwoFactorRequiredHandler(IDataService dataService, IApplicationConfig appConfig)
     {
-        _userManager = userManager;
+        _dataService = dataService;
         _appConfig = appConfig;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, TwoFactorRequiredRequirement requirement)
     {
-        if (context.User.Identity?.IsAuthenticated == true && _appConfig.Require2FA)
+        if (context.User.Identity?.IsAuthenticated == true &&
+            context.User.Identity.Name is not null &&
+            _appConfig.Require2FA)
         {
-            var user = await _userManager.GetUserAsync(context.User);
-            if (user?.TwoFactorEnabled != true)
+            var userResult = await _dataService.GetUserByName(context.User.Identity.Name);
+
+            if (!userResult.IsSuccess ||
+                !userResult.Value.TwoFactorEnabled)
             {
                 context.Fail();
                 return;

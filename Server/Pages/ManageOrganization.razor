@@ -4,8 +4,11 @@
 
 <h3 class="mb-3">Manage Organization</h3>
 
-
-@if (User?.IsAdministrator == true)
+@if (_isLoading)
+{
+    <h5>Loading...</h5>
+}
+else if (User is not null)
 {
     <div class="row">
         <div class="col-sm-8">
@@ -196,8 +199,3 @@
     </div>
 
 }
-else
-{
-    <h5 class="text-muted">Only organization administrators can view this page.</h5>
-}
-

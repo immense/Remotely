@@ -22,7 +22,10 @@ public partial class DeviceDetails : AuthComponentBase
 
     private string? _alertMessage;
     private Device? _device;
+    private bool _userHasAccess;
     private string? _inputDeviceId;
+    private bool _isLoading = true;
+    private DeviceGroup[] _deviceGroups = Array.Empty<DeviceGroup>();
 
     [Parameter]
     public string ActiveTab { get; set; } = string.Empty;
@@ -54,12 +57,15 @@ public partial class DeviceDetails : AuthComponentBase
     {
         await base.OnInitializedAsync();
 
+        EnsureUserSet();
+
         if (!string.IsNullOrWhiteSpace(DeviceId))
         {
             var deviceResult = await DataService.GetDevice(DeviceId);
             if (deviceResult.IsSuccess)
             {
                 _device = deviceResult.Value;
+                _userHasAccess = DataService.DoesUserHaveAccessToDevice(_device.ID, User);
             }
             else
             {
@@ -67,7 +73,9 @@ public partial class DeviceDetails : AuthComponentBase
             }
         }
 
+        _deviceGroups = DataService.GetDeviceGroups(UserName);
         CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
+        _isLoading = false;
     }
 
     private void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
@@ -129,6 +137,8 @@ public partial class DeviceDetails : AuthComponentBase
         {
             return;
         }
+
+        EnsureUserSet();
 
         _scriptResults.Clear();
 

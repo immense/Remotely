@@ -63,7 +63,7 @@ public partial class RunScript : AuthComponentBase
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
+        EnsureUserSet();
         _deviceGroups = DataService.GetDeviceGroups(UserName);
         _devices = DataService
             .GetDevicesForUser(UserName)
@@ -107,6 +107,8 @@ public partial class RunScript : AuthComponentBase
 
     private async Task ExecuteScript()
     {
+        EnsureUserSet();
+
         if (_selectedScript is null)
         {
             ToastService.ShowToast("You must select a script.", classString: "bg-warning");
@@ -163,6 +165,8 @@ public partial class RunScript : AuthComponentBase
 
     private async Task ScriptSelected(ScriptTreeNode viewModel)
     {
+        EnsureUserSet();
+
         if (viewModel.Script is not null)
         {
             var scriptResult = await DataService.GetSavedScript(User.Id, viewModel.Script.Id);

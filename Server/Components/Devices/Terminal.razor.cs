@@ -64,6 +64,8 @@ public partial class Terminal : AuthComponentBase, IDisposable
     private EventCallback<SavedScript> RunQuickScript =>
         EventCallback.Factory.Create<SavedScript>(this, async script =>
         {
+            EnsureUserSet();
+
             var scriptRun = new ScriptRun
             {
                 OrganizationID = User.OrganizationID,
@@ -285,6 +287,8 @@ public partial class Terminal : AuthComponentBase, IDisposable
 
     private async Task ShowQuickScripts()
     {
+        EnsureUserSet();
+
         var quickScripts = await DataService.GetQuickScripts(User.Id);
         if (quickScripts?.Any() != true)
         {
@@ -344,6 +348,8 @@ public partial class Terminal : AuthComponentBase, IDisposable
     }
     private bool TryMatchShellShortcuts()
     {
+        EnsureUserSet();
+
         var currentText = InputText?.Trim()?.ToLower();
 
         if (string.IsNullOrWhiteSpace(currentText))

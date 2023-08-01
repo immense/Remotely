@@ -97,11 +97,13 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _options = User.UserOptions ?? new();
+        _options = User?.UserOptions ?? new();
     }
 
     private Task HandleValidSubmit()
     {
+        EnsureUserSet();
+
         if (!_options.CommandModeShortcutBash.StartsWith("/"))
         {
             _options.CommandModeShortcutBash = "/" + _options.CommandModeShortcutBash;

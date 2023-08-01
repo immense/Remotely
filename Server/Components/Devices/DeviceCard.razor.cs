@@ -79,6 +79,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        EnsureUserSet();
         _theme = await AppState.GetEffectiveTheme();
         _currentVersion = UpgradeService.GetCurrentVersion();
         _deviceGroups = DataService.GetDeviceGroups(UserName);
@@ -180,6 +181,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     }
     private async Task HandleValidSubmit()
     {
+        EnsureUserSet();
         if (!DataService.DoesUserHaveAccessToDevice(Device.ID, User))
         {
             ToastService.ShowToast("Unauthorized.", classString: "bg-warning");
@@ -199,6 +201,8 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
     private async Task OnFileInputChanged(InputFileChangeEventArgs args)
     {
+        EnsureUserSet();
+
         ToastService.ShowToast("File upload started.");
 
         var fileId = await DataService.AddSharedFile(args.File, User.OrganizationID, OnFileInputProgress);

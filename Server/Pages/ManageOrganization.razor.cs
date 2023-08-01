@@ -25,6 +25,7 @@ public partial class ManageOrganization : AuthComponentBase
     private readonly List<RemotelyUser> _orgUsers = new();
     private bool _inviteAsAdmin;
     private string _inviteEmail = string.Empty;
+    private bool _isLoading = true;
     private string _newDeviceGroupName = string.Empty;
     private Organization? _organization;
     private string _selectedDeviceGroupId = string.Empty;
@@ -55,10 +56,14 @@ public partial class ManageOrganization : AuthComponentBase
         await base.OnInitializedAsync();
 
         await RefreshData();
+
+        _isLoading = false;
     }
 
     private async Task CreateNewDeviceGroup()
     {
+        EnsureUserSet();
+
         if (!User.IsAdministrator)
         {
             return;
@@ -93,6 +98,8 @@ public partial class ManageOrganization : AuthComponentBase
             return;
         }
 
+        EnsureUserSet();
+
         if (!User.IsServerAdmin)
         {
             return;
@@ -109,6 +116,8 @@ public partial class ManageOrganization : AuthComponentBase
 
     private async Task DeleteInvite(InviteLink invite)
     {
+        EnsureUserSet();
+
         if (!User.IsAdministrator)
         {
             return;
@@ -127,6 +136,8 @@ public partial class ManageOrganization : AuthComponentBase
 
     private async Task DeleteSelectedDeviceGroup()
     {
+        EnsureUserSet();
+
         if (!User.IsAdministrator)
         {
             return;
@@ -150,6 +161,8 @@ public partial class ManageOrganization : AuthComponentBase
 
     private async Task DeleteUser(RemotelyUser user)
     {
+        EnsureUserSet();
+
         if (!User.IsAdministrator)
         {
             return;
@@ -208,6 +221,8 @@ public partial class ManageOrganization : AuthComponentBase
             return;
         }
 
+        EnsureUserSet();
+
         if (!User.IsAdministrator)
         {
             return;
@@ -237,6 +252,8 @@ public partial class ManageOrganization : AuthComponentBase
 
     private async Task RefreshData()
     {
+        EnsureUserSet();
+
         var orgResult = await DataService.GetOrganizationByUserName(UserName);
         if (!orgResult.IsSuccess)
         {
@@ -256,6 +273,8 @@ public partial class ManageOrganization : AuthComponentBase
     }
     private async Task ResetPassword(RemotelyUser user)
     {
+        EnsureUserSet();
+
         if (!User.IsAdministrator)
         {
             return;
@@ -275,6 +294,8 @@ public partial class ManageOrganization : AuthComponentBase
 
     private async Task SendInvite()
     {
+        EnsureUserSet();
+
         if (!User.IsAdministrator)
         {
             return;
@@ -352,6 +373,8 @@ public partial class ManageOrganization : AuthComponentBase
 
     private async Task SetUserIsAdmin(ChangeEventArgs args, RemotelyUser orgUser)
     {
+        EnsureUserSet();
+
         if (!User.IsAdministrator)
         {
             return;

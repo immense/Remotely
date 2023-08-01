@@ -74,6 +74,8 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
     {
         await base.OnInitializedAsync();
 
+        EnsureUserSet();
+
         CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
         AppState.PropertyChanged += AppState_PropertyChanged;
 
@@ -283,6 +285,8 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
     private void LoadDevices()
     {
+        EnsureUserSet();
+
         lock (_devicesLock)
         {
             _allDevices.Clear();
@@ -346,6 +350,8 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
     private async Task WakeDevices()
     {
+        EnsureUserSet();
+
         var offlineDevices = DataService
            .GetDevicesForUser(UserName)
            .Where(x => !x.IsOnline);

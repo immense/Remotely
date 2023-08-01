@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using System.Threading.Tasks;
 
@@ -7,23 +8,26 @@ namespace Remotely.Server.Auth;
 
 public class OrganizationAdminRequirementHandler : AuthorizationHandler<OrganizationAdminRequirement>
 {
-    private readonly UserManager<RemotelyUser> _userManager;
+    private readonly IDataService _dataService;
 
-    public OrganizationAdminRequirementHandler(UserManager<RemotelyUser> userManager)
+    public OrganizationAdminRequirementHandler(IDataService dataService)
     {
-        _userManager = userManager;
+        _dataService = dataService;
     }
 
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, OrganizationAdminRequirement requirement)
     {
-        if (context.User.Identity?.IsAuthenticated != true)
+        if (context.User.Identity?.IsAuthenticated != true ||
+            string.IsNullOrWhiteSpace(context.User.Identity.Name))
         {
             context.Fail();
             return;
         }
 
-        var user = await _userManager.GetUserAsync(context.User);
-        if (user?.IsAdministrator != true)
+        var userResult = await _dataService.GetUserByName(context.User.Identity.Name);
+
+        if (!userResult.IsSuccess ||
+            !userResult.Value.IsAdministrator)
         {
             context.Fail();
             return;
