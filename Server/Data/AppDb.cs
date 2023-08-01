@@ -74,26 +74,30 @@ public class AppDb : IdentityDbContext
             .WithOne(x => x.Organization);
         builder.Entity<Organization>()
             .HasMany(x => x.DeviceGroups)
+            .WithOne(x => x.Organization)
+            .OnDelete(DeleteBehavior.ClientCascade);
+        builder.Entity<Organization>()
+            .HasMany(x => x.InviteLinks)
             .WithOne(x => x.Organization);
         builder.Entity<Organization>()
-          .HasMany(x => x.InviteLinks)
-          .WithOne(x => x.Organization);
+            .HasMany(x => x.SharedFiles)
+            .WithOne(x => x.Organization)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.ClientSetNull);
         builder.Entity<Organization>()
-          .HasMany(x => x.SharedFiles)
-          .WithOne(x => x.Organization)
-          .IsRequired(false);
-        builder.Entity<Organization>()
-          .HasMany(x => x.ApiTokens)
-          .WithOne(x => x.Organization);
+            .HasMany(x => x.ApiTokens)
+            .WithOne(x => x.Organization);
         builder.Entity<Organization>()
             .HasMany(x => x.Alerts)
             .WithOne(x => x.Organization);
         builder.Entity<Organization>()
             .HasMany(x => x.ScriptRuns)
-            .WithOne(x => x.Organization);
+            .WithOne(x => x.Organization)
+            .OnDelete(DeleteBehavior.ClientCascade);
         builder.Entity<Organization>()
             .HasMany(x => x.ScriptSchedules)
-            .WithOne(x => x.Organization);
+            .WithOne(x => x.Organization)
+            .OnDelete(DeleteBehavior.ClientCascade);
         builder.Entity<Organization>()
             .HasMany(x => x.ScriptResults)
             .WithOne(x => x.Organization);
@@ -103,29 +107,37 @@ public class AppDb : IdentityDbContext
         builder.Entity<Organization>()
             .HasOne(x => x.BrandingInfo)
             .WithOne(x => x.Organization)
-            .HasForeignKey<BrandingInfo>(x => x.OrganizationId);
+            .HasForeignKey<BrandingInfo>(x => x.OrganizationId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
-        builder.Entity<RemotelyUser>()
-           .HasOne(x => x.Organization)
-           .WithMany(x => x.RemotelyUsers);
 
         builder.Entity<RemotelyUser>()
             .HasMany(x => x.DeviceGroups)
             .WithMany(x => x.Users);
+
         builder.Entity<RemotelyUser>()
             .HasMany(x => x.Alerts)
-            .WithOne(x => x.User);
+            .WithOne(x => x.User)
+            .OnDelete(DeleteBehavior.ClientCascade);
+
         builder.Entity<RemotelyUser>()
             .Property(x => x.UserOptions)
             .HasConversion(
                 x => JsonSerializer.Serialize(x, jsonOptions),
                 x => JsonSerializer.Deserialize<RemotelyUserOptions>(x, jsonOptions));
+
         builder.Entity<RemotelyUser>()
             .HasMany(x => x.SavedScripts)
-            .WithOne(x => x.Creator);
+            .WithOne(x => x.Creator)
+            .HasForeignKey(x => x.CreatorId)
+            .OnDelete(DeleteBehavior.ClientCascade);
+
         builder.Entity<RemotelyUser>()
             .HasMany(x => x.ScriptSchedules)
-            .WithOne(x => x.Creator);
+            .WithOne(x => x.Creator)
+            .HasForeignKey(x => x.CreatorId)
+            .OnDelete(DeleteBehavior.ClientCascade);
 
         builder.Entity<RemotelyUser>()
             .HasIndex(x => x.UserName);
@@ -135,24 +147,32 @@ public class AppDb : IdentityDbContext
             .HasConversion(
                 x => JsonSerializer.Serialize(x, jsonOptions),
                 x => TryDeserializeProperty<List<Drive>>(x, jsonOptions));
+
         builder.Entity<Device>()
            .Property(x => x.Drives)
            .Metadata.SetValueComparer(new ValueComparer<List<Drive>>(true));
+
         builder.Entity<Device>()
             .HasIndex(x => x.DeviceName);
+
         builder.Entity<Device>()
             .HasMany(x => x.Alerts)
-            .WithOne(x => x.Device);
+            .WithOne(x => x.Device)
+            .OnDelete(DeleteBehavior.ClientCascade);
+
         builder.Entity<Device>()
             .HasMany(x => x.ScriptRuns)
             .WithMany(x => x.Devices);
+
         builder.Entity<Device>()
             .HasMany(x => x.ScriptSchedules)
             .WithMany(x => x.Devices);
+
         builder.Entity<Device>()
-            .HasOne(x => x.DeviceGroup)
-            .WithMany(x => x.Devices)
-            .IsRequired(false);
+            .HasMany(x => x.ScriptResults)
+            .WithOne(x => x.Device)
+            .OnDelete(DeleteBehavior.ClientCascade);
+
         builder.Entity<Device>()
             .Property(x => x.MacAddresses)
             .HasConversion(
@@ -163,7 +183,9 @@ public class AppDb : IdentityDbContext
         builder.Entity<DeviceGroup>()
             .HasMany(x => x.Devices)
             .WithOne(x => x.DeviceGroup)
-            .IsRequired(false);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
         builder.Entity<DeviceGroup>()
             .HasMany(x => x.ScriptSchedules)
             .WithMany(x => x.DeviceGroups);
@@ -171,14 +193,13 @@ public class AppDb : IdentityDbContext
         builder.Entity<ScriptRun>()
             .HasMany(x => x.Devices)
             .WithMany(x => x.ScriptRuns);
+
         builder.Entity<ScriptRun>()
             .HasMany(x => x.Results)
             .WithOne(x => x.ScriptRun)
-            .IsRequired(false);
-        builder.Entity<ScriptRun>()
-            .HasOne(x => x.SavedScript)
-            .WithMany(x => x.ScriptRuns)
-            .IsRequired(false);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
 
         builder.Entity<ScriptResult>()
           .Property(x => x.ErrorOutput)
@@ -195,18 +216,25 @@ public class AppDb : IdentityDbContext
               x => DeserializeStringArray(x, jsonOptions))
           .Metadata
           .SetValueComparer(_stringArrayComparer);
-        builder.Entity<ScriptResult>()
-            .HasOne(x => x.ScriptRun)
-            .WithMany(x => x.Results)
-            .IsRequired(false);
-        builder.Entity<ScriptResult>()
-           .HasOne(x => x.SavedScript)
-           .WithMany(x => x.ScriptResults)
-           .IsRequired(false);
 
-        builder.Entity<Alert>()
-            .HasOne(x => x.User)
-            .WithMany(x => x.Alerts);
+        builder.Entity<SavedScript>()
+            .HasMany(x => x.ScriptRuns)
+            .WithOne(x => x.SavedScript)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
+        builder.Entity<SavedScript>()
+            .HasMany(x => x.ScriptResults)
+            .WithOne(x => x.SavedScript)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
+        builder.Entity<ScriptSchedule>()
+            .HasMany(x => x.ScriptRuns)
+            .WithOne(x => x.Schedule)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.ClientSetNull);
+
 
         var isSqlite = Database.IsSqlite();
         var isPostgres = Database.IsNpgsql();

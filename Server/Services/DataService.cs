@@ -222,7 +222,6 @@ public interface IDataService
     Task UpdateTags(string deviceID, string tags);
 
     Task<Result> UpdateUserOptions(string userName, RemotelyUserOptions options);
-
     Task<bool> ValidateApiKey(string keyId, string apiSecret, string requestPath, string remoteIP);
 }
 
@@ -689,7 +688,7 @@ public class DataService : IDataService
         {
             return Result.Fail<ApiToken>("User not found.");
         }
-
+        
         var newToken = new ApiToken()
         {
             Name = tokenName,
@@ -942,6 +941,9 @@ public class DataService : IDataService
             return Result.Fail("Organization not found.");
         }
 
+        // All the joins are necessary for client-side cascade delete.
+        // This method will be called rarely, so I'm not concerned
+        // about the performance.
         var target = dbContext.Users
             .Include(x => x.DeviceGroups)
             .ThenInclude(x => x.Devices)
@@ -949,8 +951,11 @@ public class DataService : IDataService
             .Include(x => x.Alerts)
             .Include(x => x.SavedScripts)
             .ThenInclude(x => x.ScriptRuns)
+            .Include(x => x.SavedScripts)
+            .ThenInclude(x => x.ScriptResults)
             .Include(x => x.ScriptSchedules)
             .ThenInclude(x => x.ScriptRuns)
+            .ThenInclude(x => x.Results)
             .FirstOrDefault(x =>
                 x.Id == targetUserId &&
                 x.OrganizationID == orgId);
@@ -960,29 +965,6 @@ public class DataService : IDataService
             return Result.Fail("User not found.");
         }
 
-        foreach (var deviceGroup in target.DeviceGroups)
-        {
-            deviceGroup.Users.Remove(target);
-        }
-
-        foreach (var run in target.ScriptSchedules.SelectMany(x => x.ScriptRuns))
-        {
-            dbContext.ScriptRuns.Remove(run);
-        }
-
-        foreach (var script in target.SavedScripts)
-        {
-            if (script.ScriptRuns is not null)
-            {
-                dbContext.ScriptRuns.RemoveRange(script.ScriptRuns);
-            }
-        }
-
-        dbContext.Alerts.RemoveRange(target.Alerts);
-        dbContext.ScriptSchedules.RemoveRange(target.ScriptSchedules);
-
-        target.Organization = null;
-        org.RemotelyUsers.Remove(target);
         dbContext.Users.Remove(target);
 
         await dbContext.SaveChangesAsync();

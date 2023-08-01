@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.SqlServer
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.7")
+                .HasAnnotation("ProductVersion", "7.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -373,7 +373,6 @@ namespace Remotely.Server.Migrations.SqlServer
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("OrganizationId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Product")
@@ -402,7 +401,8 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasKey("Id");
 
                     b.HasIndex("OrganizationId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[OrganizationId] IS NOT NULL");
 
                     b.ToTable("BrandingInfos");
                 });
@@ -500,6 +500,28 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.ToTable("Devices");
                 });
 
+            modelBuilder.Entity("Remotely.Shared.Entities.DeviceGroup", b =>
+                {
+                    b.Property<string>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("OrganizationID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OrganizationID");
+
+                    b.ToTable("DeviceGroups");
+                });
+
             modelBuilder.Entity("Remotely.Shared.Entities.InviteLink", b =>
                 {
                     b.Property<string>("ID")
@@ -534,6 +556,9 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Property<string>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("BrandingInfoId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDefaultOrganization")
                         .HasColumnType("bit");
@@ -791,28 +816,6 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.ToTable("SharedFiles");
                 });
 
-            modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
-                {
-                    b.Property<string>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("OrganizationID")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("OrganizationID");
-
-                    b.ToTable("DeviceGroups");
-                });
-
             modelBuilder.Entity("Remotely.Shared.Entities.RemotelyUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
@@ -842,7 +845,7 @@ namespace Remotely.Server.Migrations.SqlServer
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
-                    b.HasOne("Remotely.Shared.Models.DeviceGroup", null)
+                    b.HasOne("Remotely.Shared.Entities.DeviceGroup", null)
                         .WithMany()
                         .HasForeignKey("DeviceGroupsID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -857,7 +860,7 @@ namespace Remotely.Server.Migrations.SqlServer
 
             modelBuilder.Entity("DeviceGroupScriptSchedule", b =>
                 {
-                    b.HasOne("Remotely.Shared.Models.DeviceGroup", null)
+                    b.HasOne("Remotely.Shared.Entities.DeviceGroup", null)
                         .WithMany()
                         .HasForeignKey("DeviceGroupsID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -956,7 +959,7 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasOne("Remotely.Shared.Entities.Device", "Device")
                         .WithMany("Alerts")
                         .HasForeignKey("DeviceID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Remotely.Shared.Entities.Organization", "Organization")
@@ -968,7 +971,7 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasOne("Remotely.Shared.Entities.RemotelyUser", "User")
                         .WithMany("Alerts")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("Device");
@@ -993,16 +996,14 @@ namespace Remotely.Server.Migrations.SqlServer
                 {
                     b.HasOne("Remotely.Shared.Entities.Organization", "Organization")
                         .WithOne("BrandingInfo")
-                        .HasForeignKey("Remotely.Shared.Entities.BrandingInfo", "OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Remotely.Shared.Entities.BrandingInfo", "OrganizationId");
 
                     b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Entities.Device", b =>
                 {
-                    b.HasOne("Remotely.Shared.Models.DeviceGroup", "DeviceGroup")
+                    b.HasOne("Remotely.Shared.Entities.DeviceGroup", "DeviceGroup")
                         .WithMany("Devices")
                         .HasForeignKey("DeviceGroupID");
 
@@ -1013,6 +1014,17 @@ namespace Remotely.Server.Migrations.SqlServer
                         .IsRequired();
 
                     b.Navigation("DeviceGroup");
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Entities.DeviceGroup", b =>
+                {
+                    b.HasOne("Remotely.Shared.Entities.Organization", "Organization")
+                        .WithMany("DeviceGroups")
+                        .HasForeignKey("OrganizationID")
+                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .IsRequired();
 
                     b.Navigation("Organization");
                 });
@@ -1033,7 +1045,7 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasOne("Remotely.Shared.Entities.RemotelyUser", "Creator")
                         .WithMany("SavedScripts")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Remotely.Shared.Entities.Organization", "Organization")
@@ -1052,7 +1064,7 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasOne("Remotely.Shared.Entities.Device", "Device")
                         .WithMany("ScriptResults")
                         .HasForeignKey("DeviceID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Remotely.Shared.Entities.Organization", "Organization")
@@ -1089,7 +1101,7 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasOne("Remotely.Shared.Entities.Organization", "Organization")
                         .WithMany("ScriptRuns")
                         .HasForeignKey("OrganizationID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Remotely.Shared.Entities.SavedScript", "SavedScript")
@@ -1112,13 +1124,13 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasOne("Remotely.Shared.Entities.RemotelyUser", "Creator")
                         .WithMany("ScriptSchedules")
                         .HasForeignKey("CreatorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("Remotely.Shared.Entities.Organization", "Organization")
                         .WithMany("ScriptSchedules")
                         .HasForeignKey("OrganizationID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.Navigation("Creator");
@@ -1131,17 +1143,6 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.HasOne("Remotely.Shared.Entities.Organization", "Organization")
                         .WithMany("SharedFiles")
                         .HasForeignKey("OrganizationID");
-
-                    b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
-                {
-                    b.HasOne("Remotely.Shared.Entities.Organization", "Organization")
-                        .WithMany("DeviceGroups")
-                        .HasForeignKey("OrganizationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Organization");
                 });
@@ -1162,6 +1163,11 @@ namespace Remotely.Server.Migrations.SqlServer
                     b.Navigation("Alerts");
 
                     b.Navigation("ScriptResults");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Entities.DeviceGroup", b =>
+                {
+                    b.Navigation("Devices");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Entities.Organization", b =>
@@ -1206,11 +1212,6 @@ namespace Remotely.Server.Migrations.SqlServer
             modelBuilder.Entity("Remotely.Shared.Entities.ScriptSchedule", b =>
                 {
                     b.Navigation("ScriptRuns");
-                });
-
-            modelBuilder.Entity("Remotely.Shared.Models.DeviceGroup", b =>
-                {
-                    b.Navigation("Devices");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Entities.RemotelyUser", b =>
