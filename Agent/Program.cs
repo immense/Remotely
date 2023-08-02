@@ -23,9 +23,6 @@ namespace Remotely.Agent;
 
 public class Program
 {
-    [Obsolete("Remove this when all services are in DI behind interfaces.")]
-    public static IServiceProvider? Services { get; set; }
-
     public static async Task Main(string[] args)
     {
         try
@@ -38,8 +35,6 @@ public class Program
                 .Build();
 
             await host.StartAsync();
-
-            Services = host.Services;
 
             await Init(host.Services);
 
@@ -105,6 +100,7 @@ public class Program
         services.AddScoped<IProcessInvoker, ProcessInvoker>();
         services.AddScoped<IUpdateDownloader, UpdateDownloader>();
         services.AddSingleton<IFileLogsManager, FileLogsManager>();
+        services.AddSingleton<IScriptingShellFactory, ScriptingShellFactory>();
 
         if (OperatingSystem.IsWindows())
         {

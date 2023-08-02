@@ -25,11 +25,16 @@ public interface IScriptExecutor
 public class ScriptExecutor : IScriptExecutor
 {
     private readonly IConfigService _configService;
+    private readonly IScriptingShellFactory _scriptingShellFactory;
     private readonly ILogger<ScriptExecutor> _logger;
 
-    public ScriptExecutor(IConfigService configService, ILogger<ScriptExecutor> logger)
+    public ScriptExecutor(
+        IConfigService configService, 
+        IScriptingShellFactory scriptingShellFactory,
+        ILogger<ScriptExecutor> logger)
     {
         _configService = configService;
+        _scriptingShellFactory = scriptingShellFactory;
         _logger = logger;
     }
 
@@ -161,15 +166,15 @@ public class ScriptExecutor : IScriptExecutor
         switch (shell)
         {
             case ScriptingShell.PSCore:
-                return await PsCoreShell
-                    .GetCurrent(terminalSessionId)
+                return await _scriptingShellFactory
+                    .GetOrCreatePsCoreShell(terminalSessionId)
                     .WriteInput(command);
 
             case ScriptingShell.WinPS:
                 if (EnvironmentHelper.IsWindows)
                 {
-                    var instance = await ExternalScriptingShell
-                      .GetCurrent(ScriptingShell.WinPS, terminalSessionId);
+                    var instance = await _scriptingShellFactory
+                      .GetOrCreateExternalShell(ScriptingShell.WinPS, terminalSessionId);
 
                     return await instance.WriteInput(command, timeout);
                 }
@@ -178,8 +183,8 @@ public class ScriptExecutor : IScriptExecutor
             case ScriptingShell.CMD:
                 if (EnvironmentHelper.IsWindows)
                 {
-                    var instance = await ExternalScriptingShell
-                         .GetCurrent(ScriptingShell.CMD, terminalSessionId);
+                    var instance = await _scriptingShellFactory
+                         .GetOrCreateExternalShell(ScriptingShell.CMD, terminalSessionId);
 
                     return await instance.WriteInput(command, timeout);
                 }
@@ -187,8 +192,8 @@ public class ScriptExecutor : IScriptExecutor
 
             case ScriptingShell.Bash:
                 {
-                    var instance = await ExternalScriptingShell
-                        .GetCurrent(ScriptingShell.Bash, terminalSessionId);
+                    var instance = await _scriptingShellFactory
+                        .GetOrCreateExternalShell(ScriptingShell.Bash, terminalSessionId);
 
                     return await instance.WriteInput(command, timeout);
                 }
