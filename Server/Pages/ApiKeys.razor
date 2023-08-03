@@ -18,7 +18,11 @@
     <AlertBanner Message="@_alertMessage" />
 }
 
-@if (User?.IsAdministrator == true)
+@if (_isLoading)
+{
+    <h5>Loading...</h5>
+}
+else if (User is not null)
 {
     if (!string.IsNullOrWhiteSpace(_newKeySecret))
     {
@@ -71,26 +75,25 @@
         </tbody>
     </table>
 }
-else
-{
-    <h5 class="text-muted">Only organization administrators can view this page.</h5>
-}
-
 
 @code {
     private readonly List<ApiToken> _apiTokens = new();
     private string _alertMessage = string.Empty;
     private string _createKeyName = string.Empty;
     private string _newKeySecret = string.Empty;
+    private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         RefreshData();
+        _isLoading = false;
     }
 
     private async Task CreateNewKey()
     {
+        EnsureUserSet();
+
         var secret = RandomGenerator.GenerateString(48);
         var secretHash = new PasswordHasher<string>().HashPassword(string.Empty, secret);
 
@@ -107,6 +110,8 @@ else
 
     private async Task DeleteKey(string keyId)
     {
+        EnsureUserSet();
+
         var result = await JsInterop.Confirm("Are you sure you want to delete this key?");
         if (!result)
         {
@@ -125,6 +130,7 @@ else
 
     private void RefreshData()
     {
+        EnsureUserSet();
         _apiTokens.Clear();
         _apiTokens.AddRange(DataService.GetAllApiTokens(User.Id));
         _createKeyName = string.Empty;
@@ -135,6 +141,7 @@ else
 
     private async Task RenameKey(string keyId)
     {
+        EnsureUserSet();
         var newName = await JsInterop.Prompt("New key name");
         if (!string.IsNullOrWhiteSpace(newName))
         {

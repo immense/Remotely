@@ -92,6 +92,8 @@
 
     private async Task HandleValidSubmit(EditContext context)
     {
+        EnsureUserSet();
+
         await DataService.UpdateBrandingInfo(
             User.OrganizationID,
             _inputModel.ProductName,
@@ -168,6 +170,7 @@
 
     private async Task ResetBranding()
     {
+        EnsureUserSet();
         var result = await JsInterop.Confirm("Are you sure you want to reset branding to default?");
         if (result)
         {

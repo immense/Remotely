@@ -188,6 +188,13 @@ public partial class ServerConfig : AuthComponentBase
     {
         get
         {
+            if (User is null)
+            {
+                return Enumerable.Empty<RemotelyUser>();
+            }
+
+            EnsureUserSet();
+
             return _userList.Where(x =>
                 (!_showAdminsOnly || x.IsServerAdmin) &&
                 (!_showMyOrgAdminsOnly || x.OrganizationID == User.OrganizationID));
@@ -197,7 +204,7 @@ public partial class ServerConfig : AuthComponentBase
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
+        EnsureUserSet();
         if (!User.IsServerAdmin)
         {
             return;
@@ -338,8 +345,8 @@ public partial class ServerConfig : AuthComponentBase
 
     private async Task SaveAndTestSmtpSettings()
     {
+        EnsureUserSet();
         await SaveInputToAppSettings();
-
         if (string.IsNullOrWhiteSpace(User.Email))
         {
             ToastService.ShowToast2("User email is not set.", Enums.ToastType.Warning);
@@ -417,6 +424,9 @@ public partial class ServerConfig : AuthComponentBase
         {
             return;
         }
+
+        EnsureUserSet();
+
         DataService.SetIsServerAdmin(user.Id, isAdmin, User.Id);
         ToastService.ShowToast("Server admins updated.");
     }
@@ -443,6 +453,8 @@ public partial class ServerConfig : AuthComponentBase
 
     private async Task UpdateAllDevices()
     {
+        EnsureUserSet();
+
         if (!User.IsServerAdmin)
         {
             return;

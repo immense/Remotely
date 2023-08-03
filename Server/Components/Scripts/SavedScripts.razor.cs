@@ -36,11 +36,35 @@ public partial class SavedScripts : AuthComponentBase
     [Inject]
     public IModalService ModalService { get; set; } = null!;
 
-    private bool CanModifyScript => _selectedScript.Id == Guid.Empty || 
-        _selectedScript.CreatorId == User.Id || User.IsAdministrator;
+    private bool CanModifyScript
+    {
+        get
+        {
+            if (User is null)
+            {
+                return false;
+            }
 
-    private bool CanDeleteScript => !string.IsNullOrWhiteSpace(_selectedScript.CreatorId) &&
-        (_selectedScript.CreatorId == User.Id || User.IsAdministrator);
+            return 
+                _selectedScript.Id == Guid.Empty ||
+                _selectedScript.CreatorId == User.Id || User.IsAdministrator;
+        }
+    }
+
+    private bool CanDeleteScript
+    {
+        get
+        {
+            if (User is null)
+            {
+                return false;
+            }
+
+            return 
+                !string.IsNullOrWhiteSpace(_selectedScript.CreatorId) &&
+                (_selectedScript.CreatorId == User.Id || User.IsAdministrator);
+        }
+    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -53,6 +77,8 @@ public partial class SavedScripts : AuthComponentBase
 
     private async Task OnValidSubmit(EditContext context)
     {
+        EnsureUserSet();
+
         if (_selectedScript is null)
         {
             return;
@@ -63,7 +89,7 @@ public partial class SavedScripts : AuthComponentBase
             ToastService.ShowToast("You can't modify other people's scripts.", classString: "bg-warning");
             return;
         }
-
+        
         await DataService.AddOrUpdateSavedScript(_selectedScript, User.Id);
         await ParentPage.RefreshScripts();
         ToastService.ShowToast("Script saved.");
@@ -102,6 +128,7 @@ public partial class SavedScripts : AuthComponentBase
 
     private async Task ScriptSelected(ScriptTreeNode viewModel)
     {
+        EnsureUserSet();
         if (viewModel.Script is not null)
         {
             var result = await DataService.GetSavedScript(User.Id, viewModel.Script.Id);

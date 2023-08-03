@@ -18,23 +18,27 @@
 
 @code {
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (AppConfig.Require2FA && !User.TwoFactorEnabled)
+        if (User is not null &&
+            AppConfig.Require2FA && 
+            !User.TwoFactorEnabled)
         {
             NavManager.NavigateTo("/TwoFactorRequired");
         }
-        base.OnAfterRender(firstRender);
+        await base.OnAfterRenderAsync(firstRender);
     }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
+        var isAuthenticated = await AuthService.IsAuthenticated();
+        var userResult = await AuthService.GetUser();
         // This handles a weird edge case when the user has been
         // deleted but still has an authentication cookie in their
         // browser.
-        if (IsAuthenticated == true && !IsUserSet)
+        if (isAuthenticated == true && !userResult.IsSuccess)
         {
             await SignInManager.SignOutAsync();
             NavManager.NavigateTo("/");

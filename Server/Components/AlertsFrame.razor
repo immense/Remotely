@@ -63,10 +63,8 @@
     {
         await base.OnInitializedAsync();
 
-        if (IsAuthenticated)
-        {
-            GetAlerts();
-        }
+        EnsureUserSet();
+        GetAlerts();
     }
 
     private async Task ClearAlert(Alert alert)
@@ -77,12 +75,14 @@
 
     private async Task ClearAllAlerts()
     {
+        EnsureUserSet();
         await DataService.DeleteAllAlerts(User.OrganizationID, User.UserName);
         _alerts.Clear();
     }
 
     private void GetAlerts()
     {
+        EnsureUserSet();
         _alerts.Clear();
         var alerts = DataService.GetAlerts(User.Id);
         if (alerts.Any())

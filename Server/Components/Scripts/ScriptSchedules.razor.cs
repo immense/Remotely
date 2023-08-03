@@ -48,25 +48,39 @@ public partial class ScriptSchedules : AuthComponentBase
     [Inject]
     private IToastService ToastService { get; set; } = null!;
 
-    private bool CanModifySchedule => 
-        _selectedSchedule.CreatorId == User.Id ||
-        User.IsAdministrator;
+    private bool CanModifySchedule
+    {
+        get
+        {
+            EnsureUserSet();
+            return 
+                _selectedSchedule.CreatorId == User.Id ||
+                User.IsAdministrator;
+        }
+    }
 
-    private bool CanDeleteSchedule =>
-        _selectedSchedule.CreatorId == User.Id || 
-        User.IsAdministrator;
+    private bool CanDeleteSchedule
+    {
+        get
+        {
+            EnsureUserSet();
+            return 
+                _selectedSchedule.CreatorId == User.Id ||
+                User.IsAdministrator;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        if (IsAuthenticated)
-        {
-            _deviceGroups = DataService.GetDeviceGroups(UserName);
-            _devices = DataService
-                .GetDevicesForUser(UserName)
-                .OrderBy(x => x.DeviceName)
-                .ToArray();
-        }
+
+        EnsureUserSet();
+
+        _deviceGroups = DataService.GetDeviceGroups(UserName);
+        _devices = DataService
+            .GetDevicesForUser(UserName)
+            .OrderBy(x => x.DeviceName)
+            .ToArray();
 
         await RefreshSchedules();
     }
@@ -140,6 +154,8 @@ public partial class ScriptSchedules : AuthComponentBase
 
     private async Task OnValidSubmit(EditContext context)
     {
+        EnsureUserSet();
+
         if (_selectedSchedule is null)
         {
             return;
@@ -226,6 +242,8 @@ public partial class ScriptSchedules : AuthComponentBase
 
     private async Task ScriptSelected(ScriptTreeNode viewModel)
     {
+        EnsureUserSet();
+
         if (viewModel.Script is not null)
         {
             var result = await DataService.GetSavedScript(User.Id, viewModel.Script.Id);

@@ -29,11 +29,15 @@
         </div>
     </div>
 }
+else if (_isLoading)
+{
+    <h5>Loading...</h5>
+}
 else if (_device is null)
 {
     <h3>Device not found.</h3>
 }
-else if (!DataService.DoesUserHaveAccessToDevice(_device.ID, User))
+else if (!_userHasAccess)
 {
     <h3>Unauthorized.</h3>
 }
@@ -168,7 +172,7 @@ else
                                 <InputSelect @bind-Value="_device.DeviceGroupID" class="form-control">
                                     <option value="">None</option>
 
-                                    @foreach (var group in DataService.GetDeviceGroups(UserName))
+                                    @foreach (var group in _deviceGroups)
                                     {
                                         <option @key="group.ID" value="@group.ID">@group.Name</option>
                                     }

@@ -62,6 +62,8 @@ public partial class ScriptsPage : AuthComponentBase
 
     public async Task RefreshScripts()
     {
+        EnsureUserSet();
+
         _treeNodes.Clear();
 
         _allScripts = await DataService.GetSavedScriptsWithoutContent(User.Id, User.OrganizationID);
@@ -119,6 +121,13 @@ public partial class ScriptsPage : AuthComponentBase
 
     private void RefreshTreeNodes()
     {
+        if (User is null)
+        {
+            return;
+        }
+
+        EnsureUserSet();
+
         _treeNodes.Clear();
 
         foreach (var script in _allScripts)
