@@ -285,7 +285,7 @@ using (var scope = app.Services.CreateScope())
 
     if (context.Database.IsRelational())
     {
-        context.Database.Migrate();
+        await context.Database.MigrateAsync();
     }
 
     await dataService.SetAllDevicesNotOnline();

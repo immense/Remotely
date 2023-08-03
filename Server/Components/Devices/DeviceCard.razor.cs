@@ -11,7 +11,6 @@ using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
-using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.ViewModels;
 using System;

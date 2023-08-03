@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using Remotely.Shared.Entities;
 
-namespace Remotely.Shared.Models;
+namespace Remotely.Shared.Entities;
 
 public class DeviceGroup
 {

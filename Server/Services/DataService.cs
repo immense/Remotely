@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Data;
+using Remotely.Server.Extensions;
 using Remotely.Server.Models;
 using Remotely.Shared;
 using Remotely.Shared.Dtos;
@@ -118,7 +119,7 @@ public interface IDataService
 
     Task<Result<Device>> GetDevice(
           string deviceId,
-          Action<IQueryable<Device>>? includesBuilder = null);
+          Action<IQueryable<Device>>? queryBuilder = null);
 
     Task<Result<Device>> GetDevice(string orgId, string deviceId);
 
@@ -178,7 +179,7 @@ public interface IDataService
 
     Task<Result<RemotelyUser>> GetUserByName(
         string userName, 
-        Action<IQueryable<RemotelyUser>>? includesBuilder = null);
+        Action<IQueryable<RemotelyUser>>? queryBuilder = null);
 
     Task<Result<RemotelyUserOptions>> GetUserOptions(string userName);
 
@@ -221,7 +222,6 @@ public interface IDataService
     Task UpdateTags(string deviceID, string tags);
 
     Task<Result> UpdateUserOptions(string userName, RemotelyUserOptions options);
-
     Task<bool> ValidateApiKey(string keyId, string apiSecret, string requestPath, string remoteIP);
 }
 
@@ -688,7 +688,7 @@ public class DataService : IDataService
         {
             return Result.Fail<ApiToken>("User not found.");
         }
-
+        
         var newToken = new ApiToken()
         {
             Name = tokenName,
@@ -941,13 +941,21 @@ public class DataService : IDataService
             return Result.Fail("Organization not found.");
         }
 
+        // All the joins are necessary for client-side cascade delete.
+        // This method will be called rarely, so I'm not concerned
+        // about the performance.
         var target = dbContext.Users
             .Include(x => x.DeviceGroups)
             .ThenInclude(x => x.Devices)
             .Include(x => x.Organization)
             .Include(x => x.Alerts)
             .Include(x => x.SavedScripts)
+            .ThenInclude(x => x.ScriptRuns)
+            .Include(x => x.SavedScripts)
+            .ThenInclude(x => x.ScriptResults)
             .Include(x => x.ScriptSchedules)
+            .ThenInclude(x => x.ScriptRuns)
+            .ThenInclude(x => x.Results)
             .FirstOrDefault(x =>
                 x.Id == targetUserId &&
                 x.OrganizationID == orgId);
@@ -957,18 +965,6 @@ public class DataService : IDataService
             return Result.Fail("User not found.");
         }
 
-        foreach (var deviceGroup in target.DeviceGroups)
-        {
-            deviceGroup.Users.Remove(target);
-        }
-
-        foreach (var alert in target.Alerts)
-        {
-            dbContext.Alerts.Remove(alert);
-        }
-
-        target.Organization = null;
-        org.RemotelyUsers.Remove(target);
         dbContext.Users.Remove(target);
 
         await dbContext.SaveChangesAsync();
@@ -1298,17 +1294,14 @@ public class DataService : IDataService
 
     public async Task<Result<Device>> GetDevice(
         string deviceId,
-        Action<IQueryable<Device>>? includesBuilder = null)
+        Action<IQueryable<Device>>? queryBuilder = null)
     {
         using var dbContext = _appDbFactory.GetContext();
-        
-        var query = dbContext.Devices
+
+        var device = await dbContext.Devices
             .AsNoTracking()
-            .AsQueryable();
-
-        includesBuilder?.Invoke(query);
-
-        var device = await query.FirstOrDefaultAsync(x => x.ID == deviceId);
+            .Apply(queryBuilder)
+            .FirstOrDefaultAsync(x => x.ID == deviceId);
 
         if (device is null)
         {
@@ -1762,7 +1755,7 @@ public class DataService : IDataService
 
     public async Task<Result<RemotelyUser>> GetUserByName(
         string userName,
-        Action<IQueryable<RemotelyUser>>? includesBuilder = null)
+        Action<IQueryable<RemotelyUser>>? queryBuilder = null)
     {
         if (string.IsNullOrWhiteSpace(userName))
         {
@@ -1771,14 +1764,11 @@ public class DataService : IDataService
 
         using var dbContext = _appDbFactory.GetContext();
 
-        var query = dbContext.Users
+        var user = await dbContext.Users
             .AsNoTracking()
-            .AsQueryable();
-
-        includesBuilder?.Invoke(query);
-
-        var user = await query.FirstOrDefaultAsync(x => 
-            x.UserName!.ToLower().Trim() == userName.ToLower().Trim());
+            .Apply(queryBuilder)
+            .FirstOrDefaultAsync(x =>
+                x.UserName!.ToLower().Trim() == userName.ToLower().Trim());
 
         if (user is null)
         {

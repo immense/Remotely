@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Remotely.Server.Migrations.PostgreSql;
+namespace Remotely.Server.Migrations.Sqlite;
 
 /// <inheritdoc />
 public partial class Enable_NullableReferences : Migration
@@ -11,38 +11,22 @@ public partial class Enable_NullableReferences : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         // These relationships weren't enforced previously.
-        migrationBuilder.Sql("delete from ScriptResults where DeviceID is null;");
-        migrationBuilder.Sql("delete from ScriptResults where DeviceID not in (select ID from Devices);");
-        migrationBuilder.Sql("delete from ScriptResults where OrganizationID is null;");
-        migrationBuilder.Sql("delete from ScriptResults where OrganizationID not in (select ID from Organizations);");
-        migrationBuilder.Sql("delete from ScriptResults where SavedScriptId not in (select Id from SavedScripts);");
-        migrationBuilder.Sql("delete from ScriptRuns where OrganizationID is null;");
-        migrationBuilder.Sql("delete from ScriptRuns where OrganizationID not in (select ID from Organizations);");
-        migrationBuilder.Sql("delete from ScriptRuns where SavedScriptId not in (select Id from SavedScripts);");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_Alerts_Devices_DeviceID",
-            table: "Alerts");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"DeviceID\" is null;");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"DeviceID\" not in (select \"ID\" from \"Devices\");");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"OrganizationID\" is null;");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"OrganizationID\" not in (select \"ID\" from \"Organizations\");");
+        migrationBuilder.Sql("delete from \"ScriptResults\" where \"SavedScriptId\" not in (select \"Id\" from \"SavedScripts\");");
+        migrationBuilder.Sql("delete from \"ScriptRuns\" where \"OrganizationID\" is null;");
+        migrationBuilder.Sql("delete from \"ScriptRuns\" where \"OrganizationID\" not in (select \"ID\" from \"Organizations\");");
+        migrationBuilder.Sql("delete from \"ScriptRuns\" where \"SavedScriptId\" not in (select \"Id\" from \"SavedScripts\");");
 
         migrationBuilder.DropForeignKey(
             name: "FK_Alerts_Organizations_OrganizationID",
             table: "Alerts");
 
         migrationBuilder.DropForeignKey(
-            name: "FK_Alerts_RemotelyUsers_UserID",
-            table: "Alerts");
-
-        migrationBuilder.DropForeignKey(
             name: "FK_ApiTokens_Organizations_OrganizationID",
             table: "ApiTokens");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_BrandingInfos_Organizations_OrganizationId",
-            table: "BrandingInfos");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_DeviceGroups_Organizations_OrganizationID",
-            table: "DeviceGroups");
 
         migrationBuilder.DropForeignKey(
             name: "FK_Devices_Organizations_OrganizationID",
@@ -61,32 +45,12 @@ public partial class Enable_NullableReferences : Migration
             table: "SavedScripts");
 
         migrationBuilder.DropForeignKey(
-            name: "FK_SavedScripts_RemotelyUsers_CreatorId",
-            table: "SavedScripts");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_ScriptResults_Devices_DeviceID",
-            table: "ScriptResults");
-
-        migrationBuilder.DropForeignKey(
             name: "FK_ScriptResults_Organizations_OrganizationID",
             table: "ScriptResults");
 
         migrationBuilder.DropForeignKey(
-            name: "FK_ScriptRuns_Organizations_OrganizationID",
-            table: "ScriptRuns");
-
-        migrationBuilder.DropForeignKey(
             name: "FK_ScriptRuns_ScriptSchedules_ScriptScheduleId",
             table: "ScriptRuns");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_ScriptSchedules_Organizations_OrganizationID",
-            table: "ScriptSchedules");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_ScriptSchedules_RemotelyUsers_CreatorId",
-            table: "ScriptSchedules");
 
         migrationBuilder.DropTable(
             name: "DeviceScriptRun1");
@@ -102,215 +66,211 @@ public partial class Enable_NullableReferences : Migration
         migrationBuilder.AlterColumn<byte[]>(
             name: "FileContents",
             table: "SharedFiles",
-            type: "bytea",
+            type: "BLOB",
             nullable: false,
             defaultValue: new byte[0],
             oldClrType: typeof(byte[]),
-            oldType: "bytea",
+            oldType: "BLOB",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "ScriptSchedules",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "Name",
             table: "ScriptSchedules",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "CreatorId",
             table: "ScriptSchedules",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "ScriptRuns",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "ScriptInput",
             table: "ScriptResults",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "ScriptResults",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "DeviceID",
             table: "ScriptResults",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "SavedScripts",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "CreatorId",
             table: "SavedScripts",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationName",
             table: "Organizations",
-            type: "character varying(25)",
+            type: "TEXT",
             maxLength: 25,
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "character varying(25)",
+            oldType: "TEXT",
             oldMaxLength: 25,
             oldNullable: true);
+
+        migrationBuilder.AddColumn<string>(
+            name: "BrandingInfoId",
+            table: "Organizations",
+            type: "TEXT",
+            nullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "InviteLinks",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "Devices",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "MacAddresses",
             table: "Devices",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "DeviceGroups",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "Name",
             table: "DeviceGroups",
-            type: "character varying(200)",
+            type: "TEXT",
             maxLength: 200,
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "character varying(200)",
+            oldType: "TEXT",
             oldMaxLength: 200,
-            oldNullable: true);
-
-        migrationBuilder.AlterColumn<string>(
-            name: "OrganizationId",
-            table: "BrandingInfos",
-            type: "text",
-            nullable: false,
-            defaultValue: "",
-            oldClrType: typeof(string),
-            oldType: "text",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "ApiTokens",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "UserID",
             table: "Alerts",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "Alerts",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "DeviceID",
             table: "Alerts",
-            type: "text",
+            type: "TEXT",
             nullable: false,
             defaultValue: "",
             oldClrType: typeof(string),
-            oldType: "text",
+            oldType: "TEXT",
             oldNullable: true);
 
         migrationBuilder.CreateIndex(
@@ -329,14 +289,6 @@ public partial class Enable_NullableReferences : Migration
             column: "SavedScriptId");
 
         migrationBuilder.AddForeignKey(
-            name: "FK_Alerts_Devices_DeviceID",
-            table: "Alerts",
-            column: "DeviceID",
-            principalTable: "Devices",
-            principalColumn: "ID",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
             name: "FK_Alerts_Organizations_OrganizationID",
             table: "Alerts",
             column: "OrganizationID",
@@ -345,32 +297,8 @@ public partial class Enable_NullableReferences : Migration
             onDelete: ReferentialAction.Cascade);
 
         migrationBuilder.AddForeignKey(
-            name: "FK_Alerts_RemotelyUsers_UserID",
-            table: "Alerts",
-            column: "UserID",
-            principalTable: "RemotelyUsers",
-            principalColumn: "Id",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
             name: "FK_ApiTokens_Organizations_OrganizationID",
             table: "ApiTokens",
-            column: "OrganizationID",
-            principalTable: "Organizations",
-            principalColumn: "ID",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_BrandingInfos_Organizations_OrganizationId",
-            table: "BrandingInfos",
-            column: "OrganizationId",
-            principalTable: "Organizations",
-            principalColumn: "ID",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_DeviceGroups_Organizations_OrganizationID",
-            table: "DeviceGroups",
             column: "OrganizationID",
             principalTable: "Organizations",
             principalColumn: "ID",
@@ -409,22 +337,6 @@ public partial class Enable_NullableReferences : Migration
             onDelete: ReferentialAction.Cascade);
 
         migrationBuilder.AddForeignKey(
-            name: "FK_SavedScripts_RemotelyUsers_CreatorId",
-            table: "SavedScripts",
-            column: "CreatorId",
-            principalTable: "RemotelyUsers",
-            principalColumn: "Id",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_ScriptResults_Devices_DeviceID",
-            table: "ScriptResults",
-            column: "DeviceID",
-            principalTable: "Devices",
-            principalColumn: "ID",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
             name: "FK_ScriptResults_Organizations_OrganizationID",
             table: "ScriptResults",
             column: "OrganizationID",
@@ -440,14 +352,6 @@ public partial class Enable_NullableReferences : Migration
             principalColumn: "Id");
 
         migrationBuilder.AddForeignKey(
-            name: "FK_ScriptRuns_Organizations_OrganizationID",
-            table: "ScriptRuns",
-            column: "OrganizationID",
-            principalTable: "Organizations",
-            principalColumn: "ID",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
             name: "FK_ScriptRuns_SavedScripts_SavedScriptId",
             table: "ScriptRuns",
             column: "SavedScriptId",
@@ -460,50 +364,18 @@ public partial class Enable_NullableReferences : Migration
             column: "ScheduleId",
             principalTable: "ScriptSchedules",
             principalColumn: "Id");
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_ScriptSchedules_Organizations_OrganizationID",
-            table: "ScriptSchedules",
-            column: "OrganizationID",
-            principalTable: "Organizations",
-            principalColumn: "ID",
-            onDelete: ReferentialAction.Cascade);
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_ScriptSchedules_RemotelyUsers_CreatorId",
-            table: "ScriptSchedules",
-            column: "CreatorId",
-            principalTable: "RemotelyUsers",
-            principalColumn: "Id",
-            onDelete: ReferentialAction.Cascade);
     }
 
     /// <inheritdoc />
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropForeignKey(
-            name: "FK_Alerts_Devices_DeviceID",
-            table: "Alerts");
-
-        migrationBuilder.DropForeignKey(
             name: "FK_Alerts_Organizations_OrganizationID",
-            table: "Alerts");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_Alerts_RemotelyUsers_UserID",
             table: "Alerts");
 
         migrationBuilder.DropForeignKey(
             name: "FK_ApiTokens_Organizations_OrganizationID",
             table: "ApiTokens");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_BrandingInfos_Organizations_OrganizationId",
-            table: "BrandingInfos");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_DeviceGroups_Organizations_OrganizationID",
-            table: "DeviceGroups");
 
         migrationBuilder.DropForeignKey(
             name: "FK_Devices_Organizations_OrganizationID",
@@ -522,14 +394,6 @@ public partial class Enable_NullableReferences : Migration
             table: "SavedScripts");
 
         migrationBuilder.DropForeignKey(
-            name: "FK_SavedScripts_RemotelyUsers_CreatorId",
-            table: "SavedScripts");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_ScriptResults_Devices_DeviceID",
-            table: "ScriptResults");
-
-        migrationBuilder.DropForeignKey(
             name: "FK_ScriptResults_Organizations_OrganizationID",
             table: "ScriptResults");
 
@@ -538,24 +402,12 @@ public partial class Enable_NullableReferences : Migration
             table: "ScriptResults");
 
         migrationBuilder.DropForeignKey(
-            name: "FK_ScriptRuns_Organizations_OrganizationID",
-            table: "ScriptRuns");
-
-        migrationBuilder.DropForeignKey(
             name: "FK_ScriptRuns_SavedScripts_SavedScriptId",
             table: "ScriptRuns");
 
         migrationBuilder.DropForeignKey(
             name: "FK_ScriptRuns_ScriptSchedules_ScheduleId",
             table: "ScriptRuns");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_ScriptSchedules_Organizations_OrganizationID",
-            table: "ScriptSchedules");
-
-        migrationBuilder.DropForeignKey(
-            name: "FK_ScriptSchedules_RemotelyUsers_CreatorId",
-            table: "ScriptSchedules");
 
         migrationBuilder.DropIndex(
             name: "IX_ScriptRuns_SavedScriptId",
@@ -569,190 +421,186 @@ public partial class Enable_NullableReferences : Migration
             name: "IX_ScriptResults_SavedScriptId",
             table: "ScriptResults");
 
+        migrationBuilder.DropColumn(
+            name: "BrandingInfoId",
+            table: "Organizations");
+
         migrationBuilder.AlterColumn<byte[]>(
             name: "FileContents",
             table: "SharedFiles",
-            type: "bytea",
+            type: "BLOB",
             nullable: true,
             oldClrType: typeof(byte[]),
-            oldType: "bytea");
+            oldType: "BLOB");
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "ScriptSchedules",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "Name",
             table: "ScriptSchedules",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "CreatorId",
             table: "ScriptSchedules",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "ScriptRuns",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AddColumn<int>(
             name: "ScriptScheduleId",
             table: "ScriptRuns",
-            type: "integer",
+            type: "INTEGER",
             nullable: true);
 
         migrationBuilder.AlterColumn<string>(
             name: "ScriptInput",
             table: "ScriptResults",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "ScriptResults",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "DeviceID",
             table: "ScriptResults",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "SavedScripts",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "CreatorId",
             table: "SavedScripts",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationName",
             table: "Organizations",
-            type: "character varying(25)",
+            type: "TEXT",
             maxLength: 25,
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "character varying(25)",
+            oldType: "TEXT",
             oldMaxLength: 25);
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "InviteLinks",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "Devices",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "MacAddresses",
             table: "Devices",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "DeviceGroups",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "Name",
             table: "DeviceGroups",
-            type: "character varying(200)",
+            type: "TEXT",
             maxLength: 200,
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "character varying(200)",
+            oldType: "TEXT",
             oldMaxLength: 200);
-
-        migrationBuilder.AlterColumn<string>(
-            name: "OrganizationId",
-            table: "BrandingInfos",
-            type: "text",
-            nullable: true,
-            oldClrType: typeof(string),
-            oldType: "text");
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "ApiTokens",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "UserID",
             table: "Alerts",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "OrganizationID",
             table: "Alerts",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.AlterColumn<string>(
             name: "DeviceID",
             table: "Alerts",
-            type: "text",
+            type: "TEXT",
             nullable: true,
             oldClrType: typeof(string),
-            oldType: "text");
+            oldType: "TEXT");
 
         migrationBuilder.CreateTable(
             name: "DeviceScriptRun1",
             columns: table => new
             {
-                DevicesCompletedID = table.Column<string>(type: "text", nullable: false),
-                ScriptRunsCompletedId = table.Column<int>(type: "integer", nullable: false)
+                DevicesCompletedID = table.Column<string>(type: "TEXT", nullable: false),
+                ScriptRunsCompletedId = table.Column<int>(type: "INTEGER", nullable: false)
             },
             constraints: table =>
             {
@@ -782,13 +630,6 @@ public partial class Enable_NullableReferences : Migration
             column: "ScriptRunsCompletedId");
 
         migrationBuilder.AddForeignKey(
-            name: "FK_Alerts_Devices_DeviceID",
-            table: "Alerts",
-            column: "DeviceID",
-            principalTable: "Devices",
-            principalColumn: "ID");
-
-        migrationBuilder.AddForeignKey(
             name: "FK_Alerts_Organizations_OrganizationID",
             table: "Alerts",
             column: "OrganizationID",
@@ -796,29 +637,8 @@ public partial class Enable_NullableReferences : Migration
             principalColumn: "ID");
 
         migrationBuilder.AddForeignKey(
-            name: "FK_Alerts_RemotelyUsers_UserID",
-            table: "Alerts",
-            column: "UserID",
-            principalTable: "RemotelyUsers",
-            principalColumn: "Id");
-
-        migrationBuilder.AddForeignKey(
             name: "FK_ApiTokens_Organizations_OrganizationID",
             table: "ApiTokens",
-            column: "OrganizationID",
-            principalTable: "Organizations",
-            principalColumn: "ID");
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_BrandingInfos_Organizations_OrganizationId",
-            table: "BrandingInfos",
-            column: "OrganizationId",
-            principalTable: "Organizations",
-            principalColumn: "ID");
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_DeviceGroups_Organizations_OrganizationID",
-            table: "DeviceGroups",
             column: "OrganizationID",
             principalTable: "Organizations",
             principalColumn: "ID");
@@ -852,29 +672,8 @@ public partial class Enable_NullableReferences : Migration
             principalColumn: "ID");
 
         migrationBuilder.AddForeignKey(
-            name: "FK_SavedScripts_RemotelyUsers_CreatorId",
-            table: "SavedScripts",
-            column: "CreatorId",
-            principalTable: "RemotelyUsers",
-            principalColumn: "Id");
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_ScriptResults_Devices_DeviceID",
-            table: "ScriptResults",
-            column: "DeviceID",
-            principalTable: "Devices",
-            principalColumn: "ID");
-
-        migrationBuilder.AddForeignKey(
             name: "FK_ScriptResults_Organizations_OrganizationID",
             table: "ScriptResults",
-            column: "OrganizationID",
-            principalTable: "Organizations",
-            principalColumn: "ID");
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_ScriptRuns_Organizations_OrganizationID",
-            table: "ScriptRuns",
             column: "OrganizationID",
             principalTable: "Organizations",
             principalColumn: "ID");
@@ -884,20 +683,6 @@ public partial class Enable_NullableReferences : Migration
             table: "ScriptRuns",
             column: "ScriptScheduleId",
             principalTable: "ScriptSchedules",
-            principalColumn: "Id");
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_ScriptSchedules_Organizations_OrganizationID",
-            table: "ScriptSchedules",
-            column: "OrganizationID",
-            principalTable: "Organizations",
-            principalColumn: "ID");
-
-        migrationBuilder.AddForeignKey(
-            name: "FK_ScriptSchedules_RemotelyUsers_CreatorId",
-            table: "ScriptSchedules",
-            column: "CreatorId",
-            principalTable: "RemotelyUsers",
             principalColumn: "Id");
     }
 }
