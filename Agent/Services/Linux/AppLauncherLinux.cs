@@ -175,7 +175,7 @@ public class AppLauncherLinux : IAppLauncher
         }
     }
 
-    public async Task RestartScreenCaster(List<string> viewerIDs, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
+    public async Task RestartScreenCaster(string[] viewerIds, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
     {
         try
         {
@@ -192,7 +192,7 @@ public class AppLauncherLinux : IAppLauncher
         }
         catch (Exception ex)
         {
-            await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+            await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIds);
             _logger.LogError(ex, "Error while restarting screen caster.");
             throw;
         }

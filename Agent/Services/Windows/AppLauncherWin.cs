@@ -159,7 +159,7 @@ public class AppLauncherWin : IAppLauncher
                 userConnectionId);
         }
     }
-    public async Task RestartScreenCaster(List<string> viewerIDs, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
+    public async Task RestartScreenCaster(string[] viewerIds, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
     {
         try
         {
@@ -179,7 +179,7 @@ public class AppLauncherWin : IAppLauncher
                         $" --org-id \"{orgId}\"" +
                         $" --session-id \"{sessionId}\"" +
                         $" --access-key \"{accessKey}\"" +
-                        $" --viewers {string.Join(",", viewerIDs)}",
+                        $" --viewers {string.Join(",", viewerIds)}",
 
                     targetSessionId: targetSessionID,
                     forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionID == -1,
@@ -190,7 +190,7 @@ public class AppLauncherWin : IAppLauncher
                 if (!result)
                 {
                     _logger.LogWarning("Failed to relaunch screen caster.");
-                    await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+                    await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIds);
                     await hubConnection.SendAsync("DisplayMessage",
                         "Remote control failed to start on target device.",
                         "Failed to start remote control.",
@@ -209,12 +209,12 @@ public class AppLauncherWin : IAppLauncher
                     $" --org-id \"{orgId}\"" +
                     $" --session-id \"{sessionId}\"" +
                     $" --access-key \"{accessKey}\"" +
-                    $" --viewers {string.Join(",", viewerIDs)}");
+                    $" --viewers {string.Join(",", viewerIds)}");
             }
         }
         catch (Exception ex)
         {
-            await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIDs);
+            await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIds);
             _logger.LogError(ex, "Error while restarting screen caster.");
             throw;
         }

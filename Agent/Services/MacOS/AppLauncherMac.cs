@@ -19,7 +19,7 @@ public class AppLauncherMac : IAppLauncher
         await hubConnection.SendAsync("DisplayMessage", "Feature under development.", "Feature is under development.", "bg-warning", userConnectionId);
     }
 
-    public async Task RestartScreenCaster(List<string> viewerIDs, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
+    public async Task RestartScreenCaster(string[] viewerIds, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
     {
         await hubConnection.SendAsync("DisplayMessage", "Feature under development.", "Feature is under development.", "bg-warning", userConnectionId);
     }

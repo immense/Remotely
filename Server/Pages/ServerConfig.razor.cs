@@ -11,6 +11,7 @@ using Remotely.Server.Hubs;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
+using Remotely.Shared.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -144,7 +145,7 @@ public partial class ServerConfig : AuthComponentBase
 
 
     [Inject]
-    private IHubContext<AgentHub> AgentHubContext { get; init; } = null!;
+    private IHubContext<AgentHub, IAgentHubClient> AgentHubContext { get; init; } = null!;
 
     [Inject]
     private IConfiguration Configuration { get; init; } = null!;
@@ -468,7 +469,7 @@ public partial class ServerConfig : AuthComponentBase
 
         var agentConnections = ServiceSessionCache.GetConnectionIdsByDeviceIds(OutdatedDevices);
 
-        await AgentHubContext.Clients.Clients(agentConnections).SendAsync("ReinstallAgent");
+        await AgentHubContext.Clients.Clients(agentConnections).ReinstallAgent();
         ToastService.ShowToast("Update command sent.");
     }
 }

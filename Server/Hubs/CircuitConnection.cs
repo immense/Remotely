@@ -14,6 +14,7 @@ using Remotely.Server.Services;
 using Remotely.Shared;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
+using Remotely.Shared.Interfaces;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
@@ -54,7 +55,6 @@ public interface ICircuitConnection
 
     Task UninstallAgents(string[] deviceIDs);
     Task UpdateTags(string deviceID, string tags);
-    Task UploadFiles(List<string> fileIDs, string transferID, string[] deviceIDs);
 
     /// <summary>
     /// Sends a Wake-On-LAN request for the specified device to its peer devices.
@@ -73,7 +73,7 @@ public interface ICircuitConnection
 
 public class CircuitConnection : CircuitHandler, ICircuitConnection
 {
-    private readonly IHubContext<AgentHub> _agentHubContext;
+    private readonly IHubContext<AgentHub, IAgentHubClient> _agentHubContext;
     private readonly IApplicationConfig _appConfig;
     private readonly IClientAppState _appState;
     private readonly IAuthService _authService;
@@ -92,7 +92,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         IAuthService authService,
         IDataService dataService,
         IClientAppState appState,
-        IHubContext<AgentHub> agentHubContext,
+        IHubContext<AgentHub, IAgentHubClient> agentHubContext,
         IApplicationConfig appConfig,
         ICircuitManager circuitManager,
         IToastService toastService,
@@ -154,10 +154,10 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             deviceId,
             User?.UserName);
 
-        return _agentHubContext.Clients.Client(key).SendAsync("DeleteLogs");
+        return _agentHubContext.Clients.Client(key).DeleteLogs();
     }
 
-    public Task ExecuteCommandOnAgent(ScriptingShell shell, string command, string[] deviceIDs)
+    public async Task ExecuteCommandOnAgent(ScriptingShell shell, string command, string[] deviceIDs)
     {
         deviceIDs = _dataService.FilterDeviceIdsByUserPermission(deviceIDs, User);
         var connections = GetActiveConnectionsForUserOrg(deviceIDs);
@@ -170,17 +170,12 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
         var authTokenForUploadingResults = _expiringTokenService.GetToken(Time.Now.AddMinutes(5));
 
-        foreach (var connection in connections)
-        {
-            _agentHubContext.Clients.Client(connection).SendAsync("ExecuteCommand",
-                shell,
-                command,
-                authTokenForUploadingResults,
-                User.UserName,
-                ConnectionId);
-        }
-
-        return Task.CompletedTask;
+        await _agentHubContext.Clients.Clients(connections).ExecuteCommand(
+            shell,
+            command,
+            authTokenForUploadingResults,
+            $"{User.UserName}",
+            ConnectionId);
     }
 
     public Task GetPowerShellCompletions(string inputText, int currentIndex, CompletionIntent intent, bool? forward)
@@ -197,7 +192,12 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             return Task.CompletedTask;
         }
 
-        return _agentHubContext.Clients.Client(key).SendAsync("GetPowerShellCompletions", inputText, currentIndex, intent, forward, ConnectionId);
+        return _agentHubContext.Clients.Client(key).GetPowerShellCompletions(
+            inputText,
+            currentIndex,
+            intent,
+            forward,
+            ConnectionId);
     }
 
     public Task GetRemoteLogs(string deviceId)
@@ -209,7 +209,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             return Task.CompletedTask;
         }
 
-        return _agentHubContext.Clients.Client(key).SendAsync("GetLogs", ConnectionId);
+        return _agentHubContext.Clients.Client(key).GetLogs(ConnectionId);
     }
 
     public Task InvokeCircuitEvent(CircuitEventName eventName, params object[] args)
@@ -244,16 +244,12 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         await base.OnCircuitOpenedAsync(circuit, cancellationToken);
     }
 
-    public Task ReinstallAgents(string[] deviceIDs)
+    public async Task ReinstallAgents(string[] deviceIDs)
     {
         deviceIDs = _dataService.FilterDeviceIdsByUserPermission(deviceIDs, User);
         var connections = GetActiveConnectionsForUserOrg(deviceIDs);
-        foreach (var connection in connections)
-        {
-            _agentHubContext.Clients.Client(connection).SendAsync("ReinstallAgent");
-        }
+        await _agentHubContext.Clients.Clients(connections).ReinstallAgent();
         _dataService.RemoveDevices(deviceIDs);
-        return Task.CompletedTask;
     }
 
     public async Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceId, bool viewOnly)
@@ -266,7 +262,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                  "bg-warning"));
             return Result.Fail<RemoteControlSessionEx>("Device is not online.");
         }
-      
+
 
         if (!_dataService.DoesUserHaveAccessToDevice(deviceId, User))
         {
@@ -326,11 +322,11 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             return Result.Fail<RemoteControlSessionEx>(orgResult.Reason);
         }
 
-        await _agentHubContext.Clients.Client(serviceConnectionId).SendAsync("RemoteControl",
+        await _agentHubContext.Clients.Client(serviceConnectionId).RemoteControl(
             sessionId,
             accessKey,
             ConnectionId,
-            User.UserOptions?.DisplayName,
+            $"{User.UserOptions?.DisplayName}",
             orgResult.Value,
             User.OrganizationID);
 
@@ -349,10 +345,10 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
     }
 
     public async Task RunScript(
-        IEnumerable<string> deviceIds, 
-        Guid savedScriptId, 
-        int scriptRunId, 
-        ScriptInputType scriptInputType, 
+        IEnumerable<string> deviceIds,
+        Guid savedScriptId,
+        int scriptRunId,
+        ScriptInputType scriptInputType,
         bool runAsHostedService)
     {
         var username = string.Empty;
@@ -365,14 +361,19 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             username = User.UserName;
             deviceIds = _dataService.FilterDeviceIdsByUserPermission(deviceIds.ToArray(), User);
         }
-       
+
         var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
 
         var connectionIds = _agentSessionCache.GetConnectionIdsByDeviceIds(deviceIds).ToArray();
 
         if (connectionIds.Any())
         {
-            await _agentHubContext.Clients.Clients(connectionIds).SendAsync("RunScript", savedScriptId, scriptRunId, username, scriptInputType, authToken);
+            await _agentHubContext.Clients.Clients(connectionIds).RunScript(
+                savedScriptId,
+                scriptRunId,
+                $"{username}",
+                scriptInputType,
+                authToken);
         }
 
     }
@@ -404,8 +405,8 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             return;
         }
 
-        await _agentHubContext.Clients.Client(connectionId).SendAsync("Chat",
-            User.UserOptions?.DisplayName ?? User.UserName,
+        await _agentHubContext.Clients.Client(connectionId).SendChatMessage(
+            User.UserOptions?.DisplayName ?? $"{User.UserName}",
             message,
             orgResult.Value,
             User.OrganizationID,
@@ -419,7 +420,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         {
             return false;
         }
-        
+
         if (!_dataService.DoesUserHaveAccessToDevice(deviceId, User))
         {
             _logger.LogWarning("User {username} does not have access to device ID {deviceId} and attempted file upload.",
@@ -431,12 +432,13 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
         var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(5));
 
-        await _agentHubContext.Clients.Client(connectionId).SendAsync(
-            "TransferFileFromBrowserToAgent",
-            transferId,
-            fileIds,
-            ConnectionId,
-            authToken);
+        await _agentHubContext.Clients
+            .Client(connectionId)
+            .TransferFileFromBrowserToAgent(
+                transferId,
+                fileIds,
+                ConnectionId,
+                authToken);
 
         return true;
     }
@@ -450,17 +452,14 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             return;
         }
 
-        await _agentHubContext.Clients.Client(connectionId).SendAsync("TriggerHeartbeat");
+        await _agentHubContext.Clients.Client(connectionId).TriggerHeartbeat();
     }
 
     public async Task UninstallAgents(string[] deviceIDs)
     {
         deviceIDs = _dataService.FilterDeviceIdsByUserPermission(deviceIDs, User);
         var connections = GetActiveConnectionsForUserOrg(deviceIDs);
-        foreach (var connection in connections)
-        {
-            await _agentHubContext.Clients.Client(connection).SendAsync("UninstallAgent");
-        }
+        await _agentHubContext.Clients.Clients(connections).UninstallAgent();
         _dataService.RemoveDevices(deviceIDs);
     }
 
@@ -484,29 +483,13 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         return Task.CompletedTask;
     }
 
-    public Task UploadFiles(List<string> fileIDs, string transferID, string[] deviceIDs)
-    {
-        _logger.LogInformation(
-            "File transfer started by {userName}.  File transfer IDs: {fileIds}.",
-            User.UserName,
-            string.Join(", ", fileIDs));
-
-        deviceIDs = _dataService.FilterDeviceIdsByUserPermission(deviceIDs, User);
-        var connections = GetActiveConnectionsForUserOrg(deviceIDs);
-        foreach (var connection in connections)
-        {
-            _agentHubContext.Clients.Client(connection).SendAsync("UploadFiles", transferID, fileIDs, ConnectionId);
-        }
-        return Task.CompletedTask;
-    }
-
     public async Task<Result> WakeDevice(Device device)
     {
         try
         {
             if (!_dataService.DoesUserHaveAccessToDevice(device.ID, User.Id))
             {
-                return Result.Fail("Unauthorized.") ;
+                return Result.Fail("Unauthorized.");
             }
 
             var availableDevices = _agentSessionCache
@@ -658,7 +641,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                         peerDevice.DeviceName,
                         peerDevice.ID,
                         User.UserName);
-                    await _agentHubContext.Clients.Client(connectionId).SendAsync("WakeDevice", mac);
+                    await _agentHubContext.Clients.Client(connectionId).WakeDevice(mac);
                 }
             }
         }

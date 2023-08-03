@@ -72,6 +72,8 @@ public class Program
         {
             SetSas(services, logger);
         }
+
+        // TODO: Move this to a BackgroundService.
         await services.GetRequiredService<IUpdater>().BeginChecking();
         await services.GetRequiredService<IAgentHubConnection>().Connect();
     }
@@ -91,34 +93,34 @@ public class Program
         services.AddSingleton<ICpuUtilizationSampler, CpuUtilizationSampler>();
         services.AddSingleton<IWakeOnLanService, WakeOnLanService>();
         services.AddHostedService(services => services.GetRequiredService<ICpuUtilizationSampler>());
-        services.AddScoped<IChatClientService, ChatClientService>();
+        services.AddSingleton<IChatClientService, ChatClientService>();
         services.AddTransient<IPsCoreShell, PsCoreShell>();
         services.AddTransient<IExternalScriptingShell, ExternalScriptingShell>();
-        services.AddScoped<IConfigService, ConfigService>();
-        services.AddScoped<IUninstaller, Uninstaller>();
-        services.AddScoped<IScriptExecutor, ScriptExecutor>();
-        services.AddScoped<IProcessInvoker, ProcessInvoker>();
-        services.AddScoped<IUpdateDownloader, UpdateDownloader>();
+        services.AddSingleton<IConfigService, ConfigService>();
+        services.AddSingleton<IUninstaller, Uninstaller>();
+        services.AddSingleton<IScriptExecutor, ScriptExecutor>();
+        services.AddSingleton<IProcessInvoker, ProcessInvoker>();
+        services.AddSingleton<IUpdateDownloader, UpdateDownloader>();
         services.AddSingleton<IFileLogsManager, FileLogsManager>();
         services.AddSingleton<IScriptingShellFactory, ScriptingShellFactory>();
 
         if (OperatingSystem.IsWindows())
         {
-            services.AddScoped<IAppLauncher, AppLauncherWin>();
+            services.AddSingleton<IAppLauncher, AppLauncherWin>();
             services.AddSingleton<IUpdater, UpdaterWin>();
             services.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorWin>();
             services.AddSingleton<IElevationDetector, ElevationDetectorWin>();
         }
         else if (OperatingSystem.IsLinux())
         {
-            services.AddScoped<IAppLauncher, AppLauncherLinux>();
+            services.AddSingleton<IAppLauncher, AppLauncherLinux>();
             services.AddSingleton<IUpdater, UpdaterLinux>();
             services.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorLinux>();
             services.AddSingleton<IElevationDetector, ElevationDetectorLinux>();
         }
         else if (OperatingSystem.IsMacOS())
         {
-            services.AddScoped<IAppLauncher, AppLauncherMac>();
+            services.AddSingleton<IAppLauncher, AppLauncherMac>();
             services.AddSingleton<IUpdater, UpdaterMac>();
             services.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorMac>();
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -18,11 +19,15 @@ public interface ICpuUtilizationSampler : IHostedService
 internal class CpuUtilizationSampler : BackgroundService, ICpuUtilizationSampler
 {
     private readonly HashSet<int> _ignoredProcesses = new();
+    private readonly IElevationDetector _elevationDetector;
     private readonly ILogger<CpuUtilizationSampler> _logger;
     private double _currentUtilization;
 
-    public CpuUtilizationSampler(ILogger<CpuUtilizationSampler> logger)
+    public CpuUtilizationSampler(
+        IElevationDetector elevationDetector,
+        ILogger<CpuUtilizationSampler> logger)
     {
+        _elevationDetector = elevationDetector;
         _logger = logger;
     }
 
@@ -57,6 +62,16 @@ internal class CpuUtilizationSampler : BackgroundService, ICpuUtilizationSampler
         double totalUtilization = 0;
         var utilizations = new Dictionary<int, Tuple<DateTimeOffset, TimeSpan>>();
         var processes = Process.GetProcesses();
+
+        // If we're on Windows and not running in an elevated process,
+        // don't try to get CPU utilization for session 0 processes. It
+        // will throw.
+        if (OperatingSystem.IsWindows() &&
+            !_elevationDetector.IsElevated())
+        {
+
+            processes = processes.Where(x => x.SessionId != 0).ToArray();
+        }
 
         foreach (var proc in processes)
         {

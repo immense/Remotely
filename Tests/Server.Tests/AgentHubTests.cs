@@ -7,17 +7,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Remotely.Server.Hubs;
-using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Shared.Dtos;
-using Remotely.Shared.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Remotely.Shared.Interfaces;
 
 namespace Remotely.Tests;
 
@@ -52,14 +47,14 @@ public class AgentHubTests
             expiringTokenService.Object,
             logger.Object);
 
-        var hubClients = new Mock<IHubCallerClients>();
-        var caller = new Mock<ISingleClientProxy>();
+        var hubClients = new Mock<IHubCallerClients<IAgentHubClient>>();
+        var caller = new Mock<IAgentHubClient>();
         hubClients.Setup(x => x.Caller).Returns(caller.Object);
         hub.Clients = hubClients.Object;
 
         Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
         hubClients.Verify(x => x.Caller, Times.Once);
-        caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+        caller.Verify(x => x.UninstallAgent(), Times.Once);
     }
 
     // TODO: Checking of device ban should be pulled out into
@@ -89,14 +84,14 @@ public class AgentHubTests
             expiringTokenService.Object,
             logger.Object);
 
-        var hubClients = new Mock<IHubCallerClients>();
-        var caller = new Mock<ISingleClientProxy>();
+        var hubClients = new Mock<IHubCallerClients<IAgentHubClient>>();
+        var caller = new Mock<IAgentHubClient>();
         hubClients.Setup(x => x.Caller).Returns(caller.Object);
         hub.Clients = hubClients.Object;
 
         Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
         hubClients.Verify(x => x.Caller, Times.Once);
-        caller.Verify(x => x.SendCoreAsync("UninstallAgent", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
+        caller.Verify(x => x.UninstallAgent(), Times.Once);
     }
 
     [TestCleanup]
