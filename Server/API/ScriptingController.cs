@@ -13,6 +13,7 @@ using Immense.RemoteControl.Shared.Helpers;
 using Remotely.Shared;
 using Remotely.Server.Extensions;
 using Remotely.Shared.Entities;
+using Remotely.Shared.Interfaces;
 
 namespace Remotely.Server.API;
 
@@ -20,7 +21,7 @@ namespace Remotely.Server.API;
 [Route("api/[controller]")]
 public class ScriptingController : ControllerBase
 {
-    private readonly IHubContext<AgentHub> _agentHubContext;
+    private readonly IHubContext<AgentHub, IAgentHubClient> _agentHubContext;
 
     private readonly IDataService _dataService;
     private readonly IAgentHubSessionCache _serviceSessionCache;
@@ -32,7 +33,7 @@ public class ScriptingController : ControllerBase
         IDataService dataService,
         IAgentHubSessionCache serviceSessionCache,
         IExpiringTokenService expiringTokenService,
-        IHubContext<AgentHub> agentHub)
+        IHubContext<AgentHub, IAgentHubClient> agentHub)
     {
         _dataService = dataService;
         _serviceSessionCache = serviceSessionCache;
@@ -61,7 +62,6 @@ public class ScriptingController : ControllerBase
             command = await sr.ReadToEndAsync();
         }
 
-        var userID = string.Empty;
         if (Request.HttpContext.User.Identity?.IsAuthenticated == true)
         {
             var username = Request.HttpContext.User.Identity.Name;
@@ -97,7 +97,12 @@ public class ScriptingController : ControllerBase
         var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
 
         // TODO: Replace with new invoke capability in .NET 7.
-        await _agentHubContext.Clients.Client(connectionId).SendAsync("ExecuteCommandFromApi", shell, authToken, requestID, command, User?.Identity?.Name);
+        await _agentHubContext.Clients.Client(connectionId).ExecuteCommandFromApi(
+            shell, 
+            authToken, 
+            requestID, 
+            command,
+            User?.Identity?.Name ?? "API Key");
 
         var success = await WaitHelper.WaitForAsync(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
         if (!success)

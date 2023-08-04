@@ -8,10 +8,12 @@ using NuGet.Protocol.Core.Types;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Shared.Enums;
+using Remotely.Shared.Interfaces;
 using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,11 +21,11 @@ namespace Remotely.Server.Services.RcImplementations;
 
 public class HubEventHandler : IHubEventHandler
 {
-    private readonly IHubContext<AgentHub> _serviceHub;
+    private readonly IHubContext<AgentHub, IAgentHubClient> _serviceHub;
     private readonly ILogger<HubEventHandler> _logger;
 
     public HubEventHandler(
-        IHubContext<AgentHub> serviceHub,
+        IHubContext<AgentHub, IAgentHubClient> serviceHub,
         ILogger<HubEventHandler> logger)
     {
         _serviceHub = serviceHub;
@@ -40,9 +42,9 @@ public class HubEventHandler : IHubEventHandler
 
         return _serviceHub.Clients
             .Client(ex.AgentConnectionId)
-            .SendAsync("ChangeWindowsSession",
+            .ChangeWindowsSession(
                 viewerConnectionId,
-                ex.UnattendedSessionId,
+                $"{ex.UnattendedSessionId}",
                 ex.AccessKey,
                 ex.UserConnectionId,
                 ex.RequesterUserName,
@@ -59,7 +61,7 @@ public class HubEventHandler : IHubEventHandler
             return Task.CompletedTask;
         }
 
-        return _serviceHub.Clients.Client(ex.AgentConnectionId).SendAsync("CtrlAltDel");
+        return _serviceHub.Clients.Client(ex.AgentConnectionId).InvokeCtrlAltDel();
     }
 
     public Task NotifyDesktopSessionAdded(RemoteControlSession sessionInfo)
@@ -105,9 +107,9 @@ public class HubEventHandler : IHubEventHandler
 
         return _serviceHub.Clients
             .Client(ex.AgentConnectionId)
-            .SendAsync("RestartScreenCaster",
-                ex.ViewerList,
-                ex.UnattendedSessionId,
+            .RestartScreenCaster(
+                ex.ViewerList.ToArray(),
+                $"{ex.UnattendedSessionId}",
                 ex.AccessKey,
                 ex.UserConnectionId,
                 ex.RequesterUserName,
@@ -126,9 +128,9 @@ public class HubEventHandler : IHubEventHandler
 
         return _serviceHub.Clients
                  .Client(ex.AgentConnectionId)
-                 .SendAsync("RestartScreenCaster",
-                        viewerList,
-                        ex.UnattendedSessionId,
+                 .RestartScreenCaster(
+                        viewerList.ToArray(),
+                        $"{ex.UnattendedSessionId}",
                         ex.AccessKey,
                         ex.UserConnectionId,
                         ex.RequesterName,

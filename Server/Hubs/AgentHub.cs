@@ -8,6 +8,7 @@ using Remotely.Shared;
 using Remotely.Shared.Dtos;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
+using Remotely.Shared.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -17,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Hubs;
 
-public class AgentHub : Hub
+public class AgentHub : Hub<IAgentHubClient>
 {
     private readonly IApplicationConfig _appConfig;
     private readonly ICircuitManager _circuitManager;
@@ -77,7 +78,13 @@ public class AgentHub : Hub
         }
         else
         {
-            return Clients.Caller.SendAsync("Chat", string.Empty, string.Empty, string.Empty, true, browserConnectionId);
+            return Clients.Caller.SendChatMessage(
+                senderName: string.Empty,
+                message: string.Empty,
+                orgName: string.Empty,
+                orgId: string.Empty,
+                disconnected: true,
+                senderConnectionId: browserConnectionId);
         }
     }
 
@@ -91,12 +98,17 @@ public class AgentHub : Hub
 
         var authToken = _expiringTokenService.GetToken(Time.Now.AddMinutes(AppConstants.ScriptRunExpirationMinutes));
         var scriptRuns = await _dataService.GetPendingScriptRuns(Device.ID);
+
         foreach (var run in scriptRuns)
         {
-            await Clients.Caller.SendAsync("RunScript",
-                run.SavedScriptId,
+            if (run.SavedScriptId is null)
+            {
+                continue;
+            }
+            await Clients.Caller.RunScript(
+                run.SavedScriptId.Value,
                 run.Id,
-                run.Initiator,
+                run.Initiator ?? "Unknown Initiator",
                 run.InputType,
                 authToken);
         }
@@ -106,7 +118,7 @@ public class AgentHub : Hub
     {
         try
         {
-            if (CheckForDeviceBan(device.ID, device.DeviceName))
+            if (await CheckForDeviceBan(device.ID, device.DeviceName))
             {
                 return false;
             }
@@ -118,7 +130,7 @@ public class AgentHub : Hub
             }
             device.PublicIP = $"{ip}";
 
-            if (CheckForDeviceBan(device.PublicIP))
+            if (await CheckForDeviceBan(device.PublicIP))
             {
                 return false;
             }
@@ -161,7 +173,7 @@ public class AgentHub : Hub
 
     public async Task DeviceHeartbeat(DeviceClientDto device)
     {
-        if (CheckForDeviceBan(device.ID, device.DeviceName))
+        if (await CheckForDeviceBan(device.ID, device.DeviceName))
         {
             return;
         }
@@ -173,7 +185,7 @@ public class AgentHub : Hub
         }
         device.PublicIP = $"{ip}";
 
-        if (CheckForDeviceBan(device.PublicIP))
+        if (await CheckForDeviceBan(device.PublicIP))
         {
             return;
         }
@@ -308,7 +320,7 @@ public class AgentHub : Hub
     {
         return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.TransferCompleted, transferID);
     }
-    private bool CheckForDeviceBan(params string[] deviceIdNameOrIPs)
+    private async Task<bool> CheckForDeviceBan(params string[] deviceIdNameOrIPs)
     {
         foreach (var device in deviceIdNameOrIPs)
         {
@@ -322,7 +334,7 @@ public class AgentHub : Hub
             {
                 _logger.LogWarning("Device ID/name/IP ({device}) is banned.  Sending uninstall command.", device);
 
-                _ = Clients.Caller.SendAsync("UninstallAgent");
+                await Clients.Caller.UninstallAgent();
                 return true;
             }
         }

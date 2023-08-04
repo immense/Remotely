@@ -12,6 +12,7 @@ using Remotely.Server.Services;
 using Remotely.Server.Tests.Mocks;
 using Remotely.Shared.Dtos;
 using Remotely.Shared.Extensions;
+using Remotely.Shared.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Tests;
 using System;
@@ -30,7 +31,7 @@ public class CircuitConnectionTests
     private IDataService _dataService;
     private Mock<IAuthService> _authService;
     private Mock<IClientAppState> _clientAppState;
-    private HubContextFixture<AgentHub> _agentHubContextFixture;
+    private HubContextFixture<AgentHub, IAgentHubClient> _agentHubContextFixture;
     private Mock<IApplicationConfig> _appConfig;
     private Mock<ICircuitManager> _circuitManager;
     private Mock<IToastService> _toastService;
@@ -50,7 +51,7 @@ public class CircuitConnectionTests
         _dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
         _authService = new Mock<IAuthService>();
         _clientAppState = new Mock<IClientAppState>();
-        _agentHubContextFixture = new HubContextFixture<AgentHub>();
+        _agentHubContextFixture = new HubContextFixture<AgentHub, IAgentHubClient>();
         _appConfig = new Mock<IApplicationConfig>();
         _circuitManager = new Mock<ICircuitManager>();
         _toastService = new Mock<IToastService>();
@@ -174,11 +175,7 @@ public class CircuitConnectionTests
 
         _agentHubContextFixture.SingleClientProxyMock
             .Verify(x =>
-                x.SendCoreAsync(
-                    "WakeDevice",
-                    new object[] { macAddress },
-                    default),
-                    Times.Once);
+                x.WakeDevice(macAddress), Times.Once);
 
         _agentHubContextFixture.SingleClientProxyMock.VerifyNoOtherCalls();
         _agentHubContextFixture.HubContextMock.VerifyNoOtherCalls();
@@ -247,11 +244,7 @@ public class CircuitConnectionTests
 
         _agentHubContextFixture.SingleClientProxyMock
             .Verify(x =>
-                x.SendCoreAsync(
-                    "WakeDevice",
-                    new object[] { macAddress },
-                    default),
-                    Times.Once);
+                x.WakeDevice(macAddress), Times.Once);
 
         _agentHubContextFixture.SingleClientProxyMock.VerifyNoOtherCalls();
         _agentHubContextFixture.HubContextMock.VerifyNoOtherCalls();
@@ -387,11 +380,7 @@ public class CircuitConnectionTests
 
         _agentHubContextFixture.SingleClientProxyMock
             .Verify(x =>
-                x.SendCoreAsync(
-                    "WakeDevice",
-                    new object[] { macAddress },
-                    default),
-                    Times.Once);
+                x.WakeDevice(macAddress), Times.Once);
 
         _agentHubContextFixture.SingleClientProxyMock.VerifyNoOtherCalls();
         _agentHubContextFixture.HubContextMock.VerifyNoOtherCalls();
@@ -468,11 +457,7 @@ public class CircuitConnectionTests
 
         _agentHubContextFixture.SingleClientProxyMock
             .Verify(x =>
-                x.SendCoreAsync(
-                    "WakeDevice",
-                    new object[] { macAddress },
-                    default),
-                    Times.Once);
+                x.WakeDevice(macAddress), Times.Once);
 
         _agentHubContextFixture.SingleClientProxyMock.VerifyNoOtherCalls();
         _agentHubContextFixture.HubContextMock.VerifyNoOtherCalls();

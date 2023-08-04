@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Server.Hubs;
 using Remotely.Server.RateLimiting;
 using Remotely.Server.Services;
+using Remotely.Shared.Interfaces;
 using System;
 using System.IO;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace Remotely.Server.API;
 [ApiController]
 public class AgentUpdateController : ControllerBase
 {
-    private readonly IHubContext<AgentHub> _agentHubContext;
+    private readonly IHubContext<AgentHub, IAgentHubClient> _agentHubContext;
     private readonly ILogger<AgentUpdateController> _logger;
     private readonly IApplicationConfig _appConfig;
     private readonly IWebHostEnvironment _hostEnv;
@@ -27,7 +28,7 @@ public class AgentUpdateController : ControllerBase
     public AgentUpdateController(IWebHostEnvironment hostingEnv,
         IApplicationConfig appConfig,
         IAgentHubSessionCache serviceSessionCache,
-        IHubContext<AgentHub> agentHubContext,
+        IHubContext<AgentHub, IAgentHubClient> agentHubContext,
         ILogger<AgentUpdateController> logger)
     {
         _hostEnv = hostingEnv;
@@ -111,8 +112,7 @@ public class AgentUpdateController : ControllerBase
             
             var bannedDevices = _serviceSessionCache.GetAllDevices().Where(x => x.PublicIP == deviceIp);
             var connectionIds = _serviceSessionCache.GetConnectionIdsByDeviceIds(bannedDevices.Select(x => x.ID));
-
-            await _agentHubContext.Clients.Clients(connectionIds).SendAsync("UninstallAgent");
+            await _agentHubContext.Clients.Clients(connectionIds).UninstallAgent();
 
             return true;
         }

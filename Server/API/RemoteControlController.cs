@@ -14,6 +14,7 @@ using Immense.RemoteControl.Shared.Helpers;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Extensions;
 using Remotely.Shared.Entities;
+using Remotely.Shared.Interfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,7 +24,7 @@ namespace Remotely.Server.API;
 [ApiController]
 public class RemoteControlController : ControllerBase
 {
-    private readonly IHubContext<AgentHub> _serviceHub;
+    private readonly IHubContext<AgentHub, IAgentHubClient> _agentHub;
     private readonly IRemoteControlSessionCache _remoteControlSessionCache;
     private readonly IAgentHubSessionCache _serviceSessionCache;
     private readonly IApplicationConfig _appConfig;
@@ -37,7 +38,7 @@ public class RemoteControlController : ControllerBase
         SignInManager<RemotelyUser> signInManager,
         IDataService dataService,
         IRemoteControlSessionCache remoteControlSessionCache,
-        IHubContext<AgentHub> serviceHub,
+        IHubContext<AgentHub, IAgentHubClient> agentHub,
         IAgentHubSessionCache serviceSessionCache,
         IOtpProvider otpProvider,
         IHubEventHandler hubEvents,
@@ -45,7 +46,7 @@ public class RemoteControlController : ControllerBase
         ILogger<RemoteControlController> logger)
     {
         _dataService = dataService;
-        _serviceHub = serviceHub;
+        _agentHub = agentHub;
         _remoteControlSessionCache = remoteControlSessionCache;
         _serviceSessionCache = serviceSessionCache;
         _appConfig = appConfig;
@@ -179,7 +180,7 @@ public class RemoteControlController : ControllerBase
             return BadRequest("Failed to resolve organization name.");
         }
 
-        await _serviceHub.Clients.Client(serviceConnectionId).SendAsync("RemoteControl", 
+        await _agentHub.Clients.Client(serviceConnectionId).RemoteControl(
             sessionId,
             accessKey,
             HttpContext.Connection.Id,

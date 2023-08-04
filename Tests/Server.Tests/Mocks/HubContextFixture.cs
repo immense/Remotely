@@ -9,17 +9,19 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Tests.Mocks;
 
-public class HubContextFixture<T>
-    where T : Hub
+public class HubContextFixture<THub, THubClient>
+    where THub : Hub<THubClient>
+    where THubClient : class
 {
     public HubContextFixture()
     { 
-        HubContextMock = new Mock<IHubContext<T>>();
-        HubClientsMock = new Mock<IHubClients>();
+        
+        HubContextMock = new Mock<IHubContext<THub, THubClient>>();
+        HubClientsMock = new Mock<IHubClients<THubClient>>();
         GroupManagerMock = new Mock<IGroupManager>();
-        SingleClientProxyMock = new Mock<ISingleClientProxy>();
-        ClientProxyMock = new Mock<IClientProxy>();
-
+        SingleClientProxyMock = new Mock<THubClient>();
+        ClientProxyMock = new Mock<THubClient>();
+        
         HubContextMock
             .Setup(x => x.Clients)
             .Returns(HubClientsMock.Object);
@@ -37,9 +39,9 @@ public class HubContextFixture<T>
             .Returns(ClientProxyMock.Object);
     }
 
-    public Mock<IHubContext<T>> HubContextMock { get; }
-    public Mock<IHubClients> HubClientsMock { get; }
+    public Mock<IHubContext<THub, THubClient>> HubContextMock { get; }
+    public Mock<IHubClients<THubClient>> HubClientsMock { get; }
     public Mock<IGroupManager> GroupManagerMock { get; }
-    public Mock<ISingleClientProxy> SingleClientProxyMock { get; }
-    public Mock<IClientProxy> ClientProxyMock { get; }
+    public Mock<THubClient> SingleClientProxyMock { get; }
+    public Mock<THubClient> ClientProxyMock { get; }
 }
