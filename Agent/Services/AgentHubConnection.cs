@@ -42,6 +42,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
     private readonly ILogger<AgentHubConnection> _logger;
     private readonly IFileLogsManager _fileLogsManager;
     private readonly IHostApplicationLifetime _appLifetime;
+    private readonly IScriptingShellFactory _scriptingShellFactory;
     private readonly IScriptExecutor _scriptExecutor;
     private readonly IUninstaller _uninstaller;
     private readonly IUpdater _updater;
@@ -63,6 +64,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         IWakeOnLanService wakeOnLanService,
         IFileLogsManager fileLogsManager,
         IHostApplicationLifetime appLifetime,
+        IScriptingShellFactory scriptingShellFactory,
         ILogger<AgentHubConnection> logger)
     {
         _configService = configService;
@@ -77,6 +79,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         _logger = logger;
         _fileLogsManager = fileLogsManager;
         _appLifetime = appLifetime;
+        _scriptingShellFactory = scriptingShellFactory;
     }
 
     public bool IsConnected => _hubConnection?.State == HubConnectionState.Connected;
@@ -395,7 +398,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         {
             try
             {
-                var session = PsCoreShell.GetCurrent(senderConnectionId);
+                var session = _scriptingShellFactory.GetOrCreatePsCoreShell(senderConnectionId);
                 var completion = session.GetCompletions(inputText, currentIndex, forward);
                 var completionModel = completion.ToPwshCompletion();
                 await _hubConnection.InvokeAsync("ReturnPowerShellCompletions", completionModel, intent, senderConnectionId).ConfigureAwait(false);

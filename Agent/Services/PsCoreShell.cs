@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Remotely.Agent.Interfaces;
 using Remotely.Shared.Dtos;
 using Remotely.Shared.Models;
 using System;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services;
 
-public interface IPsCoreShell
+public interface IPsCoreShell : IDisposable, IScriptingShell
 {
     string? SenderConnectionId { get; set; }
 
@@ -21,11 +22,11 @@ public interface IPsCoreShell
 
 public class PsCoreShell : IPsCoreShell
 {
-    private static readonly ConcurrentDictionary<string, IPsCoreShell> _sessions = new();
     private readonly IConfigService _configService;
     private readonly ConnectionInfo _connectionInfo;
     private readonly ILogger<PsCoreShell> _logger;
     private readonly PowerShell _powershell;
+    private bool _disposedValue;
     private CommandCompletion? _lastCompletion;
     private string? _lastInputText;
 
@@ -49,22 +50,13 @@ public class PsCoreShell : IPsCoreShell
         _powershell.Invoke();
     }
 
+    public bool IsDisposed => _disposedValue;
     public string? SenderConnectionId { get; set; }
 
-    // TODO: Turn into cache and factory.
-    public static IPsCoreShell GetCurrent(string senderConnectionId)
+    public void Dispose()
     {
-        if (_sessions.TryGetValue(senderConnectionId, out var session))
-        {
-            return session;
-        }
-        else
-        {
-            session = Program.Services.GetRequiredService<IPsCoreShell>();
-            session.SenderConnectionId = senderConnectionId;
-            _sessions.AddOrUpdate(senderConnectionId, session, (id, b) => session);
-            return session;
-        }
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 
     public CommandCompletion GetCompletions(string inputText, int currentIndex, bool? forward)
@@ -148,6 +140,18 @@ public class PsCoreShell : IPsCoreShell
                 RunTime = sw.Elapsed,
                 HadErrors = true
             };
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                _powershell.Dispose();
+            }
+            _disposedValue = true;
         }
     }
 }

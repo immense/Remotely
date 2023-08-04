@@ -392,7 +392,7 @@ public class MainWindowViewModel : ViewModelBase
                 return;
             }
 
-            var embeddedData = await _embeddedDataReader.TryGetEmbeddedData(filePath);
+            var embeddedData = await _embeddedDataReader.TryGetEmbeddedData(filePath!);
 
             if (embeddedData is null || embeddedData == EmbeddedServerData.Empty)
             {

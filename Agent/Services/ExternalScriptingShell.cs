@@ -1,9 +1,7 @@
-﻿using Immense.RemoteControl.Shared.Extensions;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Remotely.Agent.Interfaces;
 using Remotely.Shared.Dtos;
 using Remotely.Shared.Enums;
-using Remotely.Shared.Models;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -14,7 +12,7 @@ using System.Timers;
 
 namespace Remotely.Agent.Services;
 
-public interface IExternalScriptingShell
+public interface IExternalScriptingShell : IDisposable, IScriptingShell
 {
     Process? ShellProcess { get; }
     Task Init(ScriptingShell shell, string shellProcessName, string lineEnding, string connectionId);
@@ -28,6 +26,7 @@ public class ExternalScriptingShell : IExternalScriptingShell
     private readonly ILogger<ExternalScriptingShell> _logger;
     private readonly ManualResetEvent _outputDone = new(false);
     private readonly SemaphoreSlim _writeLock = new(1, 1);
+    private bool _disposedValue;
     private string _errorOut = string.Empty;
     private string _lastInputID = string.Empty;
     private string _lineEnding = Environment.NewLine;
@@ -39,7 +38,6 @@ public class ExternalScriptingShell : IExternalScriptingShell
     private string? _senderConnectionId;
     private ScriptingShell _shell;
     private string _standardOut = string.Empty;
-
     public ExternalScriptingShell(
         IConfigService configService,
         ILogger<ExternalScriptingShell> logger)
@@ -48,38 +46,14 @@ public class ExternalScriptingShell : IExternalScriptingShell
         _logger = logger;
     }
 
+    public bool IsDisposed => _disposedValue;
+
     public Process? ShellProcess { get; private set; }
 
-
-    // TODO: Turn into cache and factory.
-    public static async Task<IExternalScriptingShell> GetCurrent(ScriptingShell shell, string senderConnectionId)
+    public void Dispose()
     {
-        if (_sessions.TryGetValue($"{shell}-{senderConnectionId}", out var session) &&
-            session.ShellProcess?.HasExited != true)
-        {
-            return session;
-        }
-        else
-        {
-            session = Program.Services.GetRequiredService<IExternalScriptingShell>();
-
-            switch (shell)
-            {
-                case ScriptingShell.WinPS:
-                    await session.Init(shell, "powershell.exe", "\r\n", senderConnectionId);
-                    break;
-                case ScriptingShell.Bash:
-                    await session.Init(shell, "bash", "\n", senderConnectionId);
-                    break;
-                case ScriptingShell.CMD:
-                    await session.Init(shell, "cmd.exe", "\r\n", senderConnectionId);
-                    break;
-                default:
-                    throw new ArgumentException($"Unknown external scripting shell type: {shell}");
-            }
-            _sessions.AddOrUpdate($"{shell}-{senderConnectionId}", session, (id, b) => session);
-            return session;
-        }
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
     }
 
     public async Task Init(ScriptingShell shell, string shellProcessName, string lineEnding, string connectionId)
@@ -185,6 +159,19 @@ public class ExternalScriptingShell : IExternalScriptingShell
         }
 
         return GeneratePartialResult(input, sw.Elapsed);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposedValue)
+        {
+            if (disposing)
+            {
+                ShellProcess?.Dispose();
+            }
+
+            _disposedValue = true;
+        }
     }
 
     private ScriptResultDto GenerateCompletedResult(string input, TimeSpan runtime)
