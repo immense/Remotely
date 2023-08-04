@@ -210,7 +210,8 @@ services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 services.AddSingleton<IOtpProvider, OtpProvider>();
 services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
 services.AddSingleton<ILogsManager, LogsManager>();
-services.AddSingleton<IThemeProvider, ThemeProvider>();
+services.AddScoped<IThemeProvider, ThemeProvider>();
+services.AddScoped<IChatSessionCache, ChatSessionCache>();
 services.AddSingleton(WeakReferenceMessenger.Default);
 
 services.AddRemoteControlServer(config =>

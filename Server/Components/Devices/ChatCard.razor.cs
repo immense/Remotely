@@ -25,6 +25,9 @@ public partial class ChatCard : AuthComponentBase, IDisposable
     private IClientAppState AppState { get; init; } = null!;
 
     [Inject]
+    private IChatSessionCache ChatSessionCache { get; init; } = null!;
+
+    [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
 
     [Inject]
@@ -35,7 +38,6 @@ public partial class ChatCard : AuthComponentBase, IDisposable
 
     public void Dispose()
     {
-        AppState.PropertyChanged -= AppState_PropertyChanged;
         Messenger.Unregister<ChatReceivedMessage, string>(this, CircuitConnection.ConnectionId);
         GC.SuppressFinalize(this);
     }
@@ -48,7 +50,6 @@ public partial class ChatCard : AuthComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        AppState.PropertyChanged += AppState_PropertyChanged;
         await Messenger.Register<ChatReceivedMessage, string>(
             this,
             CircuitConnection.ConnectionId,
@@ -62,9 +63,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
             return;
         }
 
-        var session = AppState.DevicesFrameChatSessions.Find(x => x.DeviceId == message.DeviceId);
-
-        if (session is null)
+        if (!ChatSessionCache.TryGetSession(message.DeviceId, out var session))
         {
             return;
         }
@@ -96,18 +95,11 @@ public partial class ChatCard : AuthComponentBase, IDisposable
         JsInterop.ScrollToEnd(_chatMessagesWindow);
     }
 
-    private async void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private async Task CloseChatCard()
     {
-        if (e.PropertyName == Session.SessionId)
-        {
-            await InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private void CloseChatCard()
-    {
-        AppState.DevicesFrameChatSessions.RemoveAll(x => x.DeviceId == Session.DeviceId);
-        AppState.InvokePropertyChanged(nameof(AppState.DevicesFrameChatSessions));
+        _ = ChatSessionCache.TryRemove($"{Session.DeviceId}", out _);
+        var message = new ChatSessionsChangedMessage();
+        await Messenger.Send(message, CircuitConnection.ConnectionId);
     }
     private async Task EvaluateInputKeypress(KeyboardEventArgs args)
     {

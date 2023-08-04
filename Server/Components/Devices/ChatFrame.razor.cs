@@ -14,11 +14,15 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
-public partial class ChatFrame : AuthComponentBase, IDisposable
+public partial class ChatFrame : AuthComponentBase, IAsyncDisposable
 {
+    private ICollection<ChatSession> _chatSessions = Array.Empty<ChatSession>();
 
     [Inject]
     private IClientAppState AppState { get; init; } = null!;
+
+    [Inject]
+    private IChatSessionCache ChatCache { get; init; } = null!;
 
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
@@ -26,27 +30,31 @@ public partial class ChatFrame : AuthComponentBase, IDisposable
     [Inject]
     private IMessenger Messenger { get; init; } = null!;
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        AppState.PropertyChanged -= AppState_PropertyChanged;
-        Messenger.Unregister<ChatReceivedMessage, string>(this, CircuitConnection.ConnectionId);
+        await Messenger.Unregister<ChatSessionsChangedMessage, string>(this, CircuitConnection.ConnectionId);
+        await Messenger.Unregister<ChatReceivedMessage, string>(this, CircuitConnection.ConnectionId);
         GC.SuppressFinalize(this);
     }
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-        AppState.PropertyChanged += AppState_PropertyChanged;
+        _chatSessions = ChatCache.GetAllSessions();
+        await Messenger.Register<ChatSessionsChangedMessage, string>(
+            this,
+            CircuitConnection.ConnectionId,
+            HandleChatSessionsChanged);
         await Messenger.Register<ChatReceivedMessage, string>(
             this,
             CircuitConnection.ConnectionId,
             HandleChatMessageReceived);
+        await base.OnInitializedAsync();
     }
 
     private async Task HandleChatMessageReceived(ChatReceivedMessage message)
     {
-        if (AppState.DevicesFrameChatSessions.Exists(x => x.DeviceId == message.DeviceId) ||
-            message.DidDisconnect)
+        if (message.DidDisconnect ||
+            ChatCache.ContainsKey(message.DeviceId))
         {
             return;
         }
@@ -64,16 +72,14 @@ public partial class ChatFrame : AuthComponentBase, IDisposable
             Origin = ChatHistoryItemOrigin.Device
         });
 
-        AppState.DevicesFrameChatSessions.Add(newChat);
+        ChatCache.AddOrUpdate(message.DeviceId, newChat, (k, v) => newChat);
 
         await InvokeAsync(StateHasChanged);
     }
 
-    private void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private async Task HandleChatSessionsChanged(ChatSessionsChangedMessage message)
     {
-        if (e.PropertyName == nameof(AppState.DevicesFrameChatSessions))
-        {
-            InvokeAsync(StateHasChanged);
-        }
+        _chatSessions = ChatCache.GetAllSessions();
+        await InvokeAsync(StateHasChanged);
     }
 }

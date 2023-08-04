@@ -11,7 +11,6 @@ namespace Remotely.Server.Services;
 
 public interface IClientAppState : INotifyPropertyChanged, IInvokePropertyChanged
 {
-    ConcurrentList<ChatSession> DevicesFrameChatSessions { get; }
     DeviceCardState DevicesFrameFocusedCardState { get; set; }
     string? DevicesFrameFocusedDevice { get; set; }
     ConcurrentList<string> DevicesFrameSelectedDevices { get; }
@@ -28,8 +27,6 @@ public class ClientAppState : ViewModelBase, IClientAppState
 {
     private readonly ConcurrentQueue<string> _terminalHistory = new();
     private int _terminalHistoryIndex = 0;
-
-    public ConcurrentList<ChatSession> DevicesFrameChatSessions { get; } = new();
 
     public DeviceCardState DevicesFrameFocusedCardState
     {

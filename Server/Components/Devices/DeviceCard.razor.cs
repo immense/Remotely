@@ -45,6 +45,9 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     [Inject]
     private IDataService DataService { get; init; } = null!;
 
+    [Inject]
+    private IChatSessionCache ChatCache { get; init; } = null!;
+
     private bool IsExpanded => GetCardState() == DeviceCardState.Expanded;
 
     private bool IsOutdated =>
@@ -282,21 +285,18 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
     private void StartChat()
     {
-        var existingSession = AppState.DevicesFrameChatSessions.FirstOrDefault(x => x.DeviceId == Device.ID);
-        if (existingSession is null)
+        var session = ChatCache.GetOrAdd(Device.ID, key =>
         {
-            AppState.DevicesFrameChatSessions.Add(new ChatSession()
+            return new ChatSession()
             {
-                DeviceId = Device.ID,
+                DeviceId = key,
                 DeviceName = Device.DeviceName,
                 IsExpanded = true
-            });
-        }
-        else
-        {
-            existingSession.IsExpanded = true;
-        }
-        AppState.InvokePropertyChanged(nameof(AppState.DevicesFrameChatSessions));
+            };
+        });
+
+        session.IsExpanded = true;
+        Messenger.Send(new ChatSessionsChangedMessage(), CircuitConnection.ConnectionId);
     }
 
     private async Task StartRemoteControl(bool viewOnly)
