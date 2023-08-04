@@ -37,6 +37,9 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     private IClientAppState AppState { get; init; } = null!;
 
     [Inject]
+    private IThemeProvider ThemeProvider { get; init; } = null!;
+
+    [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
 
     [Inject]
@@ -79,7 +82,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     {
         await base.OnInitializedAsync();
         EnsureUserSet();
-        _theme = await AppState.GetEffectiveTheme();
+        _theme = await ThemeProvider.GetEffectiveTheme();
         _currentVersion = UpgradeService.GetCurrentVersion();
         _deviceGroups = DataService.GetDeviceGroups(UserName);
         AppState.PropertyChanged += AppState_PropertyChanged;

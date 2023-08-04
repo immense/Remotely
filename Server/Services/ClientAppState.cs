@@ -21,24 +21,13 @@ public interface IClientAppState : INotifyPropertyChanged, IInvokePropertyChange
 
     void AddTerminalLine(string content, string className = "", string title = "");
 
-    Task<Theme> GetEffectiveTheme();
     string GetTerminalHistory(bool forward);
 }
 
 public class ClientAppState : ViewModelBase, IClientAppState
 {
-    private readonly IApplicationConfig _appConfig;
-    private readonly IAuthService _authService;
     private readonly ConcurrentQueue<string> _terminalHistory = new();
     private int _terminalHistoryIndex = 0;
-
-    public ClientAppState(
-        IAuthService authService,
-        IApplicationConfig appConfig)
-    {
-        _authService = authService;
-        _appConfig = appConfig;
-    }
 
     public ConcurrentList<ChatSession> DevicesFrameChatSessions { get; } = new();
 
@@ -82,20 +71,6 @@ public class ClientAppState : ViewModelBase, IClientAppState
             ClassName = className,
             Title = title
         });
-    }
-
-    public async Task<Theme> GetEffectiveTheme()
-    {
-        if (await _authService.IsAuthenticated())
-        {
-            var userResult = await _authService.GetUser();
-            if (userResult.IsSuccess)
-            {
-                return userResult.Value.UserOptions?.Theme ?? _appConfig.Theme;
-            }
-        }
-
-        return _appConfig.Theme;
     }
 
     public string GetTerminalHistory(bool forward)
