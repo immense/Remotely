@@ -1,6 +1,6 @@
-﻿using Nihs.ConcurrentList;
-using Remotely.Server.Enums;
+﻿using Remotely.Server.Enums;
 using Remotely.Server.Models;
+using Remotely.Shared.Primitives;
 using System;
 using System.Timers;
 

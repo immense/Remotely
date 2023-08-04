@@ -1,15 +1,12 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
-using Immense.RemoteControl.Server.Services;
+﻿using Immense.RemoteControl.Server.Services;
 using Immense.RemoteControl.Shared;
 using Immense.RemoteControl.Shared.Helpers;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Authorization;
+using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using Remotely.Server.Auth;
 using Remotely.Server.Models;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
 using Remotely.Shared;
 using Remotely.Shared.Entities;
@@ -20,7 +17,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,7 +24,8 @@ namespace Remotely.Server.Hubs;
 
 public interface ICircuitConnection
 {
-    event EventHandler<CircuitEvent>? MessageReceived;
+    string ConnectionId { get; }
+
     RemotelyUser User { get; }
 
     Task DeleteRemoteLogs(string deviceId);
@@ -39,7 +36,6 @@ public interface ICircuitConnection
 
     Task GetRemoteLogs(string deviceId);
 
-    Task InvokeCircuitEvent(CircuitEventName eventName, params object[] args);
     Task ReinstallAgents(string[] deviceIDs);
 
     Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceID, bool viewOnly);
@@ -80,12 +76,11 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
     private readonly ICircuitManager _circuitManager;
     private readonly IDataService _dataService;
     private readonly IRemoteControlSessionCache _remoteControlSessionCache;
-    private readonly ConcurrentQueue<CircuitEvent> _eventQueue = new();
     private readonly IExpiringTokenService _expiringTokenService;
     private readonly ILogger<CircuitConnection> _logger;
     private readonly IAgentHubSessionCache _agentSessionCache;
+    private readonly IMessenger _messenger;
     private readonly IToastService _toastService;
-    private readonly ManualResetEventSlim _initSignal = new();
     private RemotelyUser? _user;
 
     public CircuitConnection(
@@ -99,6 +94,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         IExpiringTokenService expiringTokenService,
         IRemoteControlSessionCache remoteControlSessionCache,
         IAgentHubSessionCache agentSessionCache,
+        IMessenger messenger,
         ILogger<CircuitConnection> logger)
     {
         _dataService = dataService;
@@ -111,33 +107,17 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         _expiringTokenService = expiringTokenService;
         _remoteControlSessionCache = remoteControlSessionCache;
         _agentSessionCache = agentSessionCache;
+        _messenger = messenger;
         _logger = logger;
     }
 
-
-    public event EventHandler<CircuitEvent>? MessageReceived;
 
     public string ConnectionId { get; } = Guid.NewGuid().ToString();
 
     public RemotelyUser User
     {
-        get
-        {
-            if (_initSignal.Wait(TimeSpan.FromSeconds(5)) && _user is not null)
-            {
-                return _user;
-            }
-            _logger.LogError("Failed to resolve user.");
-            throw new InvalidOperationException("Failed to resolve user.");
-        }
-        internal set
-        {
-            _user = value;
-            if (_user is not null)
-            {
-                _initSignal.Set();
-            }
-        }
+        get => _user ?? throw new InvalidOperationException("User is not set.");
+        internal set => _user = value;
     }
 
 
@@ -212,12 +192,6 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         return _agentHubContext.Clients.Client(key).GetLogs(ConnectionId);
     }
 
-    public Task InvokeCircuitEvent(CircuitEventName eventName, params object[] args)
-    {
-        _eventQueue.Enqueue(new CircuitEvent(eventName, args));
-        return Task.Run(ProcessMessages);
-    }
-
     public override async Task OnCircuitClosedAsync(Circuit circuit, CancellationToken cancellationToken)
     {
         if (!string.IsNullOrWhiteSpace(ConnectionId))
@@ -237,9 +211,8 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                 _toastService.ShowToast2("Authorization failure.", Enums.ToastType.Error);
                 return;
             }
-            _user = userResult.Value;
+            User = userResult.Value;
             _circuitManager.TryAddConnection(ConnectionId, this);
-            _initSignal.Set();
         }
         await base.OnCircuitOpenedAsync(circuit, cancellationToken);
     }
@@ -256,10 +229,13 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
     {
         if (!_agentSessionCache.TryGetByDeviceId(deviceId, out var targetDevice))
         {
-            MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
+            var message = new DisplayNotificationMessage(
                  "The selected device is not online.",
                  "Device is not online.",
-                 "bg-warning"));
+                 "bg-warning");
+
+            await _messenger.Send(message, ConnectionId);
+
             return Result.Fail<RemoteControlSessionEx>("Device is not online.");
         }
 
@@ -281,19 +257,24 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
         if (sessionCount >= _appConfig.RemoteControlSessionLimit)
         {
-            MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
+            var message = new DisplayNotificationMessage(
                 "There are already the maximum amount of active remote control sessions for your organization.",
                 "Max number of concurrent sessions reached.",
-                "bg-warning"));
+                "bg-warning");
+
+            await _messenger.Send(message, ConnectionId);
+
             return Result.Fail<RemoteControlSessionEx>("Max number of concurrent sessions reached.");
         }
 
         if (!_agentSessionCache.TryGetConnectionId(targetDevice.ID, out var serviceConnectionId))
         {
-            MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
-               "Service connection not found.",
-               "Service connection not found.",
-               "bg-warning"));
+            var message = new DisplayNotificationMessage(
+                "Service connection not found.",
+                "Service connection not found.",
+                "bg-warning");
+            
+            await _messenger.Send(message, ConnectionId);
             return Result.Fail<RemoteControlSessionEx>("Service connection not found.");
         }
 
@@ -463,24 +444,30 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         _dataService.RemoveDevices(deviceIDs);
     }
 
-    public Task UpdateTags(string deviceID, string tags)
+    public async Task UpdateTags(string deviceID, string tags)
     {
         if (_dataService.DoesUserHaveAccessToDevice(deviceID, User))
         {
             if (tags.Length > 200)
             {
-                MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
+                var message = new CircuitEvent(CircuitEventName.DisplayMessage,
                     $"Tag must be 200 characters or less. Supplied length is {tags.Length}.",
                     "Tag must be under 200 characters.",
-                    "bg-warning"));
+                    "bg-warning");
+
+                await _messenger.Send(message, ConnectionId);
+                return;
             }
-            _dataService.UpdateTags(deviceID, tags);
-            MessageReceived?.Invoke(this, new CircuitEvent(CircuitEventName.DisplayMessage,
+
+            await _dataService.UpdateTags(deviceID, tags);
+
+            var successMessage = new DisplayNotificationMessage(
                 "Device updated successfully.",
                 "Device updated.",
-                "bg-success"));
+                "bg-success");
+
+            await _messenger.Send(successMessage, ConnectionId);
         }
-        return Task.CompletedTask;
     }
 
     public async Task<Result> WakeDevice(Device device)
@@ -606,23 +593,6 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         }
     }
 
-    private void ProcessMessages()
-    {
-        lock (_eventQueue)
-        {
-            while (_eventQueue.TryDequeue(out var circuitEvent))
-            {
-                try
-                {
-                    MessageReceived?.Invoke(this, circuitEvent);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error while invoking circuit event.");
-                }
-            }
-        }
-    }
 
     private async Task SendWakeCommand(Device deviceToWake, IEnumerable<Device> peerDevices)
     {

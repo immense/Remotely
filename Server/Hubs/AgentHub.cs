@@ -1,8 +1,10 @@
 ﻿using Immense.RemoteControl.Server.Hubs;
+using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Models;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
 using Remotely.Shared;
 using Remotely.Shared.Dtos;
@@ -24,6 +26,7 @@ public class AgentHub : Hub<IAgentHubClient>
     private readonly ICircuitManager _circuitManager;
     private readonly IDataService _dataService;
     private readonly IExpiringTokenService _expiringTokenService;
+    private readonly IMessenger _messenger;
     private readonly ILogger<AgentHub> _logger;
     private readonly IAgentHubSessionCache _serviceSessionCache;
     private readonly IHubContext<ViewerHub> _viewerHubContext;
@@ -34,6 +37,7 @@ public class AgentHub : Hub<IAgentHubClient>
         IHubContext<ViewerHub> viewerHubContext,
         ICircuitManager circuitManager,
         IExpiringTokenService expiringTokenService,
+        IMessenger messenger,
         ILogger<AgentHub> logger)
     {
         _dataService = dataService;
@@ -42,6 +46,7 @@ public class AgentHub : Hub<IAgentHubClient>
         _appConfig = appConfig;
         _circuitManager = circuitManager;
         _expiringTokenService = expiringTokenService;
+        _messenger = messenger;
         _logger = logger;
     }
 
@@ -65,20 +70,21 @@ public class AgentHub : Hub<IAgentHubClient>
         }
     }
 
-    public Task Chat(string message, bool disconnected, string browserConnectionId)
+    public async Task Chat(string messageText, bool disconnected, string browserConnectionId)
     {
         if (Device is null)
         {
-            return Task.CompletedTask;
+            return;
         }
 
-        if (_circuitManager.TryGetConnection(browserConnectionId, out var connection))
+        if (_circuitManager.TryGetConnection(browserConnectionId, out _))
         {
-            return connection.InvokeCircuitEvent(CircuitEventName.ChatReceived, Device.ID, $"{Device.DeviceName}", message, disconnected);
+            var message = new ChatReceivedMessage(Device.ID, $"{Device.DeviceName}", messageText, disconnected);
+            await _messenger.Send(message, browserConnectionId);
         }
         else
         {
-            return Clients.Caller.SendChatMessage(
+            await Clients.Caller.SendChatMessage(
                 senderName: string.Empty,
                 message: string.Empty,
                 orgName: string.Empty,
@@ -152,7 +158,8 @@ public class AgentHub : Hub<IAgentHubClient>
 
                 foreach (var connection in connections)
                 {
-                    await connection.InvokeCircuitEvent(CircuitEventName.DeviceUpdate, Device);
+                    var message = new DeviceStateChangedMessage(Device);
+                    await _messenger.Send(message, connection.ConnectionId);
                 }
                 return true;
             }
@@ -212,7 +219,8 @@ public class AgentHub : Hub<IAgentHubClient>
 
         foreach (var connection in connections)
         {
-            _ = connection.InvokeCircuitEvent(CircuitEventName.DeviceUpdate, Device);
+            var message = new DeviceStateChangedMessage(Device);
+            await _messenger.Send(message, connection.ConnectionId);
         }
 
 
@@ -220,19 +228,22 @@ public class AgentHub : Hub<IAgentHubClient>
     }
 
 
-    public Task<bool> DisplayMessage(string consoleMessage, string popupMessage, string className, string requesterID)
+    public Task DisplayMessage(string consoleMessage, string popupMessage, string className, string requesterId)
     {
-        return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.DisplayMessage, consoleMessage, popupMessage, className);
+        var message = new DisplayNotificationMessage(consoleMessage, popupMessage, className);
+        return _messenger.Send(message, requesterId);
     }
 
-    public Task<bool> DownloadFile(string fileID, string requesterID)
+    public Task DownloadFile(string fileID, string requesterId)
     {
-        return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.DownloadFile, fileID);
+        var message = new DownloadFileMessage(fileID);
+        return _messenger.Send(message, requesterId);
     }
 
-    public Task<bool> DownloadFileProgress(int progressPercent, string requesterID)
+    public Task DownloadFileProgress(int progressPercent, string requesterId)
     {
-        return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.DownloadFileProgress, progressPercent);
+        var message = new DownloadFileProgressMessage(progressPercent);
+        return _messenger.Send(message, requesterId);
     }
 
     public string GetServerUrl()
@@ -245,7 +256,7 @@ public class AgentHub : Hub<IAgentHubClient>
         return $"{Device?.ServerVerificationToken}";
     }
 
-    public override Task OnDisconnectedAsync(Exception? exception)
+    public override async Task OnDisconnectedAsync(Exception? exception)
     {
         try
         {
@@ -265,10 +276,11 @@ public class AgentHub : Hub<IAgentHubClient>
 
                 foreach (var connection in connections)
                 {
-                    connection.InvokeCircuitEvent(CircuitEventName.DeviceWentOffline, Device);
+                    var message = new DeviceStateChangedMessage(Device);
+                    await _messenger.Send(message, connection.ConnectionId);
                 }
             }
-            return base.OnDisconnectedAsync(exception);
+            await base.OnDisconnectedAsync(exception);
         }
         finally
         {
@@ -278,7 +290,8 @@ public class AgentHub : Hub<IAgentHubClient>
 
     public Task ReturnPowerShellCompletions(PwshCommandCompletion completion, CompletionIntent intent, string senderConnectionId)
     {
-        return _circuitManager.InvokeOnConnection(senderConnectionId, CircuitEventName.PowerShellCompletions, completion, intent);
+        var message = new PowerShellCompletionsMessage(completion, intent);
+        return _messenger.Send(message, senderConnectionId);
     }
 
     public async Task ScriptResult(string scriptResultId)
@@ -289,9 +302,8 @@ public class AgentHub : Hub<IAgentHubClient>
             return;
         }
 
-        _ = await _circuitManager.InvokeOnConnection($"{result.Value.SenderConnectionID}",
-            CircuitEventName.ScriptResult,
-            result.Value);
+        var message = new ScriptResultMessage(result.Value);
+        await _messenger.Send(message, $"{result.Value.SenderConnectionID}");
     }
 
     public void ScriptResultViaApi(string commandID, string requestID)
@@ -305,7 +317,8 @@ public class AgentHub : Hub<IAgentHubClient>
 
     public Task SendLogs(string logChunk, string requesterConnectionId)
     {
-        return _circuitManager.InvokeOnConnection(requesterConnectionId, CircuitEventName.RemoteLogsReceived, logChunk);
+        var message = new ReceiveLogsMessage(logChunk);
+        return _messenger.Send(message, requesterConnectionId);
     }
     public void SetServerVerificationToken(string verificationToken)
     {
@@ -316,9 +329,10 @@ public class AgentHub : Hub<IAgentHubClient>
         Device.ServerVerificationToken = verificationToken;
         _dataService.SetServerVerificationToken(Device.ID, verificationToken);
     }
-    public Task TransferCompleted(string transferID, string requesterID)
+    public Task TransferCompleted(string transferId, string requesterId)
     {
-        return _circuitManager.InvokeOnConnection(requesterID, CircuitEventName.TransferCompleted, transferID);
+        var message = new TransferCompleteMessage(transferId);
+        return _messenger.Send(message, requesterId);
     }
     private async Task<bool> CheckForDeviceBan(params string[] deviceIdNameOrIPs)
     {

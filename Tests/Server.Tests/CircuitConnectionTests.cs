@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using Castle.Core.Logging;
 using Immense.RemoteControl.Server.Services;
+using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -37,6 +38,7 @@ public class CircuitConnectionTests
     private Mock<IToastService> _toastService;
     private Mock<IExpiringTokenService> _expiringTokenService;
     private Mock<IRemoteControlSessionCache> _remoteControlSessionCache;
+    private Mock<IMessenger> _messenger;
     private Mock<IAgentHubSessionCache> _agentSessionCache;
     private Mock<ILogger<CircuitConnection>> _logger;
     private CircuitConnection _circuitConnection;
@@ -57,6 +59,7 @@ public class CircuitConnectionTests
         _toastService = new Mock<IToastService>();
         _expiringTokenService = new Mock<IExpiringTokenService>();
         _remoteControlSessionCache = new Mock<IRemoteControlSessionCache>();
+        _messenger = new Mock<IMessenger>();
         _agentSessionCache = new Mock<IAgentHubSessionCache>();
         _logger = new Mock<ILogger<CircuitConnection>>();
 
@@ -71,6 +74,7 @@ public class CircuitConnectionTests
             _expiringTokenService.Object,
             _remoteControlSessionCache.Object,
             _agentSessionCache.Object,
+            _messenger.Object,
             _logger.Object);
     }
 

@@ -1,10 +1,12 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
+using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Components.ModalContents;
 using Remotely.Server.Hubs;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
@@ -37,6 +39,9 @@ public partial class Terminal : AuthComponentBase, IDisposable
 
     [Inject]
     private IDataService DataService { get; init; } = null!;
+
+    [Inject]
+    private IMessenger Messenger { get; init; } = null!;
 
     private string InputText
     {
@@ -90,7 +95,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
     public void Dispose()
     {
         AppState.PropertyChanged -= AppState_PropertyChanged;
-        CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
+        Messenger.Unregister<PowerShellCompletionsMessage, string>(this, CircuitConnection.ConnectionId);
         GC.SuppressFinalize(this);
     }
 
@@ -106,9 +111,32 @@ public partial class Terminal : AuthComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
+        await Messenger.Register<PowerShellCompletionsMessage, string>(
+            this,
+            CircuitConnection.ConnectionId, 
+            HandlePowerShellCompletionsMessage);
         AppState.PropertyChanged += AppState_PropertyChanged;
     }
+
+    private async Task HandlePowerShellCompletionsMessage(PowerShellCompletionsMessage message)
+    {
+        var completion = message.Completion;
+        var intent = message.Intent;
+
+        switch (intent)
+        {
+            case CompletionIntent.ShowAll:
+                await DisplayCompletions(completion.CompletionMatches);
+                break;
+            case CompletionIntent.NextResult:
+                ApplyCompletion(completion);
+                break;
+            default:
+                break;
+        }
+        AppState.InvokePropertyChanged(nameof(AppState.TerminalLines));
+    }
+
     private void ApplyCompletion(PwshCommandCompletion completion)
     {
         try
@@ -142,27 +170,6 @@ public partial class Terminal : AuthComponentBase, IDisposable
         }
     }
 
-    private async void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
-    {
-        if (e.EventName == Models.CircuitEventName.PowerShellCompletions)
-        {
-            var completion = (PwshCommandCompletion)e.Params[0];
-            var intent = (CompletionIntent)e.Params[1];
-
-            switch (intent)
-            {
-                case CompletionIntent.ShowAll:
-                    await DisplayCompletions(completion.CompletionMatches);
-                    break;
-                case CompletionIntent.NextResult:
-                    ApplyCompletion(completion);
-                    break;
-                default:
-                    break;
-            }
-            AppState.InvokePropertyChanged(nameof(AppState.TerminalLines));
-        }
-    }
     private async Task DisplayCompletions(List<PwshCompletionResult> completionMatches)
     {
         var deviceId = AppState.DevicesFrameSelectedDevices.FirstOrDefault();

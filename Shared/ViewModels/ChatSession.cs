@@ -1,4 +1,4 @@
-﻿using Nihs.ConcurrentList;
+﻿using Remotely.Shared.Primitives;
 using System;
 
 namespace Remotely.Shared.ViewModels;

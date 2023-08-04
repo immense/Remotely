@@ -1,7 +1,6 @@
-﻿using Nihs.ConcurrentList;
-using Remotely.Server.Enums;
+﻿using Remotely.Server.Enums;
 using Remotely.Shared.Enums;
-using Remotely.Shared.Models;
+using Remotely.Shared.Primitives;
 using Remotely.Shared.ViewModels;
 using System.Collections.Concurrent;
 using System.ComponentModel;

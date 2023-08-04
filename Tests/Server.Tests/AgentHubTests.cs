@@ -13,8 +13,10 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Remotely.Shared.Interfaces;
+using Immense.SimpleMessenger;
+using Remotely.Tests;
 
-namespace Remotely.Tests;
+namespace Remotely.Server.Tests;
 
 [TestClass]
 public class AgentHubTests
@@ -34,17 +36,19 @@ public class AgentHubTests
         var viewerHub = new Mock<IHubContext<ViewerHub>>();
         var expiringTokenService = new Mock<IExpiringTokenService>();
         var serviceSessionCache = new Mock<IAgentHubSessionCache>();
+        var messenger = new Mock<IMessenger>();
         var logger = new Mock<ILogger<AgentHub>>();
 
         appConfig.Setup(x => x.BannedDevices).Returns(new string[] { $"{_testData.Org1Device1.DeviceName}" });
 
         var hub = new AgentHub(
-            _dataService, 
-            appConfig.Object, 
-            serviceSessionCache.Object, 
-            viewerHub.Object, 
-            circuitManager.Object, 
+            _dataService,
+            appConfig.Object,
+            serviceSessionCache.Object,
+            viewerHub.Object,
+            circuitManager.Object,
             expiringTokenService.Object,
+            messenger.Object,
             logger.Object);
 
         var hubClients = new Mock<IHubCallerClients<IAgentHubClient>>();
@@ -71,6 +75,7 @@ public class AgentHubTests
         var viewerHub = new Mock<IHubContext<ViewerHub>>();
         var expiringTokenService = new Mock<IExpiringTokenService>();
         var serviceSessionCache = new Mock<IAgentHubSessionCache>();
+        var messenger = new Mock<IMessenger>();
         var logger = new Mock<ILogger<AgentHub>>();
 
         appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.ID });
@@ -82,6 +87,7 @@ public class AgentHubTests
             viewerHub.Object,
             circuitManager.Object,
             expiringTokenService.Object,
+            messenger.Object,
             logger.Object);
 
         var hubClients = new Mock<IHubCallerClients<IAgentHubClient>>();
@@ -123,7 +129,7 @@ public class AgentHubTests
 
         public override void Abort()
         {
-            
+
         }
     }
 }

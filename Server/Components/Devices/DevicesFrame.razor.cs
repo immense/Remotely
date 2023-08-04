@@ -1,22 +1,22 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Immense.SimpleMessenger;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
-using Remotely.Server.Models;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
 using Remotely.Shared.Attributes;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
@@ -29,7 +29,7 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
     private readonly string _deviceGroupNone = Guid.NewGuid().ToString();
     private readonly List<DeviceGroup> _deviceGroups = new();
     private readonly List<Device> _devicesForPage = new();
-    private readonly object _devicesLock = new();
+    private readonly SemaphoreSlim _devicesLock = new(1,1);
     private readonly List<Device> _filteredDevices = new();
     private readonly List<PropertyInfo> _sortableProperties = new();
     private int _currentPage = 1;
@@ -50,24 +50,34 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
     private IDataService DataService { get; init; } = null!;
 
     [Inject]
-    private IJsInterop JsInterop { get; init; } = null!;
+    private IToastService ToastService { get; init; } = null!;
 
     [Inject]
-    private IToastService ToastService { get; init; } = null!;
+    private IMessenger Messenger { get; init; } = null!;
 
     private int TotalPages => (int)Math.Max(1, Math.Ceiling((decimal)_filteredDevices.Count / _devicesPerPage));
 
     public void Dispose()
     {
-        CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
+        Messenger.Unregister<DisplayNotificationMessage, string>(this, CircuitConnection.ConnectionId);
+        Messenger.Unregister<ScriptResultMessage, string>(this, CircuitConnection.ConnectionId);
+        Messenger.Unregister<DeviceStateChangedMessage, string>(this, CircuitConnection.ConnectionId);
+
         AppState.PropertyChanged -= AppState_PropertyChanged;
         GC.SuppressFinalize(this);
     }
 
-    public void Refresh()
+    private async Task HandleDisplayNotificationMessage(DisplayNotificationMessage message)
     {
-        LoadDevices();
-        InvokeAsync(StateHasChanged);
+        AppState.AddTerminalLine(message.ConsoleText);
+        ToastService.ShowToast(message.ToastText, classString: message.ClassName);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task Refresh()
+    {
+        await LoadDevices();
+        await InvokeAsync(StateHasChanged);
     }
 
     protected override async Task OnInitializedAsync()
@@ -76,7 +86,21 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
         EnsureUserSet();
 
-        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
+        await Messenger.Register<DisplayNotificationMessage, string>(
+            this,
+            CircuitConnection.ConnectionId,
+            HandleDisplayNotificationMessage);
+
+        await Messenger.Register<DeviceStateChangedMessage, string>(
+            this,
+            CircuitConnection.ConnectionId,
+            HandleDeviceStateChangedMessage);
+
+        await Messenger.Register<ScriptResultMessage, string>(
+           this,
+           CircuitConnection.ConnectionId,
+           HandleScriptResultMessage);
+
         AppState.PropertyChanged += AppState_PropertyChanged;
 
         _deviceGroups.Clear();
@@ -91,17 +115,43 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
         _sortableProperties.AddRange(sortableProperties);
 
-        LoadDevices();
+        await LoadDevices();
     }
 
-    protected override bool ShouldRender()
+    private async Task HandleScriptResultMessage(ScriptResultMessage message)
     {
-        var shouldRender = base.ShouldRender();
-        if (shouldRender)
+        await AddScriptResult(message.ScriptResult);
+    }
+
+    private async Task HandleDeviceStateChangedMessage(DeviceStateChangedMessage message)
+    {
+        await _devicesLock.WaitAsync();
+
+        try
         {
-            FilterDevices();
+            var device = message.Device;
+
+            foreach (var collection in new[] { _allDevices, _devicesForPage })
+            {
+                var index = collection.FindIndex(x => x.ID == device.ID);
+                if (index > -1)
+                {
+                    collection[index] = device;
+                }
+            }
+
+            Debouncer.Debounce(TimeSpan.FromSeconds(2), Refresh);
         }
-        return shouldRender;
+        finally
+        {
+            _devicesLock.Release();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        await FilterDevices();
     }
 
     private async Task AddScriptResult(ScriptResult result)
@@ -138,65 +188,16 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
         }
     }
 
-    private async void CircuitConnection_MessageReceived(object? sender, CircuitEvent args)
-    {
-        switch (args.EventName)
-        {
-            case CircuitEventName.DeviceUpdate:
-            case CircuitEventName.DeviceWentOffline:
-                {
-                    if (args.Params?.FirstOrDefault() is Device device)
-                    {
-                        lock (_devicesLock)
-                        {
-                            var index = _allDevices.FindIndex(x => x.ID == device.ID);
-                            if (index > -1)
-                            {
-                                _allDevices[index] = device;
-                            }
-
-                            index = _devicesForPage.FindIndex(x => x.ID == device.ID);
-                            if (index > -1)
-                            {
-                                _devicesForPage[index] = device;
-                            }
-                        }
-                        Debouncer.Debounce(TimeSpan.FromSeconds(2), Refresh);
-                    }
-                    break;
-                }
-            case CircuitEventName.DisplayMessage:
-                {
-                    var terminalMessage = (string)args.Params[0];
-                    var toastMessage = (string)args.Params[1];
-                    var className = (string)args.Params[2];
-                    AppState.AddTerminalLine(terminalMessage);
-                    ToastService.ShowToast(toastMessage, classString: className);
-                    await InvokeAsync(StateHasChanged);
-                }
-                break;
-            case CircuitEventName.ScriptResult:
-                {
-                    if (args.Params[0] is ScriptResult result)
-                    {
-                        await AddScriptResult(result);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
     private void ClearSelectedCard()
     {
         AppState.DevicesFrameFocusedDevice = string.Empty;
         AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
     }
 
-    private void FilterDevices()
+    private async Task FilterDevices()
     {
-        lock (_devicesLock)
+        await _devicesLock.WaitAsync();
+        try
         {
             _filteredDevices.Clear();
             var appendDevices = new List<Device>();
@@ -262,8 +263,12 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
             _devicesForPage.Clear();
             _devicesForPage.AddRange(appendDevices.Concat(devicesForPage));
-        }
 
+        }
+        finally
+        {
+            _devicesLock.Release();
+        }
     }
 
 
@@ -277,17 +282,18 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
         return $"oi-sort-{_sortDirection.ToString().ToLower()}";
     }
 
-    private void HandleRefreshClicked()
+    private async Task HandleRefreshClicked()
     {
-        Refresh();
+        await Refresh();
         ToastService.ShowToast("Devices refreshed.");
     }
 
-    private void LoadDevices()
+    private async Task LoadDevices()
     {
         EnsureUserSet();
 
-        lock (_devicesLock)
+        await _devicesLock.WaitAsync();
+        try
         {
             _allDevices.Clear();
 
@@ -297,8 +303,12 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
             _allDevices.AddRange(devices);
         }
+        finally
+        {
+            _devicesLock.Release();
+        }
 
-        FilterDevices();
+        await FilterDevices();
     }
     private void PageDown()
     {

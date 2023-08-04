@@ -1,13 +1,10 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
+﻿using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
-using Remotely.Server.Auth;
 using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
-using Remotely.Server.Models;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
@@ -15,7 +12,6 @@ using Remotely.Shared.Utilities;
 using Remotely.Shared.ViewModels;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -69,10 +65,13 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     [Inject]
     private IUpgradeService UpgradeService { get; init; } = null!;
 
+    [Inject]
+    private IMessenger Messenger { get; init; } = null!;
+
     public void Dispose()
     {
         AppState.PropertyChanged -= AppState_PropertyChanged;
-        CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
+        Messenger.Unregister<DeviceStateChangedMessage, string>(this, CircuitConnection.ConnectionId);
         GC.SuppressFinalize(this);
     }
 
@@ -84,7 +83,48 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         _currentVersion = UpgradeService.GetCurrentVersion();
         _deviceGroups = DataService.GetDeviceGroups(UserName);
         AppState.PropertyChanged += AppState_PropertyChanged;
-        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
+        await Messenger.Register<DeviceStateChangedMessage, string>(
+            this, 
+            CircuitConnection.ConnectionId,
+            HandleDeviceStateChanged);
+    }
+
+    private async Task HandleDeviceStateChanged(DeviceStateChangedMessage message)
+    {
+        if (message.Device.ID != Device.ID)
+        {
+            return;
+        }
+
+        // TODO: It would be cool to decorate user-editable properties
+        // with a "UserEditable" attribute, then use a source generator
+        // to create/update a method that copies property values for
+        // those that do not have the attribute.  We could do the same
+        // with reflection, but this method is called too frequently,
+        // and the performance hit would likely be significant.
+
+        // If the card is expanded, only update the immutable UI
+        // elements, so any changes to the form fields aren't lost.
+        if (IsExpanded)
+        {
+            Device.CurrentUser = message.Device.CurrentUser;
+            Device.Platform = message.Device.Platform;
+            Device.TotalStorage = message.Device.TotalStorage;
+            Device.UsedStorage = message.Device.UsedStorage;
+            Device.Drives = message.Device.Drives;
+            Device.CpuUtilization = message.Device.CpuUtilization;
+            Device.TotalMemory = message.Device.TotalMemory;
+            Device.UsedMemory = message.Device.UsedMemory;
+            Device.AgentVersion = message.Device.AgentVersion;
+            Device.LastOnline = message.Device.LastOnline;
+            Device.PublicIP = message.Device.PublicIP;
+            Device.MacAddresses = message.Device.MacAddresses;
+        }
+        else
+        {
+            Device = message.Device;
+        }
+        await InvokeAsync(StateHasChanged);
     }
 
     private void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -97,25 +137,6 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         }
     }
 
-    private async void CircuitConnection_MessageReceived(object? sender, CircuitEvent e)
-    {
-       switch (e.EventName)
-        {
-            case CircuitEventName.DeviceUpdate:
-            case CircuitEventName.DeviceWentOffline:
-                {
-                    if (e.Params?.FirstOrDefault() is Device device &&
-                        device.ID == Device?.ID)
-                    {
-                        Device = device;
-                        await InvokeAsync(StateHasChanged);
-                    }
-                    break;
-                }
-            default:
-                break;
-        }
-    }
     private void ContextMenuOpening(MouseEventArgs args)
     {
         if (GetCardState() == DeviceCardState.Normal)
@@ -331,7 +352,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
             await CircuitConnection.UninstallAgents(new[] { Device.ID });
             AppState.DevicesFrameFocusedDevice = null;
             AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
-            ParentFrame.Refresh();
+            await ParentFrame.Refresh();
         }
     }
 
