@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Shared.Enums;
 using Remotely.Shared.ViewModels;
 using System;
@@ -22,10 +23,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
     public required ChatSession Session { get; set; }
 
     [Inject]
-    private IClientAppState AppState { get; init; } = null!;
-
-    [Inject]
-    private IChatSessionCache ChatSessionCache { get; init; } = null!;
+    private IChatSessionStore ChatSessionStore { get; init; } = null!;
 
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
@@ -63,7 +61,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
             return;
         }
 
-        if (!ChatSessionCache.TryGetSession(message.DeviceId, out var session))
+        if (!ChatSessionStore.TryGetSession(message.DeviceId, out var session))
         {
             return;
         }
@@ -97,7 +95,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
 
     private async Task CloseChatCard()
     {
-        _ = ChatSessionCache.TryRemove($"{Session.DeviceId}", out _);
+        _ = ChatSessionStore.TryRemove($"{Session.DeviceId}", out _);
         var message = new ChatSessionsChangedMessage();
         await Messenger.Send(message, CircuitConnection.ConnectionId);
     }

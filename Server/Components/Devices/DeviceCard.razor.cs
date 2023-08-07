@@ -6,6 +6,7 @@ using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Utilities;
@@ -24,6 +25,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     private ElementReference _card;
     private Version _currentVersion = new();
     private Theme _theme;
+    private DeviceCardState _state;
     private DeviceGroup[] _deviceGroups = Array.Empty<DeviceGroup>();
 
     [Parameter]
@@ -34,7 +36,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
 
     [Inject]
-    private IClientAppState AppState { get; init; } = null!;
+    private ISelectedCardsStore SelectedCards { get; init; } = null!;
 
     [Inject]
     private IThemeProvider ThemeProvider { get; init; } = null!;
@@ -46,15 +48,15 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     private IDataService DataService { get; init; } = null!;
 
     [Inject]
-    private IChatSessionCache ChatCache { get; init; } = null!;
+    private IChatSessionStore ChatCache { get; init; } = null!;
 
-    private bool IsExpanded => GetCardState() == DeviceCardState.Expanded;
+    private bool IsExpanded => _state == DeviceCardState.Expanded;
 
     private bool IsOutdated =>
         Version.TryParse(Device.AgentVersion, out var result) &&
         result < _currentVersion;
 
-    private bool IsSelected => AppState.DevicesFrameSelectedDevices.Contains(Device.ID);
+    private bool IsSelected => SelectedCards.SelectedDevices.Contains(Device.ID);
 
     [Inject]
     private IJsInterop JsInterop { get; init; } = null!;
@@ -76,7 +78,6 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
     public void Dispose()
     {
-        AppState.PropertyChanged -= AppState_PropertyChanged;
         Messenger.Unregister<DeviceStateChangedMessage, string>(this, CircuitConnection.ConnectionId);
         GC.SuppressFinalize(this);
     }
@@ -88,11 +89,39 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         _theme = await ThemeProvider.GetEffectiveTheme();
         _currentVersion = UpgradeService.GetCurrentVersion();
         _deviceGroups = DataService.GetDeviceGroups(UserName);
-        AppState.PropertyChanged += AppState_PropertyChanged;
+
+        await Messenger.Register<DeviceCardStateChangedMessage, string>(
+            this,
+            CircuitConnection.ConnectionId,
+            HandleDeviceCardStateChanged);
+
         await Messenger.Register<DeviceStateChangedMessage, string>(
             this, 
             CircuitConnection.ConnectionId,
             HandleDeviceStateChanged);
+    }
+
+    private async Task HandleDeviceCardStateChanged(DeviceCardStateChangedMessage message)
+    {
+        if (message.DeviceId == Device.ID)
+        {
+            if (message.State == _state)
+            {
+                return;
+            }
+            _state = message.State;
+            await InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            if (_state == DeviceCardState.Normal)
+            {
+                return;
+            }
+            _state = DeviceCardState.Normal;
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
     }
 
     private async Task HandleDeviceStateChanged(DeviceStateChangedMessage message)
@@ -133,19 +162,9 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
-    private void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(AppState.DevicesFrameFocusedCardState) ||
-            e.PropertyName == nameof(AppState.DevicesFrameFocusedDevice) ||
-            e.PropertyName == nameof(AppState.DevicesFrameSelectedDevices))
-        {
-            InvokeAsync(StateHasChanged);
-        }
-    }
-
     private void ContextMenuOpening(MouseEventArgs args)
     {
-        if (GetCardState() == DeviceCardState.Normal)
+        if (_state == DeviceCardState.Normal)
         {
             JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");
         }
@@ -153,40 +172,24 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
     private async Task ExpandCard(MouseEventArgs args)
     {
-        if (AppState.DevicesFrameFocusedDevice == Device.ID)
+        if (_state == DeviceCardState.Expanded)
         {
-            if (AppState.DevicesFrameFocusedCardState == DeviceCardState.Normal)
-            {
-                AppState.DevicesFrameFocusedCardState = DeviceCardState.Expanded;
-            }
             return;
         }
 
-        AppState.DevicesFrameFocusedDevice = Device.ID;
-        AppState.DevicesFrameFocusedCardState = DeviceCardState.Expanded;
+        await Messenger.Send(
+            new DeviceCardStateChangedMessage(Device.ID, DeviceCardState.Expanded),
+            CircuitConnection.ConnectionId);
+
         JsInterop.ScrollToElement(_card);
 
         await CircuitConnection.TriggerHeartbeat(Device.ID);
     }
 
-    private DeviceCardState GetCardState()
+
+    private string GetCardStateClass()
     {
-        if (AppState.DevicesFrameFocusedDevice == Device.ID)
-        {
-            return AppState.DevicesFrameFocusedCardState;
-        }
-
-        return DeviceCardState.Normal;
-    }
-
-    private string GetCardStateClass(Device device)
-    {
-        if (AppState.DevicesFrameFocusedDevice == device.ID)
-        {
-            return AppState.DevicesFrameFocusedCardState.ToString().ToLower();
-        }
-
-        return string.Empty;
+        return $"{_state}".ToLower();
     }
 
     private string GetProgressMessage(string key)
@@ -203,7 +206,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     {
         if (IsExpanded)
         {
-            SetCardStateNormal();
+            _state = DeviceCardState.Normal;
         }
     }
     private async Task HandleValidSubmit()
@@ -263,12 +266,6 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     private void OpenDeviceDetails()
     {
         JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");
-    }
-
-    private void SetCardStateNormal()
-    {
-        AppState.DevicesFrameFocusedDevice = null;
-        AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
     }
 
     private void ShowAllDisks()
@@ -338,13 +335,12 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
         if (isSelected)
         {
-            AppState.DevicesFrameSelectedDevices.Add(Device.ID);
+            SelectedCards.Add(Device.ID);
         }
         else
         {
-            AppState.DevicesFrameSelectedDevices.Remove(Device.ID);
+            SelectedCards.Remove(Device.ID);
         }
-        AppState.InvokePropertyChanged(nameof(AppState.DevicesFrameSelectedDevices));
     }
 
     private async Task UninstallAgent()
@@ -353,8 +349,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         if (result)
         {
             await CircuitConnection.UninstallAgents(new[] { Device.ID });
-            AppState.DevicesFrameFocusedDevice = null;
-            AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
+            _state = DeviceCardState.Normal;
             await ParentFrame.Refresh();
         }
     }

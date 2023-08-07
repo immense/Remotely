@@ -6,6 +6,7 @@ using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Shared.Attributes;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Utilities;
@@ -41,7 +42,10 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
     private ListSortDirection _sortDirection;
 
     [Inject]
-    private IClientAppState AppState { get; init; } = null!;
+    private ISelectedCardsStore CardStore { get; init; } = null!;
+
+    [Inject]
+    private ITerminalStore TerminalStore { get; init; } = null!;
 
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
@@ -63,13 +67,12 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
         Messenger.Unregister<ScriptResultMessage, string>(this, CircuitConnection.ConnectionId);
         Messenger.Unregister<DeviceStateChangedMessage, string>(this, CircuitConnection.ConnectionId);
 
-        AppState.PropertyChanged -= AppState_PropertyChanged;
         GC.SuppressFinalize(this);
     }
 
     private async Task HandleDisplayNotificationMessage(DisplayNotificationMessage message)
     {
-        AppState.AddTerminalLine(message.ConsoleText);
+        TerminalStore.AddTerminalLine(message.ConsoleText);
         ToastService.ShowToast(message.ToastText, classString: message.ClassName);
         await InvokeAsync(StateHasChanged);
     }
@@ -100,8 +103,6 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
            this,
            CircuitConnection.ConnectionId,
            HandleScriptResultMessage);
-
-        AppState.PropertyChanged += AppState_PropertyChanged;
 
         _deviceGroups.Clear();
 
@@ -162,36 +163,27 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
             return;
         }
 
-        AppState.AddTerminalLine($"{deviceResult.Value.DeviceName} @ {result.TimeStamp}", "font-weight-bold");
+        TerminalStore.AddTerminalLine($"{deviceResult.Value.DeviceName} @ {result.TimeStamp}", "font-weight-bold");
 
         var stdOut = result.StandardOutput ?? Array.Empty<string>();
         var stdErr = result.ErrorOutput ?? Array.Empty<string>();
 
         foreach (var line in stdOut)
         {
-            AppState.AddTerminalLine(line, "text-info");
+            TerminalStore.AddTerminalLine(line, "text-info");
         }
         foreach (var line in stdErr)
         {
-            AppState.AddTerminalLine(line, "text-danger");
+            TerminalStore.AddTerminalLine(line, "text-danger");
         }
-        AppState.InvokePropertyChanged(nameof(AppState.TerminalLines));
+        TerminalStore.InvokeLinesChanged();
     }
 
-    private void AppState_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async Task ClearSelectedCard()
     {
-        if (e.PropertyName == nameof(AppState.DevicesFrameFocusedCardState) ||
-            e.PropertyName == nameof(AppState.DevicesFrameFocusedDevice) ||
-            e.PropertyName == nameof(AppState.DevicesFrameSelectedDevices))
-        {
-            InvokeAsync(StateHasChanged);
-        }
-    }
-
-    private void ClearSelectedCard()
-    {
-        AppState.DevicesFrameFocusedDevice = string.Empty;
-        AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
+        await Messenger.Send(
+            new DeviceCardStateChangedMessage(string.Empty, DeviceCardState.Normal), 
+            CircuitConnection.ConnectionId);
     }
 
     private async Task FilterDevices()
@@ -204,7 +196,7 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
             foreach (var device in _allDevices)
             {
-                if (AppState.DevicesFrameSelectedDevices.Contains(device.ID))
+                if (CardStore.SelectedDevices.Contains(device.ID))
                 {
                     appendDevices.Add(device);
                 }
@@ -328,22 +320,19 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
     private void SelectAllCards()
     {
-        if (AppState.DevicesFrameSelectedDevices.Any())
+        if (CardStore.SelectedDevices.Any())
         {
-            AppState.DevicesFrameSelectedDevices.Clear();
+            CardStore.Clear();
         }
         else
         {
             foreach (var device in _filteredDevices)
             {
-                if (!AppState.DevicesFrameSelectedDevices.Contains(device.ID))
-                {
-                    AppState.DevicesFrameSelectedDevices.Add(device.ID);
-                }
+                _ = CardStore.Add(device.ID);
             };
         }
 
-        AppState.InvokePropertyChanged(nameof(AppState.DevicesFrameSelectedDevices));
+        CardStore.InvokeSelectionsChanged();
     }
 
     private void ToggleSortDirection()

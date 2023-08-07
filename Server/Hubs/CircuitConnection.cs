@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Server.Models;
 using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Shared;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
@@ -71,7 +72,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 {
     private readonly IHubContext<AgentHub, IAgentHubClient> _agentHubContext;
     private readonly IApplicationConfig _appConfig;
-    private readonly IClientAppState _appState;
+    private readonly ISelectedCardsStore _cardStore;
     private readonly IAuthService _authService;
     private readonly ICircuitManager _circuitManager;
     private readonly IDataService _dataService;
@@ -86,7 +87,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
     public CircuitConnection(
         IAuthService authService,
         IDataService dataService,
-        IClientAppState appState,
+        ISelectedCardsStore cardStore,
         IHubContext<AgentHub, IAgentHubClient> agentHubContext,
         IApplicationConfig appConfig,
         ICircuitManager circuitManager,
@@ -99,7 +100,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
     {
         _dataService = dataService;
         _agentHubContext = agentHubContext;
-        _appState = appState;
+        _cardStore = cardStore;
         _appConfig = appConfig;
         _authService = authService;
         _circuitManager = circuitManager;
@@ -160,7 +161,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
     public Task GetPowerShellCompletions(string inputText, int currentIndex, CompletionIntent intent, bool? forward)
     {
-        var device = _appState.DevicesFrameSelectedDevices.FirstOrDefault();
+        var device = _cardStore.SelectedDevices.FirstOrDefault();
         if (device is null)
         {
             return Task.CompletedTask;

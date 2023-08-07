@@ -1,19 +1,13 @@
-﻿using Remotely.Server.Enums;
-using Remotely.Shared.Enums;
-using Remotely.Shared.Primitives;
-using Remotely.Shared.ViewModels;
+﻿using Remotely.Shared.ViewModels;
+using System;
 using System.Collections.Concurrent;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 
-namespace Remotely.Server.Services;
+namespace Remotely.Server.Services.Stores;
 
-public interface IClientAppState : INotifyPropertyChanged, IInvokePropertyChanged
+public interface ITerminalStore
 {
-    DeviceCardState DevicesFrameFocusedCardState { get; set; }
-    string? DevicesFrameFocusedDevice { get; set; }
-    ConcurrentList<string> DevicesFrameSelectedDevices { get; }
+    event EventHandler? TerminalLinesChanged;
     ConcurrentQueue<TerminalLineItem> TerminalLines { get; }
 
     void AddTerminalHistory(string content);
@@ -21,29 +15,18 @@ public interface IClientAppState : INotifyPropertyChanged, IInvokePropertyChange
     void AddTerminalLine(string content, string className = "", string title = "");
 
     string GetTerminalHistory(bool forward);
-}
 
-public class ClientAppState : ViewModelBase, IClientAppState
+    void InvokeLinesChanged();
+}
+public class TerminalStore : ITerminalStore
 {
     private readonly ConcurrentQueue<string> _terminalHistory = new();
     private int _terminalHistoryIndex = 0;
 
-    public DeviceCardState DevicesFrameFocusedCardState
-    {
-        get => Get<DeviceCardState>();
-        set => Set(value);
-    }
 
-    public string? DevicesFrameFocusedDevice
-    {
-        get => Get<string>();
-        set => Set(value);
-    }
-
-    public ConcurrentList<string> DevicesFrameSelectedDevices { get; } = new();
+    public event EventHandler? TerminalLinesChanged;
 
     public ConcurrentQueue<TerminalLineItem> TerminalLines { get; } = new();
-
     public void AddTerminalHistory(string content)
     {
         while (_terminalHistory.Count > 500)
@@ -91,5 +74,10 @@ public class ClientAppState : ViewModelBase, IClientAppState
             return "";
         }
         return _terminalHistory.ElementAt(_terminalHistoryIndex);
+    }
+
+    public void InvokeLinesChanged()
+    {
+        TerminalLinesChanged?.Invoke(this, EventArgs.Empty);
     }
 }

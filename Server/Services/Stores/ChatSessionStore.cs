@@ -5,13 +5,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Remotely.Server.Services;
+namespace Remotely.Server.Services.Stores;
 
-public interface IChatSessionCache
+public interface IChatSessionStore
 {
     void AddOrUpdate(
-        string deviceId, 
-        ChatSession chatSession, 
+        string deviceId,
+        ChatSession chatSession,
         Func<string, ChatSession, ChatSession> updateFactory);
 
     bool ContainsKey(string deviceId);
@@ -21,13 +21,13 @@ public interface IChatSessionCache
     bool TryRemove(string deviceId, [NotNullWhen(true)] out ChatSession? session);
 }
 
-public class ChatSessionCache : IChatSessionCache
+public class ChatSessionStore : IChatSessionStore
 {
     private readonly ConcurrentDictionary<string, ChatSession> _sessions = new();
 
     public void AddOrUpdate(
-        string deviceId, 
-        ChatSession chatSession, 
+        string deviceId,
+        ChatSession chatSession,
         Func<string, ChatSession, ChatSession> updateFactory)
     {
         _sessions.AddOrUpdate(deviceId, chatSession, updateFactory);

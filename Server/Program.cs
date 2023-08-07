@@ -31,6 +31,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
 using Remotely.Shared.Entities;
 using Immense.SimpleMessenger;
+using Remotely.Server.Services.Stores;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -204,14 +205,15 @@ services.AddScoped<ILoaderService, LoaderService>();
 services.AddScoped(x => (CircuitHandler)x.GetRequiredService<ICircuitConnection>());
 services.AddSingleton<ICircuitManager, CircuitManager>();
 services.AddScoped<IAuthService, AuthService>();
-services.AddScoped<IClientAppState, ClientAppState>();
+services.AddScoped<ISelectedCardsStore, SelectedCardsStore>();
 services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
 services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 services.AddSingleton<IOtpProvider, OtpProvider>();
 services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
 services.AddSingleton<ILogsManager, LogsManager>();
 services.AddScoped<IThemeProvider, ThemeProvider>();
-services.AddScoped<IChatSessionCache, ChatSessionCache>();
+services.AddScoped<IChatSessionStore, ChatSessionStore>();
+services.AddScoped<ITerminalStore, TerminalStore>();
 services.AddSingleton(WeakReferenceMessenger.Default);
 
 services.AddRemoteControlServer(config =>

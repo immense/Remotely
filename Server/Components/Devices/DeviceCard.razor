@@ -1,16 +1,16 @@
 ﻿@attribute [Authorize]
 @inherits AuthComponentBase
 
-<div @ref="_card" class="card border-secondary my-3 mr-3 device-card @_theme @GetCardStateClass(Device)"
+<div @ref="_card" class="card border-secondary my-3 mr-3 device-card @_theme @GetCardStateClass()"
      @onclick="ExpandCard"
      @onclick:stopPropagation
      @oncontextmenu="ContextMenuOpening"
-     @oncontextmenu:preventDefault="GetCardState() == DeviceCardState.Normal"
-     @oncontextmenu:stopPropagation="GetCardState() == DeviceCardState.Normal">
+     @oncontextmenu:preventDefault="_state == DeviceCardState.Normal"
+     @oncontextmenu:stopPropagation="_state == DeviceCardState.Normal">
 
     <div class="card-header" @onclick="HandleHeaderClick" 
-         @onclick:stopPropagation="GetCardState() == DeviceCardState.Expanded"
-         @onclick:preventDefault="GetCardState() == DeviceCardState.Expanded">
+         @onclick:stopPropagation="_state == DeviceCardState.Expanded"
+         @onclick:preventDefault="_state == DeviceCardState.Expanded">
         <div>
             @if (Device.IsOnline)
             {

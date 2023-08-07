@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
-using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.ViewModels;
@@ -19,10 +19,10 @@ public partial class ChatFrame : AuthComponentBase, IAsyncDisposable
     private ICollection<ChatSession> _chatSessions = Array.Empty<ChatSession>();
 
     [Inject]
-    private IClientAppState AppState { get; init; } = null!;
+    private ISelectedCardsStore CardStore { get; init; } = null!;
 
     [Inject]
-    private IChatSessionCache ChatCache { get; init; } = null!;
+    private IChatSessionStore ChatCache { get; init; } = null!;
 
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
