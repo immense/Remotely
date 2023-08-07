@@ -451,8 +451,8 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         {
             if (tags.Length > 200)
             {
-                var message = new CircuitEvent(CircuitEventName.DisplayMessage,
-                    $"Tag must be 200 characters or less. Supplied length is {tags.Length}.",
+                var message = new DisplayNotificationMessage(
+                     $"Tag must be 200 characters or less. Supplied length is {tags.Length}.",
                     "Tag must be under 200 characters.",
                     "bg-warning");
 
