@@ -66,7 +66,7 @@ public partial class ChatFrame : AuthComponentBase, IAsyncDisposable
             IsExpanded = true
         };
 
-        newChat.ChatHistory.Add(new ChatHistoryItem()
+        newChat.ChatHistory.Enqueue(new ChatHistoryItem()
         {
             Message = message.MessageText,
             Origin = ChatHistoryItemOrigin.Device

@@ -1,11 +1,11 @@
-﻿using Remotely.Shared.Primitives;
-using System;
+﻿using System;
+using System.Collections.Concurrent;
 
 namespace Remotely.Shared.ViewModels;
 
 public class ChatSession
 {
-    public ConcurrentList<ChatHistoryItem> ChatHistory { get; } = new();
+    public ConcurrentQueue<ChatHistoryItem> ChatHistory { get; } = new();
     public string? DeviceId { get; set; }
     public string? DeviceName { get; set; }
     public string ExpandedClass => IsExpanded ? "expanded" : "";

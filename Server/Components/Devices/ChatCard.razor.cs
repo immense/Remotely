@@ -68,7 +68,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
 
         if (message.DidDisconnect)
         {
-            session.ChatHistory.Add(new ChatHistoryItem()
+            session.ChatHistory.Enqueue(new ChatHistoryItem()
             {
                 Message = $"{Session.DeviceName} disconnected.",
                 Origin = ChatHistoryItemOrigin.System
@@ -76,7 +76,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
         }
         else
         {
-            session.ChatHistory.Add(new ChatHistoryItem()
+            session.ChatHistory.Enqueue(new ChatHistoryItem()
             {
                 Message = message.MessageText,
                 Origin = ChatHistoryItemOrigin.Device
@@ -110,7 +110,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
 
             await CircuitConnection.SendChat(_inputText, $"{Session.DeviceId}");
 
-            Session.ChatHistory.Add(new ChatHistoryItem()
+            Session.ChatHistory.Enqueue(new ChatHistoryItem()
             {
                 Origin = ChatHistoryItemOrigin.Self,
                 Message = _inputText
