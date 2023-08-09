@@ -1,35 +1,36 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Immense.SimpleMessenger;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
-using Remotely.Server.Models;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Shared.Attributes;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
 [Authorize]
-public partial class DevicesFrame : AuthComponentBase, IDisposable
+public partial class DevicesFrame : AuthComponentBase
 {
     private readonly List<Device> _allDevices = new();
     private readonly string _deviceGroupAll = Guid.NewGuid().ToString();
     private readonly string _deviceGroupNone = Guid.NewGuid().ToString();
     private readonly List<DeviceGroup> _deviceGroups = new();
     private readonly List<Device> _devicesForPage = new();
-    private readonly object _devicesLock = new();
+    private readonly SemaphoreSlim _devicesLock = new(1,1);
     private readonly List<Device> _filteredDevices = new();
     private readonly List<PropertyInfo> _sortableProperties = new();
     private int _currentPage = 1;
@@ -41,7 +42,10 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
     private ListSortDirection _sortDirection;
 
     [Inject]
-    private IClientAppState AppState { get; init; } = null!;
+    private ISelectedCardsStore CardStore { get; init; } = null!;
+
+    [Inject]
+    private ITerminalStore TerminalStore { get; init; } = null!;
 
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
@@ -50,24 +54,21 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
     private IDataService DataService { get; init; } = null!;
 
     [Inject]
-    private IJsInterop JsInterop { get; init; } = null!;
-
-    [Inject]
     private IToastService ToastService { get; init; } = null!;
 
     private int TotalPages => (int)Math.Max(1, Math.Ceiling((decimal)_filteredDevices.Count / _devicesPerPage));
 
-    public void Dispose()
+    private async Task HandleDisplayNotificationMessage(DisplayNotificationMessage message)
     {
-        CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
-        AppState.PropertyChanged -= AppState_PropertyChanged;
-        GC.SuppressFinalize(this);
+        TerminalStore.AddTerminalLine(message.ConsoleText);
+        ToastService.ShowToast(message.ToastText, classString: message.ClassName);
+        await InvokeAsync(StateHasChanged);
     }
 
-    public void Refresh()
+    public async Task Refresh()
     {
-        LoadDevices();
-        InvokeAsync(StateHasChanged);
+        await LoadDevices();
+        await InvokeAsync(StateHasChanged);
     }
 
     protected override async Task OnInitializedAsync()
@@ -76,8 +77,17 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
         EnsureUserSet();
 
-        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
-        AppState.PropertyChanged += AppState_PropertyChanged;
+        await Register<DisplayNotificationMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleDisplayNotificationMessage);
+
+        await Register<DeviceStateChangedMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleDeviceStateChangedMessage);
+
+        await Register<ScriptResultMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleScriptResultMessage);
 
         _deviceGroups.Clear();
 
@@ -91,17 +101,43 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
         _sortableProperties.AddRange(sortableProperties);
 
-        LoadDevices();
+        await LoadDevices();
     }
 
-    protected override bool ShouldRender()
+    private async Task HandleScriptResultMessage(ScriptResultMessage message)
     {
-        var shouldRender = base.ShouldRender();
-        if (shouldRender)
+        await AddScriptResult(message.ScriptResult);
+    }
+
+    private async Task HandleDeviceStateChangedMessage(DeviceStateChangedMessage message)
+    {
+        await _devicesLock.WaitAsync();
+
+        try
         {
-            FilterDevices();
+            var device = message.Device;
+
+            foreach (var collection in new[] { _allDevices, _devicesForPage })
+            {
+                var index = collection.FindIndex(x => x.ID == device.ID);
+                if (index > -1)
+                {
+                    collection[index] = device;
+                }
+            }
+
+            Debouncer.Debounce(TimeSpan.FromSeconds(2), Refresh);
         }
-        return shouldRender;
+        finally
+        {
+            _devicesLock.Release();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        await FilterDevices();
     }
 
     private async Task AddScriptResult(ScriptResult result)
@@ -112,98 +148,40 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
             return;
         }
 
-        AppState.AddTerminalLine($"{deviceResult.Value.DeviceName} @ {result.TimeStamp}", "font-weight-bold");
+        TerminalStore.AddTerminalLine($"{deviceResult.Value.DeviceName} @ {result.TimeStamp}", "font-weight-bold");
 
         var stdOut = result.StandardOutput ?? Array.Empty<string>();
         var stdErr = result.ErrorOutput ?? Array.Empty<string>();
 
         foreach (var line in stdOut)
         {
-            AppState.AddTerminalLine(line, "text-info");
+            TerminalStore.AddTerminalLine(line, "text-info");
         }
         foreach (var line in stdErr)
         {
-            AppState.AddTerminalLine(line, "text-danger");
+            TerminalStore.AddTerminalLine(line, "text-danger");
         }
-        AppState.InvokePropertyChanged(nameof(AppState.TerminalLines));
+        TerminalStore.InvokeLinesChanged();
     }
 
-    private void AppState_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    private async Task ClearSelectedCard()
     {
-        if (e.PropertyName == nameof(AppState.DevicesFrameFocusedCardState) ||
-            e.PropertyName == nameof(AppState.DevicesFrameFocusedDevice) ||
-            e.PropertyName == nameof(AppState.DevicesFrameSelectedDevices))
-        {
-            InvokeAsync(StateHasChanged);
-        }
+        await Messenger.Send(
+            new DeviceCardStateChangedMessage(string.Empty, DeviceCardState.Normal), 
+            CircuitConnection.ConnectionId);
     }
 
-    private async void CircuitConnection_MessageReceived(object? sender, CircuitEvent args)
+    private async Task FilterDevices()
     {
-        switch (args.EventName)
-        {
-            case CircuitEventName.DeviceUpdate:
-            case CircuitEventName.DeviceWentOffline:
-                {
-                    if (args.Params?.FirstOrDefault() is Device device)
-                    {
-                        lock (_devicesLock)
-                        {
-                            var index = _allDevices.FindIndex(x => x.ID == device.ID);
-                            if (index > -1)
-                            {
-                                _allDevices[index] = device;
-                            }
-
-                            index = _devicesForPage.FindIndex(x => x.ID == device.ID);
-                            if (index > -1)
-                            {
-                                _devicesForPage[index] = device;
-                            }
-                        }
-                        Debouncer.Debounce(TimeSpan.FromSeconds(2), Refresh);
-                    }
-                    break;
-                }
-            case CircuitEventName.DisplayMessage:
-                {
-                    var terminalMessage = (string)args.Params[0];
-                    var toastMessage = (string)args.Params[1];
-                    var className = (string)args.Params[2];
-                    AppState.AddTerminalLine(terminalMessage);
-                    ToastService.ShowToast(toastMessage, classString: className);
-                    await InvokeAsync(StateHasChanged);
-                }
-                break;
-            case CircuitEventName.ScriptResult:
-                {
-                    if (args.Params[0] is ScriptResult result)
-                    {
-                        await AddScriptResult(result);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void ClearSelectedCard()
-    {
-        AppState.DevicesFrameFocusedDevice = string.Empty;
-        AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
-    }
-
-    private void FilterDevices()
-    {
-        lock (_devicesLock)
+        await _devicesLock.WaitAsync();
+        try
         {
             _filteredDevices.Clear();
             var appendDevices = new List<Device>();
 
             foreach (var device in _allDevices)
             {
-                if (AppState.DevicesFrameSelectedDevices.Contains(device.ID))
+                if (CardStore.SelectedDevices.Contains(device.ID))
                 {
                     appendDevices.Add(device);
                 }
@@ -262,8 +240,12 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
             _devicesForPage.Clear();
             _devicesForPage.AddRange(appendDevices.Concat(devicesForPage));
-        }
 
+        }
+        finally
+        {
+            _devicesLock.Release();
+        }
     }
 
 
@@ -277,17 +259,18 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
         return $"oi-sort-{_sortDirection.ToString().ToLower()}";
     }
 
-    private void HandleRefreshClicked()
+    private async Task HandleRefreshClicked()
     {
-        Refresh();
+        await Refresh();
         ToastService.ShowToast("Devices refreshed.");
     }
 
-    private void LoadDevices()
+    private async Task LoadDevices()
     {
         EnsureUserSet();
 
-        lock (_devicesLock)
+        await _devicesLock.WaitAsync();
+        try
         {
             _allDevices.Clear();
 
@@ -297,8 +280,12 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
             _allDevices.AddRange(devices);
         }
+        finally
+        {
+            _devicesLock.Release();
+        }
 
-        FilterDevices();
+        await FilterDevices();
     }
     private void PageDown()
     {
@@ -318,22 +305,19 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
     private void SelectAllCards()
     {
-        if (AppState.DevicesFrameSelectedDevices.Any())
+        if (CardStore.SelectedDevices.Any())
         {
-            AppState.DevicesFrameSelectedDevices.Clear();
+            CardStore.Clear();
         }
         else
         {
             foreach (var device in _filteredDevices)
             {
-                if (!AppState.DevicesFrameSelectedDevices.Contains(device.ID))
-                {
-                    AppState.DevicesFrameSelectedDevices.Add(device.ID);
-                }
+                _ = CardStore.Add(device.ID);
             };
         }
 
-        AppState.InvokePropertyChanged(nameof(AppState.DevicesFrameSelectedDevices));
+        CardStore.InvokeSelectionsChanged();
     }
 
     private void ToggleSortDirection()

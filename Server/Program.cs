@@ -14,7 +14,6 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Logging;
-using Npgsql;
 using Remotely.Server.Areas.Identity;
 using Remotely.Server.Auth;
 using Remotely.Server.Data;
@@ -28,10 +27,11 @@ using Remotely.Server.Services.RcImplementations;
 using Remotely.Shared.Services;
 using System;
 using Serilog;
-using Nihs.SimpleMessenger;
 using Microsoft.AspNetCore.RateLimiting;
 using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
 using Remotely.Shared.Entities;
+using Immense.SimpleMessenger;
+using Remotely.Server.Services.Stores;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -205,13 +205,16 @@ services.AddScoped<ILoaderService, LoaderService>();
 services.AddScoped(x => (CircuitHandler)x.GetRequiredService<ICircuitConnection>());
 services.AddSingleton<ICircuitManager, CircuitManager>();
 services.AddScoped<IAuthService, AuthService>();
-services.AddScoped<IClientAppState, ClientAppState>();
+services.AddScoped<ISelectedCardsStore, SelectedCardsStore>();
 services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
 services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 services.AddSingleton<IOtpProvider, OtpProvider>();
 services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
 services.AddSingleton<ILogsManager, LogsManager>();
-services.AddScoped<IMessenger>((services) => new WeakReferenceMessenger());
+services.AddScoped<IThemeProvider, ThemeProvider>();
+services.AddScoped<IChatSessionStore, ChatSessionStore>();
+services.AddScoped<ITerminalStore, TerminalStore>();
+services.AddSingleton(WeakReferenceMessenger.Default);
 
 services.AddRemoteControlServer(config =>
 {

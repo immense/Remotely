@@ -1,7 +1,10 @@
-﻿using Nihs.ConcurrentList;
-using Remotely.Server.Enums;
+﻿using Remotely.Server.Enums;
 using Remotely.Server.Models;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Timers;
 
 namespace Remotely.Server.Services;
@@ -10,7 +13,7 @@ public interface IToastService
 {
     event EventHandler OnToastsChanged;
 
-    ConcurrentList<Toast> Toasts { get; }
+    IEnumerable<Toast> Toasts { get; }
     void ShowToast(
         string message, 
         int expirationMillisecond = 3000, 
@@ -26,8 +29,20 @@ public interface IToastService
 
 public class ToastService : IToastService
 {
+    private readonly object _lock = new();
+    private readonly List<Toast> _toasts = new();
     public event EventHandler? OnToastsChanged;
-    public ConcurrentList<Toast> Toasts { get; } = new();
+
+    public IEnumerable<Toast> Toasts
+    {
+        get
+        {
+            lock (_lock)
+            {
+                return _toasts.ToArray();
+            }
+        }
+    }
 
     public void ShowToast(string message,
         int expirationMillisecond = 3000,
@@ -46,7 +61,10 @@ public class ToastService : IToastService
             TimeSpan.FromMilliseconds(expirationMillisecond),
             styleOverrides);
 
-        Toasts.Add(toastModel);
+        lock (_lock)
+        {
+            _toasts.Add(toastModel);
+        }
 
         OnToastsChanged?.Invoke(this, EventArgs.Empty);
 
@@ -56,7 +74,10 @@ public class ToastService : IToastService
         };
         removeToastTimer.Elapsed += (s, e) =>
         {
-            Toasts.Remove(toastModel);
+            lock (_lock)
+            {
+                _toasts.Remove(toastModel);
+            }
             OnToastsChanged?.Invoke(this, EventArgs.Empty);
             removeToastTimer.Dispose();
         };

@@ -111,6 +111,10 @@ dotnet_style_qualification_for_event = false:silent
 dotnet_style_qualification_for_method = false:silent
 dotnet_style_qualification_for_property = false:silent
 dotnet_style_qualification_for_field = false:silent
+
+# IDE0130: Namespace does not match folder structure
+dotnet_diagnostic.IDE0130.severity = error
+
 [*.cs]
 csharp_indent_labels = one_less_than_current
 csharp_using_directive_placement = outside_namespace:silent
@@ -167,3 +171,6 @@ dotnet_diagnostic.CS8600.severity = error
 
 # CS8602: Dereference of a possibly null reference.
 dotnet_diagnostic.CS8602.severity = error
+
+# CS8631: The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match constraint type.
+dotnet_diagnostic.CS8631.severity = error

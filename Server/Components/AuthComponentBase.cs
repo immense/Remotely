@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Remotely.Server.Components;
 
 [Authorize]
-public class AuthComponentBase : ComponentBase
+public class AuthComponentBase : MessengerSubscriber
 {
     [Inject]
     protected IAuthService AuthService { get; set; } = null!;

@@ -1,5 +1,5 @@
 ﻿using Immense.RemoteControl.Shared.Primitives;
-using Nihs.SimpleMessenger;
+using Immense.SimpleMessenger;
 using Remotely.Server.Models.Messages;
 using System;
 using System.Threading.Tasks;

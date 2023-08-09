@@ -1,33 +1,31 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
+﻿using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
-using Remotely.Server.Auth;
 using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
-using Remotely.Server.Models;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.ViewModels;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
-public partial class DeviceCard : AuthComponentBase, IDisposable
+public partial class DeviceCard : AuthComponentBase
 {
     private readonly ConcurrentDictionary<string, double> _fileUploadProgressLookup = new();
     private ElementReference _card;
     private Version _currentVersion = new();
     private Theme _theme;
+    private DeviceCardState _state;
     private DeviceGroup[] _deviceGroups = Array.Empty<DeviceGroup>();
 
     [Parameter]
@@ -38,7 +36,10 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
 
     [Inject]
-    private IClientAppState AppState { get; init; } = null!;
+    private ISelectedCardsStore SelectedCards { get; init; } = null!;
+
+    [Inject]
+    private IThemeProvider ThemeProvider { get; init; } = null!;
 
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
@@ -46,13 +47,16 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     [Inject]
     private IDataService DataService { get; init; } = null!;
 
-    private bool IsExpanded => GetCardState() == DeviceCardState.Expanded;
+    [Inject]
+    private IChatSessionStore ChatCache { get; init; } = null!;
+
+    private bool IsExpanded => _state == DeviceCardState.Expanded;
 
     private bool IsOutdated =>
         Version.TryParse(Device.AgentVersion, out var result) &&
         result < _currentVersion;
 
-    private bool IsSelected => AppState.DevicesFrameSelectedDevices.Contains(Device.ID);
+    private bool IsSelected => SelectedCards.SelectedDevices.Contains(Device.ID);
 
     [Inject]
     private IJsInterop JsInterop { get; init; } = null!;
@@ -69,56 +73,87 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     [Inject]
     private IUpgradeService UpgradeService { get; init; } = null!;
 
-    public void Dispose()
-    {
-        AppState.PropertyChanged -= AppState_PropertyChanged;
-        CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
-        GC.SuppressFinalize(this);
-    }
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         EnsureUserSet();
-        _theme = await AppState.GetEffectiveTheme();
+        _theme = await ThemeProvider.GetEffectiveTheme();
         _currentVersion = UpgradeService.GetCurrentVersion();
         _deviceGroups = DataService.GetDeviceGroups(UserName);
-        AppState.PropertyChanged += AppState_PropertyChanged;
-        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
+
+        await Register<DeviceCardStateChangedMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleDeviceCardStateChanged);
+
+        await Register<DeviceStateChangedMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleDeviceStateChanged);
     }
 
-    private void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private async Task HandleDeviceCardStateChanged(DeviceCardStateChangedMessage message)
     {
-        if (e.PropertyName == nameof(AppState.DevicesFrameFocusedCardState) ||
-            e.PropertyName == nameof(AppState.DevicesFrameFocusedDevice) ||
-            e.PropertyName == nameof(AppState.DevicesFrameSelectedDevices))
+        if (message.DeviceId == Device.ID)
         {
-            InvokeAsync(StateHasChanged);
+            if (message.State == _state)
+            {
+                return;
+            }
+            _state = message.State;
+            await InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            if (_state == DeviceCardState.Normal)
+            {
+                return;
+            }
+            _state = DeviceCardState.Normal;
+            await InvokeAsync(StateHasChanged);
+            return;
         }
     }
 
-    private async void CircuitConnection_MessageReceived(object? sender, CircuitEvent e)
+    private async Task HandleDeviceStateChanged(DeviceStateChangedMessage message)
     {
-       switch (e.EventName)
+        if (message.Device.ID != Device.ID)
         {
-            case CircuitEventName.DeviceUpdate:
-            case CircuitEventName.DeviceWentOffline:
-                {
-                    if (e.Params?.FirstOrDefault() is Device device &&
-                        device.ID == Device?.ID)
-                    {
-                        Device = device;
-                        await InvokeAsync(StateHasChanged);
-                    }
-                    break;
-                }
-            default:
-                break;
+            return;
         }
+
+        // TODO: It would be cool to decorate user-editable properties
+        // with a "UserEditable" attribute, then use a source generator
+        // to create/update a method that copies property values for
+        // those that do not have the attribute.  We could do the same
+        // with reflection, but this method is called too frequently,
+        // and the performance hit would likely be significant.
+
+        // If the card is expanded, only update the immutable UI
+        // elements, so any changes to the form fields aren't lost.
+        if (IsExpanded)
+        {
+            Device.CurrentUser = message.Device.CurrentUser;
+            Device.Platform = message.Device.Platform;
+            Device.TotalStorage = message.Device.TotalStorage;
+            Device.UsedStorage = message.Device.UsedStorage;
+            Device.Drives = message.Device.Drives;
+            Device.CpuUtilization = message.Device.CpuUtilization;
+            Device.TotalMemory = message.Device.TotalMemory;
+            Device.UsedMemory = message.Device.UsedMemory;
+            Device.AgentVersion = message.Device.AgentVersion;
+            Device.LastOnline = message.Device.LastOnline;
+            Device.PublicIP = message.Device.PublicIP;
+            Device.MacAddresses = message.Device.MacAddresses;
+        }
+        else
+        {
+            Device = message.Device;
+        }
+        await InvokeAsync(StateHasChanged);
     }
+
     private void ContextMenuOpening(MouseEventArgs args)
     {
-        if (GetCardState() == DeviceCardState.Normal)
+        if (_state == DeviceCardState.Normal)
         {
             JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");
         }
@@ -126,40 +161,24 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
     private async Task ExpandCard(MouseEventArgs args)
     {
-        if (AppState.DevicesFrameFocusedDevice == Device.ID)
+        if (_state == DeviceCardState.Expanded)
         {
-            if (AppState.DevicesFrameFocusedCardState == DeviceCardState.Normal)
-            {
-                AppState.DevicesFrameFocusedCardState = DeviceCardState.Expanded;
-            }
             return;
         }
 
-        AppState.DevicesFrameFocusedDevice = Device.ID;
-        AppState.DevicesFrameFocusedCardState = DeviceCardState.Expanded;
+        await Messenger.Send(
+            new DeviceCardStateChangedMessage(Device.ID, DeviceCardState.Expanded),
+            CircuitConnection.ConnectionId);
+
         JsInterop.ScrollToElement(_card);
 
         await CircuitConnection.TriggerHeartbeat(Device.ID);
     }
 
-    private DeviceCardState GetCardState()
+
+    private string GetCardStateClass()
     {
-        if (AppState.DevicesFrameFocusedDevice == Device.ID)
-        {
-            return AppState.DevicesFrameFocusedCardState;
-        }
-
-        return DeviceCardState.Normal;
-    }
-
-    private string GetCardStateClass(Device device)
-    {
-        if (AppState.DevicesFrameFocusedDevice == device.ID)
-        {
-            return AppState.DevicesFrameFocusedCardState.ToString().ToLower();
-        }
-
-        return string.Empty;
+        return $"{_state}".ToLower();
     }
 
     private string GetProgressMessage(string key)
@@ -176,7 +195,7 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     {
         if (IsExpanded)
         {
-            SetCardStateNormal();
+            _state = DeviceCardState.Normal;
         }
     }
     private async Task HandleValidSubmit()
@@ -238,12 +257,6 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");
     }
 
-    private void SetCardStateNormal()
-    {
-        AppState.DevicesFrameFocusedDevice = null;
-        AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
-    }
-
     private void ShowAllDisks()
     {
         var disksString = JsonSerializer.Serialize(Device.Drives, JsonSerializerHelper.IndentedOptions);
@@ -258,21 +271,18 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
     private void StartChat()
     {
-        var existingSession = AppState.DevicesFrameChatSessions.FirstOrDefault(x => x.DeviceId == Device.ID);
-        if (existingSession is null)
+        var session = ChatCache.GetOrAdd(Device.ID, key =>
         {
-            AppState.DevicesFrameChatSessions.Add(new ChatSession()
+            return new ChatSession()
             {
-                DeviceId = Device.ID,
+                DeviceId = key,
                 DeviceName = Device.DeviceName,
                 IsExpanded = true
-            });
-        }
-        else
-        {
-            existingSession.IsExpanded = true;
-        }
-        AppState.InvokePropertyChanged(nameof(AppState.DevicesFrameChatSessions));
+            };
+        });
+
+        session.IsExpanded = true;
+        Messenger.Send(new ChatSessionsChangedMessage(), CircuitConnection.ConnectionId);
     }
 
     private async Task StartRemoteControl(bool viewOnly)
@@ -314,13 +324,12 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
 
         if (isSelected)
         {
-            AppState.DevicesFrameSelectedDevices.Add(Device.ID);
+            SelectedCards.Add(Device.ID);
         }
         else
         {
-            AppState.DevicesFrameSelectedDevices.Remove(Device.ID);
+            SelectedCards.Remove(Device.ID);
         }
-        AppState.InvokePropertyChanged(nameof(AppState.DevicesFrameSelectedDevices));
     }
 
     private async Task UninstallAgent()
@@ -329,9 +338,8 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         if (result)
         {
             await CircuitConnection.UninstallAgents(new[] { Device.ID });
-            AppState.DevicesFrameFocusedDevice = null;
-            AppState.DevicesFrameFocusedCardState = DeviceCardState.Normal;
-            ParentFrame.Refresh();
+            _state = DeviceCardState.Normal;
+            await ParentFrame.Refresh();
         }
     }
 

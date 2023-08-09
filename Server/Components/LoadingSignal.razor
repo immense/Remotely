@@ -1,4 +1,4 @@
-﻿@inject IClientAppState AppState
+﻿@inject IThemeProvider ThemeProvider
 
 <div class="signal-background">
     <div class="signal-wrapper text-center">
@@ -20,7 +20,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _theme = await AppState.GetEffectiveTheme();
+        _theme = await ThemeProvider.GetEffectiveTheme();
         await base.OnInitializedAsync();
     }
 

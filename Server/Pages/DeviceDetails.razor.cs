@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Immense.SimpleMessenger;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Components;
 using Remotely.Server.Hubs;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
@@ -74,18 +76,17 @@ public partial class DeviceDetails : AuthComponentBase
         }
 
         _deviceGroups = DataService.GetDeviceGroups(UserName);
-        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
+        await Register<ReceiveLogsMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleReceiveLogsMessage);
+
         _isLoading = false;
     }
 
-    private void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
+    private async Task HandleReceiveLogsMessage(ReceiveLogsMessage message)
     {
-        if (e.EventName == Models.CircuitEventName.RemoteLogsReceived)
-        {
-            var logChunk = (string)e.Params[0];
-            _logLines.Enqueue(logChunk);
-            InvokeAsync(StateHasChanged);
-        }
+        _logLines.Enqueue(message.LogChunk);
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task DeleteLogs()

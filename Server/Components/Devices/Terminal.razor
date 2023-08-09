@@ -20,7 +20,7 @@
     <div class="terminal-body border border-secondary bg-dark">
         <div @ref="_terminalWindow" class="terminal-window px-2 py-1">
             
-            @foreach (var line in AppState.TerminalLines)
+            @foreach (var line in TerminalStore.TerminalLines)
             {
                 <div @key="line.Id" class="ml-1 terminal-line @line.ClassName" title="@line.Title">
                     @line.Text

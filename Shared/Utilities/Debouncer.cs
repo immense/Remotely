@@ -26,4 +26,20 @@ public static class Debouncer
         _timers.TryAdd(key, timer);
         timer.Start();
     }
+
+    public static void Debounce(TimeSpan wait, Func<Task> func, [CallerMemberName] string key = "")
+    {
+        if (_timers.TryRemove(key, out var timer))
+        {
+            timer.Stop();
+            timer.Dispose();
+        }
+        timer = new Timer(wait.TotalMilliseconds)
+        {
+            AutoReset = false
+        };
+        timer.Elapsed += (s, e) => func();
+        _timers.TryAdd(key, timer);
+        timer.Start();
+    }
 }

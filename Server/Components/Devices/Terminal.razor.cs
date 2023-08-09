@@ -1,11 +1,14 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
+using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Components.ModalContents;
 using Remotely.Server.Hubs;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
@@ -30,7 +33,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
     private ElementReference _terminalWindow;
 
     [Inject]
-    private IClientAppState AppState { get; init; } = null!;
+    private ISelectedCardsStore CardStore { get; init; } = null!;
 
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
@@ -57,7 +60,6 @@ public partial class Terminal : AuthComponentBase, IDisposable
     [Inject]
     private ILogger<Terminal> Logger { get; init; } = null!;
 
-
     [Inject]
     private IModalService ModalService { get; init; } = null!;
 
@@ -74,23 +76,24 @@ public partial class Terminal : AuthComponentBase, IDisposable
                 RunOnNextConnect = false,
                 Initiator = User.UserName,
                 InputType = ScriptInputType.OneTimeScript,
-                Devices = DataService.GetDevices(AppState.DevicesFrameSelectedDevices)
+                Devices = DataService.GetDevices(CardStore.SelectedDevices)
             };
 
             await DataService.AddScriptRun(scriptRun);
 
-            await CircuitConnection.RunScript(AppState.DevicesFrameSelectedDevices, script.Id, scriptRun.Id, ScriptInputType.OneTimeScript, false);
+            await CircuitConnection.RunScript(CardStore.SelectedDevices, script.Id, scriptRun.Id, ScriptInputType.OneTimeScript, false);
 
             ToastService.ShowToast($"Running script on {scriptRun.Devices.Count} devices.");
         });
 
     [Inject]
+    private ITerminalStore TerminalStore { get; init; } = null!;
+    [Inject]
     private IToastService ToastService { get; init; } = null!;
 
     public void Dispose()
     {
-        AppState.PropertyChanged -= AppState_PropertyChanged;
-        CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
+        Messenger.Unregister<PowerShellCompletionsMessage, string>(this, CircuitConnection.ConnectionId);
         GC.SuppressFinalize(this);
     }
 
@@ -106,9 +109,12 @@ public partial class Terminal : AuthComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
-        AppState.PropertyChanged += AppState_PropertyChanged;
+        await Register<PowerShellCompletionsMessage, string>(
+            CircuitConnection.ConnectionId, 
+            HandlePowerShellCompletionsMessage);
+        TerminalStore.TerminalLinesChanged += TerminalStore_TerminalLinesChanged;
     }
+
     private void ApplyCompletion(PwshCommandCompletion completion)
     {
         try
@@ -133,42 +139,12 @@ public partial class Terminal : AuthComponentBase, IDisposable
         }
     }
 
-    private void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(AppState.TerminalLines))
-        {
-            InvokeAsync(StateHasChanged);
-            JsInterop.ScrollToEnd(_terminalWindow);
-        }
-    }
-
-    private async void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
-    {
-        if (e.EventName == Models.CircuitEventName.PowerShellCompletions)
-        {
-            var completion = (PwshCommandCompletion)e.Params[0];
-            var intent = (CompletionIntent)e.Params[1];
-
-            switch (intent)
-            {
-                case CompletionIntent.ShowAll:
-                    await DisplayCompletions(completion.CompletionMatches);
-                    break;
-                case CompletionIntent.NextResult:
-                    ApplyCompletion(completion);
-                    break;
-                default:
-                    break;
-            }
-            AppState.InvokePropertyChanged(nameof(AppState.TerminalLines));
-        }
-    }
     private async Task DisplayCompletions(List<PwshCompletionResult> completionMatches)
     {
-        var deviceId = AppState.DevicesFrameSelectedDevices.FirstOrDefault();
-        if (string.IsNullOrWhiteSpace(deviceId)) 
-        { 
-            return; 
+        var deviceId = CardStore.SelectedDevices.FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(deviceId))
+        {
+            return;
         }
 
         var deviceResult = await DataService.GetDevice(deviceId);
@@ -179,15 +155,16 @@ public partial class Terminal : AuthComponentBase, IDisposable
             return;
         }
 
-        AppState.AddTerminalLine(
-            $"Completions for {deviceResult.Value.DeviceName}", 
+        TerminalStore.AddTerminalLine(
+            $"Completions for {deviceResult.Value.DeviceName}",
             className: "font-weight-bold");
 
         foreach (var match in completionMatches)
         {
-            AppState.AddTerminalLine(match.CompletionText, className: "", title: match.ToolTip);
+            TerminalStore.AddTerminalLine(match.CompletionText, className: "", title: match.ToolTip);
         }
     }
+
     private void EvaluateInputKeypress(KeyboardEventArgs ev)
     {
         if (ev.Key.Equals("Enter", StringComparison.OrdinalIgnoreCase))
@@ -197,14 +174,14 @@ public partial class Terminal : AuthComponentBase, IDisposable
                 return;
             }
 
-            var devices = AppState.DevicesFrameSelectedDevices.ToArray();
+            var devices = CardStore.SelectedDevices.ToArray();
             if (!devices.Any())
             {
                 ToastService.ShowToast("You must select at least one device.", classString: "bg-warning");
                 return;
             }
             CircuitConnection.ExecuteCommandOnAgent(_shell, InputText, devices);
-            AppState.AddTerminalHistory(InputText);
+            TerminalStore.AddTerminalHistory(InputText);
             InputText = string.Empty;
         }
     }
@@ -220,11 +197,11 @@ public partial class Terminal : AuthComponentBase, IDisposable
 
         if (ev.Key.Equals("ArrowUp", StringComparison.OrdinalIgnoreCase))
         {
-            InputText = AppState.GetTerminalHistory(false);
+            InputText = TerminalStore.GetTerminalHistory(false);
         }
         else if (ev.Key.Equals("ArrowDown", StringComparison.OrdinalIgnoreCase))
         {
-            InputText = AppState.GetTerminalHistory(true);
+            InputText = TerminalStore.GetTerminalHistory(true);
         }
         else if (ev.Key.Equals("Tab", StringComparison.OrdinalIgnoreCase))
         {
@@ -234,7 +211,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
                 return;
             }
 
-            if (!AppState.DevicesFrameSelectedDevices.Any())
+            if (!CardStore.SelectedDevices.Any())
             {
                 ToastService.ShowToast("No devices are selected.", classString: "bg-warning");
                 return;
@@ -249,7 +226,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
         }
         else if (ev.CtrlKey && ev.Key.Equals(" ", StringComparison.OrdinalIgnoreCase))
         {
-            if (!AppState.DevicesFrameSelectedDevices.Any())
+            if (!CardStore.SelectedDevices.Any())
             {
                 return;
             }
@@ -258,8 +235,8 @@ public partial class Terminal : AuthComponentBase, IDisposable
         }
         else if (ev.CtrlKey && ev.Key.Equals("q", StringComparison.OrdinalIgnoreCase))
         {
-            AppState.TerminalLines.Clear();
-            AppState.InvokePropertyChanged(nameof(AppState.TerminalLines));
+            TerminalStore.TerminalLines.Clear();
+            TerminalStore.InvokeLinesChanged();
         }
     }
 
@@ -272,6 +249,25 @@ public partial class Terminal : AuthComponentBase, IDisposable
         }
 
         await CircuitConnection.GetPowerShellCompletions(_lastCompletionInput, _lastCursorIndex, CompletionIntent.NextResult, forward);
+    }
+
+    private async Task HandlePowerShellCompletionsMessage(PowerShellCompletionsMessage message)
+    {
+        var completion = message.Completion;
+        var intent = message.Intent;
+
+        switch (intent)
+        {
+            case CompletionIntent.ShowAll:
+                await DisplayCompletions(completion.CompletionMatches);
+                break;
+            case CompletionIntent.NextResult:
+                ApplyCompletion(completion);
+                break;
+            default:
+                break;
+        }
+        TerminalStore.InvokeLinesChanged();
     }
 
     private async Task ShowAllCompletions()
@@ -296,7 +292,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
             return;
         }
 
-        if (!AppState.DevicesFrameSelectedDevices.Any())
+        if (!CardStore.SelectedDevices.Any())
         {
             ToastService.ShowToast("You must select at least one device.", classString: "bg-warning");
             return;
@@ -334,6 +330,12 @@ public partial class Terminal : AuthComponentBase, IDisposable
             "Note: The first PS Core command or tab completion takes a few moments while the service is " +
             "starting on the remote device."
         });
+    }
+
+    private async void TerminalStore_TerminalLinesChanged(object? sender, EventArgs e)
+    {
+        await InvokeAsync(StateHasChanged);
+        JsInterop.ScrollToEnd(_terminalWindow);
     }
     private void ToggleTerminalOpen()
     {

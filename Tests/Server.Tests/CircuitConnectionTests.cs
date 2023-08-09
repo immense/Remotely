@@ -1,24 +1,17 @@
 ﻿#nullable enable
-using Castle.Core.Logging;
 using Immense.RemoteControl.Server.Services;
-using Microsoft.AspNetCore.SignalR;
+using Immense.SimpleMessenger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Server.Tests.Mocks;
-using Remotely.Shared.Dtos;
 using Remotely.Shared.Extensions;
 using Remotely.Shared.Interfaces;
-using Remotely.Shared.Models;
 using Remotely.Tests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Tests;
@@ -30,13 +23,14 @@ public class CircuitConnectionTests
     private TestData _testData;
     private IDataService _dataService;
     private Mock<IAuthService> _authService;
-    private Mock<IClientAppState> _clientAppState;
+    private Mock<ISelectedCardsStore> _clientAppState;
     private HubContextFixture<AgentHub, IAgentHubClient> _agentHubContextFixture;
     private Mock<IApplicationConfig> _appConfig;
     private Mock<ICircuitManager> _circuitManager;
     private Mock<IToastService> _toastService;
     private Mock<IExpiringTokenService> _expiringTokenService;
     private Mock<IRemoteControlSessionCache> _remoteControlSessionCache;
+    private Mock<IMessenger> _messenger;
     private Mock<IAgentHubSessionCache> _agentSessionCache;
     private Mock<ILogger<CircuitConnection>> _logger;
     private CircuitConnection _circuitConnection;
@@ -50,13 +44,14 @@ public class CircuitConnectionTests
 
         _dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
         _authService = new Mock<IAuthService>();
-        _clientAppState = new Mock<IClientAppState>();
+        _clientAppState = new Mock<ISelectedCardsStore>();
         _agentHubContextFixture = new HubContextFixture<AgentHub, IAgentHubClient>();
         _appConfig = new Mock<IApplicationConfig>();
         _circuitManager = new Mock<ICircuitManager>();
         _toastService = new Mock<IToastService>();
         _expiringTokenService = new Mock<IExpiringTokenService>();
         _remoteControlSessionCache = new Mock<IRemoteControlSessionCache>();
+        _messenger = new Mock<IMessenger>();
         _agentSessionCache = new Mock<IAgentHubSessionCache>();
         _logger = new Mock<ILogger<CircuitConnection>>();
 
@@ -71,6 +66,7 @@ public class CircuitConnectionTests
             _expiringTokenService.Object,
             _remoteControlSessionCache.Object,
             _agentSessionCache.Object,
+            _messenger.Object,
             _logger.Object);
     }
 

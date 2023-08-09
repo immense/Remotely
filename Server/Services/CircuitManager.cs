@@ -15,7 +15,6 @@ public interface ICircuitManager
     ICollection<ICircuitConnection> Connections { get; }
     bool TryAddConnection(string id, ICircuitConnection connection);
     bool TryRemoveConnection(string id, [NotNullWhen(true)] out ICircuitConnection? connection);
-    Task<bool> InvokeOnConnection(string id, CircuitEventName eventName, params object[] args);
     bool TryGetConnection(string id, [NotNullWhen(true)] out ICircuitConnection? connection);
 }
 public class CircuitManager : ICircuitManager
@@ -30,23 +29,6 @@ public class CircuitManager : ICircuitManager
 
     public ICollection<ICircuitConnection> Connections => _connections.Values;
 
-    public Task<bool> InvokeOnConnection(string browserConnectionId, CircuitEventName eventName, params object[] args)
-    {
-        try
-        {
-            if (_connections.TryGetValue(browserConnectionId, out var result))
-            {
-                result.InvokeCircuitEvent(eventName, args);
-                return Task.FromResult(true);
-            }
-            return Task.FromResult(false);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while invoking circuit event.");
-            return Task.FromResult(false);
-        }
-    }
 
     public bool TryAddConnection(string id, ICircuitConnection connection)
     {

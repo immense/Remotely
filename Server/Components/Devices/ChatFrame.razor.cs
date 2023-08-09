@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Immense.SimpleMessenger;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Hubs;
-using Remotely.Server.Services;
+using Remotely.Server.Models.Messages;
+using Remotely.Server.Services.Stores;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.ViewModels;
 using System;
@@ -11,71 +14,61 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
-public partial class ChatFrame : AuthComponentBase, IDisposable
+public partial class ChatFrame : AuthComponentBase, IAsyncDisposable
 {
+    private ICollection<ChatSession> _chatSessions = Array.Empty<ChatSession>();
 
     [Inject]
-    private IClientAppState AppState { get; init; } = null!;
+    private ISelectedCardsStore CardStore { get; init; } = null!;
+
+    [Inject]
+    private IChatSessionStore ChatCache { get; init; } = null!;
 
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
 
-    public void Dispose()
-    {
-        AppState.PropertyChanged -= AppState_PropertyChanged;
-        CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
-        GC.SuppressFinalize(this);
-    }
-
     protected override async Task OnInitializedAsync()
     {
+        _chatSessions = ChatCache.GetAllSessions();
+        await Register<ChatSessionsChangedMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleChatSessionsChanged);
+        await Register<ChatReceivedMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleChatMessageReceived);
+
         await base.OnInitializedAsync();
-        AppState.PropertyChanged += AppState_PropertyChanged;
-        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
     }
 
-    private void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
+    private async Task HandleChatMessageReceived(ChatReceivedMessage message)
     {
-        if (e.EventName == Models.CircuitEventName.ChatReceived)
+        if (message.DidDisconnect ||
+            ChatCache.ContainsKey(message.DeviceId))
         {
-            var deviceId = (string)e.Params[0];
-
-            if (!AppState.DevicesFrameChatSessions.Exists(x => x.DeviceId == deviceId))
-            {
-                var deviceName = (string)e.Params[1];
-                var message = (string)e.Params[2];
-                var disconnected = (bool)e.Params[3];
-
-                if (disconnected)
-                {
-                    return;
-                }
-
-                var newChat = new ChatSession()
-                {
-                    DeviceId = deviceId,
-                    DeviceName = deviceName,
-                    IsExpanded = true
-                };
-
-                newChat.ChatHistory.Add(new ChatHistoryItem()
-                {
-                    Message = message,
-                    Origin = ChatHistoryItemOrigin.Device
-                });
-
-                AppState.DevicesFrameChatSessions.Add(newChat);
-
-                InvokeAsync(StateHasChanged);
-            }
+            return;
         }
+
+        var newChat = new ChatSession()
+        {
+            DeviceId = message.DeviceId,
+            DeviceName = message.DeviceName,
+            IsExpanded = true
+        };
+
+        newChat.ChatHistory.Enqueue(new ChatHistoryItem()
+        {
+            Message = message.MessageText,
+            Origin = ChatHistoryItemOrigin.Device
+        });
+
+        ChatCache.AddOrUpdate(message.DeviceId, newChat, (k, v) => newChat);
+
+        await Messenger.Send(new ChatSessionsChangedMessage(), CircuitConnection.ConnectionId);
     }
 
-    private void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private async Task HandleChatSessionsChanged(ChatSessionsChangedMessage message)
     {
-        if (e.PropertyName == nameof(AppState.DevicesFrameChatSessions))
-        {
-            InvokeAsync(StateHasChanged);
-        }
+        _chatSessions = ChatCache.GetAllSessions();
+        await InvokeAsync(StateHasChanged);
     }
 }

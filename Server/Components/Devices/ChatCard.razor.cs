@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿using Immense.SimpleMessenger;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Hubs;
+using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
+using Remotely.Server.Services.Stores;
 using Remotely.Shared.Enums;
 using Remotely.Shared.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
-public partial class ChatCard : AuthComponentBase, IDisposable
+public partial class ChatCard : AuthComponentBase, IAsyncDisposable
 {
     private ElementReference _chatMessagesWindow;
 
@@ -22,20 +23,13 @@ public partial class ChatCard : AuthComponentBase, IDisposable
     public required ChatSession Session { get; set; }
 
     [Inject]
-    private IClientAppState AppState { get; init; } = null!;
+    private IChatSessionStore ChatSessionStore { get; init; } = null!;
 
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
 
     [Inject]
     private IJsInterop JsInterop { get; init; } = null!;
-
-    public void Dispose()
-    {
-        AppState.PropertyChanged -= AppState_PropertyChanged;
-        CircuitConnection.MessageReceived -= CircuitConnection_MessageReceived;
-        GC.SuppressFinalize(this);
-    }
 
     protected override void OnAfterRender(bool firstRender)
     {
@@ -45,64 +39,55 @@ public partial class ChatCard : AuthComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        AppState.PropertyChanged += AppState_PropertyChanged;
-        CircuitConnection.MessageReceived += CircuitConnection_MessageReceived;
+        await Register<ChatReceivedMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleChatMessageReceived);
     }
 
-    private async void AppState_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    private async Task HandleChatMessageReceived(ChatReceivedMessage message)
     {
-        if (e.PropertyName == Session.SessionId)
+        if (message.DeviceId != Session.DeviceId)
         {
-            await InvokeAsync(StateHasChanged);
+            return;
         }
-    }
 
-    private async void CircuitConnection_MessageReceived(object? sender, Models.CircuitEvent e)
-    {
-        if (e.EventName == Models.CircuitEventName.ChatReceived)
+        if (!ChatSessionStore.TryGetSession(message.DeviceId, out var session))
         {
-            var deviceId = (string)e.Params[0];
+            return;
+        }
 
-            if (deviceId == Session.DeviceId)
+        if (message.DidDisconnect)
+        {
+            session.ChatHistory.Enqueue(new ChatHistoryItem()
             {
-                var deviceName = (string)e.Params[1];
-                var message = (string)e.Params[2];
-                var disconnected = (bool)e.Params[3];
-
-                var session = AppState.DevicesFrameChatSessions.Find(x => x.DeviceId == deviceId);
-
-                if (disconnected)
-                {
-                    session.ChatHistory.Add(new ChatHistoryItem()
-                    {
-                        Message = $"{Session.DeviceName} disconnected.",
-                        Origin = ChatHistoryItemOrigin.System
-                    });
-                }
-                else
-                {
-                    session.ChatHistory.Add(new ChatHistoryItem()
-                    {
-                        Message = message,
-                        Origin = ChatHistoryItemOrigin.Device
-                    });
-                }
-
-                if (!session.IsExpanded)
-                {
-                    session.MissedChats++;
-                }
-
-                await InvokeAsync(StateHasChanged);
-
-                JsInterop.ScrollToEnd(_chatMessagesWindow);
-            }
+                Message = $"{Session.DeviceName} disconnected.",
+                Origin = ChatHistoryItemOrigin.System
+            });
         }
+        else
+        {
+            session.ChatHistory.Enqueue(new ChatHistoryItem()
+            {
+                Message = message.MessageText,
+                Origin = ChatHistoryItemOrigin.Device
+            });
+        }
+
+        if (!session.IsExpanded)
+        {
+            session.MissedChats++;
+        }
+
+        await InvokeAsync(StateHasChanged);
+
+        JsInterop.ScrollToEnd(_chatMessagesWindow);
     }
-    private void CloseChatCard()
+
+    private async Task CloseChatCard()
     {
-        AppState.DevicesFrameChatSessions.RemoveAll(x => x.DeviceId == Session.DeviceId);
-        AppState.InvokePropertyChanged(nameof(AppState.DevicesFrameChatSessions));
+        _ = ChatSessionStore.TryRemove($"{Session.DeviceId}", out _);
+        var message = new ChatSessionsChangedMessage();
+        await Messenger.Send(message, CircuitConnection.ConnectionId);
     }
     private async Task EvaluateInputKeypress(KeyboardEventArgs args)
     {
@@ -115,7 +100,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
 
             await CircuitConnection.SendChat(_inputText, $"{Session.DeviceId}");
 
-            Session.ChatHistory.Add(new ChatHistoryItem()
+            Session.ChatHistory.Enqueue(new ChatHistoryItem()
             {
                 Origin = ChatHistoryItemOrigin.Self,
                 Message = _inputText
