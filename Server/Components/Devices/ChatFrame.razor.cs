@@ -27,27 +27,16 @@ public partial class ChatFrame : AuthComponentBase, IAsyncDisposable
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
 
-    [Inject]
-    private IMessenger Messenger { get; init; } = null!;
-
-    public async ValueTask DisposeAsync()
-    {
-        await Messenger.Unregister<ChatSessionsChangedMessage, string>(this, CircuitConnection.ConnectionId);
-        await Messenger.Unregister<ChatReceivedMessage, string>(this, CircuitConnection.ConnectionId);
-        GC.SuppressFinalize(this);
-    }
-
     protected override async Task OnInitializedAsync()
     {
         _chatSessions = ChatCache.GetAllSessions();
-        await Messenger.Register<ChatSessionsChangedMessage, string>(
-            this,
+        await Register<ChatSessionsChangedMessage, string>(
             CircuitConnection.ConnectionId,
             HandleChatSessionsChanged);
-        await Messenger.Register<ChatReceivedMessage, string>(
-            this,
+        await Register<ChatReceivedMessage, string>(
             CircuitConnection.ConnectionId,
             HandleChatMessageReceived);
+
         await base.OnInitializedAsync();
     }
 
@@ -74,7 +63,7 @@ public partial class ChatFrame : AuthComponentBase, IAsyncDisposable
 
         ChatCache.AddOrUpdate(message.DeviceId, newChat, (k, v) => newChat);
 
-        await InvokeAsync(StateHasChanged);
+        await Messenger.Send(new ChatSessionsChangedMessage(), CircuitConnection.ConnectionId);
     }
 
     private async Task HandleChatSessionsChanged(ChatSessionsChangedMessage message)

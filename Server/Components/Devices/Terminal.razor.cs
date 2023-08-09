@@ -61,9 +61,6 @@ public partial class Terminal : AuthComponentBase, IDisposable
     private ILogger<Terminal> Logger { get; init; } = null!;
 
     [Inject]
-    private IMessenger Messenger { get; init; } = null!;
-
-    [Inject]
     private IModalService ModalService { get; init; } = null!;
 
     private EventCallback<SavedScript> RunQuickScript =>
@@ -112,8 +109,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        await Messenger.Register<PowerShellCompletionsMessage, string>(
-            this,
+        await Register<PowerShellCompletionsMessage, string>(
             CircuitConnection.ConnectionId, 
             HandlePowerShellCompletionsMessage);
         TerminalStore.TerminalLinesChanged += TerminalStore_TerminalLinesChanged;

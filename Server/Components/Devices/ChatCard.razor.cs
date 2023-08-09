@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
-public partial class ChatCard : AuthComponentBase, IDisposable
+public partial class ChatCard : AuthComponentBase, IAsyncDisposable
 {
     private ElementReference _chatMessagesWindow;
 
@@ -31,15 +31,6 @@ public partial class ChatCard : AuthComponentBase, IDisposable
     [Inject]
     private IJsInterop JsInterop { get; init; } = null!;
 
-    [Inject]
-    private IMessenger Messenger { get; init; } = null!;
-
-    public void Dispose()
-    {
-        Messenger.Unregister<ChatReceivedMessage, string>(this, CircuitConnection.ConnectionId);
-        GC.SuppressFinalize(this);
-    }
-
     protected override void OnAfterRender(bool firstRender)
     {
         JsInterop.ScrollToEnd(_chatMessagesWindow);
@@ -48,8 +39,7 @@ public partial class ChatCard : AuthComponentBase, IDisposable
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        await Messenger.Register<ChatReceivedMessage, string>(
-            this,
+        await Register<ChatReceivedMessage, string>(
             CircuitConnection.ConnectionId,
             HandleChatMessageReceived);
     }

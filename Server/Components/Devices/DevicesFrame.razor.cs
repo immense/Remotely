@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Remotely.Server.Components.Devices;
 
 [Authorize]
-public partial class DevicesFrame : AuthComponentBase, IDisposable
+public partial class DevicesFrame : AuthComponentBase
 {
     private readonly List<Device> _allDevices = new();
     private readonly string _deviceGroupAll = Guid.NewGuid().ToString();
@@ -56,19 +56,7 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
     [Inject]
     private IToastService ToastService { get; init; } = null!;
 
-    [Inject]
-    private IMessenger Messenger { get; init; } = null!;
-
     private int TotalPages => (int)Math.Max(1, Math.Ceiling((decimal)_filteredDevices.Count / _devicesPerPage));
-
-    public void Dispose()
-    {
-        Messenger.Unregister<DisplayNotificationMessage, string>(this, CircuitConnection.ConnectionId);
-        Messenger.Unregister<ScriptResultMessage, string>(this, CircuitConnection.ConnectionId);
-        Messenger.Unregister<DeviceStateChangedMessage, string>(this, CircuitConnection.ConnectionId);
-
-        GC.SuppressFinalize(this);
-    }
 
     private async Task HandleDisplayNotificationMessage(DisplayNotificationMessage message)
     {
@@ -89,20 +77,17 @@ public partial class DevicesFrame : AuthComponentBase, IDisposable
 
         EnsureUserSet();
 
-        await Messenger.Register<DisplayNotificationMessage, string>(
-            this,
+        await Register<DisplayNotificationMessage, string>(
             CircuitConnection.ConnectionId,
             HandleDisplayNotificationMessage);
 
-        await Messenger.Register<DeviceStateChangedMessage, string>(
-            this,
+        await Register<DeviceStateChangedMessage, string>(
             CircuitConnection.ConnectionId,
             HandleDeviceStateChangedMessage);
 
-        await Messenger.Register<ScriptResultMessage, string>(
-           this,
-           CircuitConnection.ConnectionId,
-           HandleScriptResultMessage);
+        await Register<ScriptResultMessage, string>(
+            CircuitConnection.ConnectionId,
+            HandleScriptResultMessage);
 
         _deviceGroups.Clear();
 

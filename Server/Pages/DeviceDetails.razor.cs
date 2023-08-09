@@ -54,9 +54,6 @@ public partial class DeviceDetails : AuthComponentBase
     [Inject]
     private IToastService ToastService { get; set; } = null!;
 
-    [Inject]
-    private IMessenger Messenger { get; init; } = null!;
-
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,8 +76,7 @@ public partial class DeviceDetails : AuthComponentBase
         }
 
         _deviceGroups = DataService.GetDeviceGroups(UserName);
-        await Messenger.Register<ReceiveLogsMessage, string>(
-            this,
+        await Register<ReceiveLogsMessage, string>(
             CircuitConnection.ConnectionId,
             HandleReceiveLogsMessage);
 

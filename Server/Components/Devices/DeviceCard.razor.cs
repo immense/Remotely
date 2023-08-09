@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
-public partial class DeviceCard : AuthComponentBase, IDisposable
+public partial class DeviceCard : AuthComponentBase
 {
     private readonly ConcurrentDictionary<string, double> _fileUploadProgressLookup = new();
     private ElementReference _card;
@@ -73,15 +73,6 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
     [Inject]
     private IUpgradeService UpgradeService { get; init; } = null!;
 
-    [Inject]
-    private IMessenger Messenger { get; init; } = null!;
-
-    public void Dispose()
-    {
-        Messenger.Unregister<DeviceStateChangedMessage, string>(this, CircuitConnection.ConnectionId);
-        GC.SuppressFinalize(this);
-    }
-
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -90,13 +81,11 @@ public partial class DeviceCard : AuthComponentBase, IDisposable
         _currentVersion = UpgradeService.GetCurrentVersion();
         _deviceGroups = DataService.GetDeviceGroups(UserName);
 
-        await Messenger.Register<DeviceCardStateChangedMessage, string>(
-            this,
+        await Register<DeviceCardStateChangedMessage, string>(
             CircuitConnection.ConnectionId,
             HandleDeviceCardStateChanged);
 
-        await Messenger.Register<DeviceStateChangedMessage, string>(
-            this, 
+        await Register<DeviceStateChangedMessage, string>(
             CircuitConnection.ConnectionId,
             HandleDeviceStateChanged);
     }
