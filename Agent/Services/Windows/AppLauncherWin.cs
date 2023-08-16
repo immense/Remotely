@@ -1,15 +1,13 @@
-﻿using Immense.RemoteControl.Desktop.Native.Windows;
+﻿using Immense.RemoteControl.Desktop.Shared.Native.Windows;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Versioning;
-using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Threading.Tasks;
 

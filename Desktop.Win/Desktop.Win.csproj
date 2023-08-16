@@ -52,6 +52,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Desktop.Shared\Desktop.Shared.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.UI\Immense.RemoteControl.Desktop.UI.csproj" />
     <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Windows\Immense.RemoteControl.Desktop.Windows.csproj" />
   </ItemGroup>
 

@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Desktop.Native.Windows;
+﻿using Immense.RemoteControl.Desktop.Shared.Native.Windows;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,7 +11,6 @@ using Remotely.Shared.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
