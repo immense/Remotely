@@ -3,20 +3,10 @@ using Immense.RemoteControl.Desktop.Shared.Services;
 using Immense.RemoteControl.Shared;
 using Immense.RemoteControl.Shared.Models;
 using Microsoft.Extensions.Logging;
-using Remotely.Shared;
 using Remotely.Shared.Entities;
-using Remotely.Shared.Enums;
 using Remotely.Shared.Services;
-using Remotely.Shared.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Desktop.Shared.Services;
 
@@ -41,11 +31,14 @@ public class BrandingProvider : IBrandingProvider
         _logger = logger;
     }
 
-    public async Task<BrandingInfoBase> GetBrandingInfo()
+    public BrandingInfoBase CurrentBranding => _brandingInfo ??
+        throw new InvalidOperationException("Branding info has not been set or initialized.");
+
+    public async Task Initialize()
     {
         if (_brandingInfo is not null)
         {
-            return _brandingInfo;
+            return;
         }
 
         var result = await TryGetBrandingInfo();
@@ -71,7 +64,6 @@ public class BrandingProvider : IBrandingProvider
 
             _brandingInfo.Icon = ms.ToArray();
         }
-        return _brandingInfo;
     }
 
     public void SetBrandingInfo(BrandingInfoBase brandingInfo)
