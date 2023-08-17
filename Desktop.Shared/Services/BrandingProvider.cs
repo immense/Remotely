@@ -23,13 +23,11 @@ namespace Desktop.Shared.Services;
 public class BrandingProvider : IBrandingProvider
 {
     private readonly IAppState _appState;
-    private readonly IOrganizationIdProvider _orgIdProvider;
     private readonly IEmbeddedServerDataSearcher _embeddedDataSearcher;
     private readonly ILogger<BrandingProvider> _logger;
-    private BrandingInfoBase _brandingInfo = new()
-    {
-        Product = "Remote Control"
-    };
+    private readonly IOrganizationIdProvider _orgIdProvider;
+    private BrandingInfoBase? _brandingInfo;
+
 
     public BrandingProvider(
         IAppState appState,
@@ -45,6 +43,11 @@ public class BrandingProvider : IBrandingProvider
 
     public async Task<BrandingInfoBase> GetBrandingInfo()
     {
+        if (_brandingInfo is not null)
+        {
+            return _brandingInfo;
+        }
+
         var result = await TryGetBrandingInfo();
 
         if (result.IsSuccess)
@@ -54,9 +57,13 @@ public class BrandingProvider : IBrandingProvider
         else
         {
             _logger.LogWarning(result.Exception, "Failed to extract embedded service data.");
+            _brandingInfo = new()
+            {
+                Product = "Remote Control"
+            };
         }
 
-        if (!_brandingInfo.Icon.Any())
+        if (_brandingInfo.Icon?.Any() != true)
         {
             using var mrs = typeof(BrandingProvider).Assembly.GetManifestResourceStream("Desktop.Shared.Assets.Remotely_Icon.png");
             using var ms = new MemoryStream();
