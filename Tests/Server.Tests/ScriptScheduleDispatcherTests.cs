@@ -14,7 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Tests;
+namespace Remotely.Server.Tests;
 
 [TestClass]
 public class ScriptScheduleDispatcherTests
@@ -68,7 +68,7 @@ public class ScriptScheduleDispatcherTests
         };
 
         var scriptSchedules = new List<ScriptSchedule>()
-        { 
+        {
             _schedule1
         };
 
@@ -108,9 +108,9 @@ public class ScriptScheduleDispatcherTests
 
         _dataService.Verify(x => x.GetScriptSchedulesDue(), Times.Once);
         _dataService.Verify(x => x.AddOrUpdateScriptSchedule(_schedule1), Times.Once);
-        _dataService.Verify(x => x.GetDevices(It.Is<IEnumerable<string>>(x => 
+        _dataService.Verify(x => x.GetDevices(It.Is<IEnumerable<string>>(x =>
             x.Contains(_schedule1.Devices.First().ID))));
-        _dataService.Verify(x => x.AddScriptRun(It.Is<ScriptRun>(x => 
+        _dataService.Verify(x => x.AddScriptRun(It.Is<ScriptRun>(x =>
             x.ScheduleId == _schedule1.Id &&
             x.Devices!.Exists(d => d.ID == _testData.Org1Device1.ID) &&
             x.Devices!.Exists(d => d.ID == _testData.Org1Device2.ID))));

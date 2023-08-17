@@ -18,7 +18,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Remotely.Desktop.Shared.Services;
+namespace Desktop.Shared.Services;
 
 public class BrandingProvider : IBrandingProvider
 {
@@ -32,8 +32,8 @@ public class BrandingProvider : IBrandingProvider
     };
 
     public BrandingProvider(
-        IAppState appState, 
-        IOrganizationIdProvider orgIdProvider, 
+        IAppState appState,
+        IOrganizationIdProvider orgIdProvider,
         IEmbeddedServerDataSearcher embeddedServerDataSearcher,
         ILogger<BrandingProvider> logger)
     {

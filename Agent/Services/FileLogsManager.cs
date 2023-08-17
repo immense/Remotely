@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Remotely.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Remotely.Shared.Services;
+namespace Remotely.Agent.Services;
 
 public interface IFileLogsManager
 {

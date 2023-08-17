@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using System.Threading;
 using System;
-using Remotely.Desktop.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Services;
@@ -15,6 +14,7 @@ using Immense.RemoteControl.Desktop.Linux.Startup;
 using Immense.RemoteControl.Desktop.UI.Services;
 using Avalonia;
 using Immense.RemoteControl.Desktop.UI;
+using Desktop.Shared.Services;
 
 public class Program
 {

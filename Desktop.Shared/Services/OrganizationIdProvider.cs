@@ -1,5 +1,4 @@
-﻿
-namespace Remotely.Desktop.Shared.Services;
+﻿namespace Desktop.Shared.Services;
 
 public interface IOrganizationIdProvider
 {
