@@ -4,8 +4,8 @@
 .DESCRIPTION
    Do not modify this script.  It was generated specifically for your account.
 .EXAMPLE
-   powershell.exe -f Install-Win10.ps1
-   powershell.exe -f Install-Win10.ps1 -DeviceAlias "My Super Computer" -DeviceGroup "My Stuff"
+   powershell.exe -f Install-Win.ps1
+   powershell.exe -f Install-Win.ps1 -DeviceAlias "My Super Computer" -DeviceGroup "My Stuff"
 #>
 
 param (
@@ -102,17 +102,17 @@ function Install-Remotely {
 
 	if ($Path) {
 		Write-Log "Copying install files..."
-		Copy-Item -Path $Path -Destination "$env:TEMP\Remotely-Win10-$Platform.zip"
+		Copy-Item -Path $Path -Destination "$env:TEMP\Remotely-Win-$Platform.zip"
 
 	}
 	else {
 		$ProgressPreference = 'SilentlyContinue'
 		Write-Log "Downloading client..."
-		Invoke-WebRequest -Uri "$HostName/Content/Remotely-Win10-$Platform.zip" -OutFile "$env:TEMP\Remotely-Win10-$Platform.zip" 
+		Invoke-WebRequest -Uri "$HostName/Content/Remotely-Win-$Platform.zip" -OutFile "$env:TEMP\Remotely-Win-$Platform.zip" 
 		$ProgressPreference = 'Continue'
 	}
 
-	if (!(Test-Path -Path "$env:TEMP\Remotely-Win10-$Platform.zip")) {
+	if (!(Test-Path -Path "$env:TEMP\Remotely-Win-$Platform.zip")) {
 		Write-Log "Client files failed to download."
 		Do-Exit
 	}
@@ -120,7 +120,7 @@ function Install-Remotely {
 	Stop-Remotely
 	Get-ChildItem -Path "C:\Program Files\Remotely" | Where-Object {$_.Name -notlike "ConnectionInfo.json"} | Remove-Item -Recurse -Force
 
-	Expand-Archive -Path "$env:TEMP\Remotely-Win10-$Platform.zip" -DestinationPath "$InstallPath"  -Force
+	Expand-Archive -Path "$env:TEMP\Remotely-Win-$Platform.zip" -DestinationPath "$InstallPath"  -Force
 
 	New-Item -ItemType File -Path "$InstallPath\ConnectionInfo.json" -Value (ConvertTo-Json -InputObject $ConnectionInfo) -Force
 

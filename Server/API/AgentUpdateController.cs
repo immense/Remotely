@@ -56,10 +56,10 @@ public class AgentUpdateController : ControllerBase
             switch (platform.ToLower())
             {
                 case "win-x64":
-                    filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely-Win10-x64.zip");
+                    filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely-Win-x64.zip");
                     break;
                 case "win-x86":
-                    filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely-Win10-x86.zip");
+                    filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely-Win-x86.zip");
                     break;
                 case "linux":
                     filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely-Linux.zip");

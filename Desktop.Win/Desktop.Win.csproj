@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Remotely_Desktop</AssemblyName>
     <RootNamespace>Remotely.Desktop.Win</RootNamespace>
     <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
