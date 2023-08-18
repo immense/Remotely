@@ -15,6 +15,8 @@ using Avalonia;
 using Immense.RemoteControl.Desktop.UI;
 using Desktop.Shared.Services;
 
+namespace Remotely.Desktop.Win;
+
 public class Program
 {
     // This is needed for the visual designer to work.
