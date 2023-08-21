@@ -6,7 +6,6 @@
         xmlns:ViewModels="clr-namespace:Remotely.Agent.Installer.Win.ViewModels"
         xmlns:local="clr-namespace:Remotely.Agent.Installer.Win"
         mc:Ignorable="d"
-        WindowStyle="None"
         ResizeMode="CanResizeWithGrip"
         AllowsTransparency="True"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
@@ -21,25 +20,11 @@
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Border Height="50" Background="{Binding TitleBackgroundColor}">
-            <DockPanel Margin="10,0,0,0">
-                <DockPanel>
-                    <Image Height="50" Width="50"  Margin="0,0,10,0" Source="{Binding Icon}"></Image>
-                    <TextBlock Foreground="{Binding TitleForegroundColor}" FontWeight="Bold" FontSize="20" VerticalAlignment="Center">
-                        <Run Text="{Binding ProductName}"></Run>
-                        <Run Text="Installer"></Run>
-                    </TextBlock>
-                </DockPanel>
-                <Button Style="{StaticResource TitlebarButton}" Click="CloseButton_Click" Content="X" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}" />
-                <Button Style="{StaticResource TitlebarButton}" Click="MinimizeButton_Click" Content="____" Foreground="{Binding TitleButtonForegroundColor}" Background="{Binding TitleBackgroundColor}"/>
-            </DockPanel>
-        </Border>
-        <Grid Grid.Row="1" Margin="10,15,10,0">
+        <Grid Grid.Row="0" Margin="10,15,10,0">
 
             <StackPanel>
                 <TextBlock Style="{StaticResource SectionHeader}" Text="{Binding HeaderMessage}" Margin="0,0,0,10"></TextBlock>
@@ -122,7 +107,7 @@
 
         </Grid>
 
-        <DockPanel Margin="10" Grid.Row="2">
+        <DockPanel Margin="10" Grid.Row="1">
             <Button DockPanel.Dock="Left" 
                     HorizontalAlignment="Left" 
                     Style="{StaticResource NormalButton}" 

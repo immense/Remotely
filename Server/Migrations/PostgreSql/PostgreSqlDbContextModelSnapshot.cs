@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.PostgreSql
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -357,15 +357,6 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .ValueGeneratedOnAdd()
                         .HasColumnType("text");
 
-                    b.Property<byte>("ButtonForegroundBlue")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("ButtonForegroundGreen")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("ButtonForegroundRed")
-                        .HasColumnType("smallint");
-
                     b.Property<byte[]>("Icon")
                         .IsRequired()
                         .HasColumnType("bytea");
@@ -377,24 +368,6 @@ namespace Remotely.Server.Migrations.PostgreSql
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("character varying(25)");
-
-                    b.Property<byte>("TitleBackgroundBlue")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("TitleBackgroundGreen")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("TitleBackgroundRed")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("TitleForegroundBlue")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("TitleForegroundGreen")
-                        .HasColumnType("smallint");
-
-                    b.Property<byte>("TitleForegroundRed")
-                        .HasColumnType("smallint");
 
                     b.HasKey("Id");
 
