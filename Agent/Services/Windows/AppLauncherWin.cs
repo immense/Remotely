@@ -124,7 +124,7 @@ public class AppLauncherWin : IAppLauncher
                     targetSessionId: targetSessionId,
                     forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionId == -1,
                     desktopName: "default",
-                    hiddenWindow: true,
+                    hiddenWindow: false,
                     out _);
                 if (!result)
                 {
