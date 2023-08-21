@@ -9,7 +9,7 @@ using System.Diagnostics;
 using Remotely.Shared.Utilities;
 using Immense.RemoteControl.Desktop.Shared.Startup;
 using System.Linq;
-using Immense.RemoteControl.Immense.RemoteControl.Desktop.Windows.Startup;
+using Immense.RemoteControl.Desktop.Windows.Startup;
 using Immense.RemoteControl.Desktop.UI.Services;
 using Avalonia;
 using Immense.RemoteControl.Desktop.UI;
