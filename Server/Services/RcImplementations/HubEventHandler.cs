@@ -97,6 +97,12 @@ public class HubEventHandler : IHubEventHandler
             return Task.CompletedTask;
         }
 
+        if (ex.RequireConsent)
+        {
+            // Don't restart if consent wasn't granted on the first request.
+            return Task.CompletedTask;
+        }
+
         _logger.LogDebug("Windows session changed during remote control.  " +
             "Reason: {reason}.  " +
             "Current Session ID: {sessionId}.  " +
@@ -123,6 +129,12 @@ public class HubEventHandler : IHubEventHandler
         if (session is not RemoteControlSessionEx ex)
         {
             _logger.LogError("Event should have been for RemoteControlSessionEx.");
+            return Task.CompletedTask;
+        }
+
+        if (ex.RequireConsent)
+        {
+            // Don't restart if consent wasn't granted on the first request.
             return Task.CompletedTask;
         }
 
