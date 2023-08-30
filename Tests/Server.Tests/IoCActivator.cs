@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 
-namespace Remotely.Tests;
+namespace Remotely.Server.Tests;
 
 [TestClass]
 public class IoCActivator

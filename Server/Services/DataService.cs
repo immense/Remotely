@@ -206,12 +206,9 @@ public interface IDataService
     Task<bool> TempPasswordSignIn(string email, string password);
 
     Task UpdateBrandingInfo(
-                                                                                                                                                                                                                                                string organizationId,
+        string organizationId,
         string productName,
-        byte[] iconBytes,
-        ColorPickerModel titleForeground,
-        ColorPickerModel titleBackground,
-        ColorPickerModel titleButtonForeground);
+        byte[] iconBytes);
 
     Task<Result<Device>> UpdateDevice(DeviceSetupOptions deviceOptions, string organizationId);
 
@@ -2043,10 +2040,7 @@ public class DataService : IDataService
     public async Task UpdateBrandingInfo(
         string organizationId,
         string productName,
-        byte[] iconBytes,
-        ColorPickerModel titleForeground,
-        ColorPickerModel titleBackground,
-        ColorPickerModel titleButtonForeground)
+        byte[] iconBytes)
     {
         using var dbContext = _appDbFactory.GetContext();
 
@@ -2067,18 +2061,6 @@ public class DataService : IDataService
         {
             organization.BrandingInfo.Icon = iconBytes;
         }
-
-        organization.BrandingInfo.TitleBackgroundRed = titleBackground.Red;
-        organization.BrandingInfo.TitleBackgroundGreen = titleBackground.Green;
-        organization.BrandingInfo.TitleBackgroundBlue = titleBackground.Blue;
-
-        organization.BrandingInfo.TitleForegroundRed = titleForeground.Red;
-        organization.BrandingInfo.TitleForegroundGreen = titleForeground.Green;
-        organization.BrandingInfo.TitleForegroundBlue = titleForeground.Blue;
-
-        organization.BrandingInfo.ButtonForegroundRed = titleButtonForeground.Red;
-        organization.BrandingInfo.ButtonForegroundGreen = titleButtonForeground.Green;
-        organization.BrandingInfo.ButtonForegroundBlue = titleButtonForeground.Blue;
 
         await dbContext.SaveChangesAsync();
     }

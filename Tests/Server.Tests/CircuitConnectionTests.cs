@@ -11,7 +11,6 @@ using Remotely.Server.Services.Stores;
 using Remotely.Server.Tests.Mocks;
 using Remotely.Shared.Extensions;
 using Remotely.Shared.Interfaces;
-using Remotely.Tests;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Tests;

@@ -74,7 +74,7 @@ public class UpdaterWin : IUpdater
             var serverUrl = _configService.GetConnectionInfo().Host;
 
             var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
-            var fileUrl = serverUrl + $"/Content/Remotely-Win10-{platform}.zip";
+            var fileUrl = serverUrl + $"/Content/Remotely-Win-{platform}.zip";
 
             using var httpClient = _httpClientFactory.CreateClient();
             using var request = new HttpRequestMessage(HttpMethod.Head, fileUrl);

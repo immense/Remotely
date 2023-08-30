@@ -1,8 +1,7 @@
-﻿using Immense.RemoteControl.Desktop.Native.Windows;
+﻿using Immense.RemoteControl.Desktop.Shared.Native.Windows;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Dtos;
-using Remotely.Shared.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

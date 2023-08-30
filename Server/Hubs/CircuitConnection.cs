@@ -45,7 +45,7 @@ public interface ICircuitConnection
 
     Task RunScript(IEnumerable<string> deviceIds, Guid savedScriptId, int scriptRunId, ScriptInputType scriptInputType, bool runAsHostedService);
 
-    Task SendChat(string message, string deviceId);
+    Task SendChat(string message, string deviceId, bool isDisconnecting = false);
     Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds);
 
     Task TriggerHeartbeat(string deviceId);
@@ -360,7 +360,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
     }
 
-    public async Task SendChat(string message, string deviceId)
+    public async Task SendChat(string message, string deviceId, bool isDisconnecting = false)
     {
         if (!_dataService.DoesUserHaveAccessToDevice(deviceId, User))
         {
@@ -392,7 +392,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             message,
             orgResult.Value,
             User.OrganizationID,
-            false,
+            isDisconnecting,
             ConnectionId);
     }
 

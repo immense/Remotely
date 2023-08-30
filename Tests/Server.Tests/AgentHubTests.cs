@@ -14,7 +14,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Remotely.Shared.Interfaces;
 using Immense.SimpleMessenger;
-using Remotely.Tests;
 
 namespace Remotely.Server.Tests;
 

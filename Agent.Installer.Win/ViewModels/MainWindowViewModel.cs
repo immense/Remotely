@@ -190,9 +190,6 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    public SolidColorBrush? TitleBackgroundColor { get; set; }
-    public SolidColorBrush? TitleButtonForegroundColor { get; set; }
-    public SolidColorBrush? TitleForegroundColor { get; set; }
     public ICommand UninstallCommand => new RelayCommand(async (param) => { await Uninstall(); });
     private string? DeviceAlias { get; set; }
     private string? DeviceGroup { get; set; }
@@ -279,25 +276,6 @@ public class MainWindowViewModel : ViewModelBase
             {
                 ProductName = brandingInfo.Product;
             }
-
-            TitleBackgroundColor = new SolidColorBrush(Color.FromRgb(
-                brandingInfo?.TitleBackgroundRed ?? 70,
-                brandingInfo?.TitleBackgroundGreen ?? 70,
-                brandingInfo?.TitleBackgroundBlue ?? 70));
-
-            TitleForegroundColor = new SolidColorBrush(Color.FromRgb(
-               brandingInfo?.TitleForegroundRed ?? 29,
-               brandingInfo?.TitleForegroundGreen ?? 144,
-               brandingInfo?.TitleForegroundBlue ?? 241));
-
-            TitleButtonForegroundColor = new SolidColorBrush(Color.FromRgb(
-               brandingInfo?.ButtonForegroundRed ?? 255,
-               brandingInfo?.ButtonForegroundGreen ?? 255,
-               brandingInfo?.ButtonForegroundBlue ?? 255));
-
-            TitleBackgroundColor.Freeze();
-            TitleForegroundColor.Freeze();
-            TitleButtonForegroundColor.Freeze();
 
             Icon = GetBitmapImageIcon(brandingInfo);
         }

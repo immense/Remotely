@@ -3,12 +3,12 @@
    Publishes the Remotely clients.
 .DESCRIPTION
    Publishes the Remotely clients.
-   To deploy the server, supply the following arguments: -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
+   To deploy the server, supply the following arguments: -rid win-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
 .COPYRIGHT
    Copyright 2023 Immense Networks.  All rights reserved.
 .EXAMPLE
    Run it from the Utilities folder (located in the solution directory).
-   Or run "powershell -f Publish.ps1 -rid win10-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
+   Or run "powershell -f Publish.ps1 -rid win-x64 -outdir path\to\dir -hostname https://mysite.mydomain.com
 #>
 
 param (
@@ -92,25 +92,25 @@ if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPat
 
     
 # Clear publish folders.
-if ((Test-Path -Path "$Root\Agent\bin\Release\net7.0\win10-x64\publish") -eq $true) {
-	Get-ChildItem -Path "$Root\Agent\bin\Release\net7.0\win10-x64\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path "$Root\Agent\bin\publish\win-x64") -eq $true) {
+	Get-ChildItem -Path "$Root\Agent\bin\publish\win-x64" | Remove-Item -Force -Recurse
 }
-if ((Test-Path -Path  "$Root\Agent\bin\Release\net7.0\win10-x86\publish" ) -eq $true) {
-	Get-ChildItem -Path  "$Root\Agent\bin\Release\net7.0\win10-x86\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path  "$Root\Agent\bin\publish\win-x86" ) -eq $true) {
+	Get-ChildItem -Path  "$Root\Agent\bin\publish\win-x86" | Remove-Item -Force -Recurse
 }
-if ((Test-Path -Path "$Root\Agent\bin\Release\net7.0\linux-x64\publish") -eq $true) {
-	Get-ChildItem -Path "$Root\Agent\bin\Release\net7.0\linux-x64\publish" | Remove-Item -Force -Recurse
+if ((Test-Path -Path "$Root\Agent\bin\publish\linux-x64") -eq $true) {
+	Get-ChildItem -Path "$Root\Agent\bin\publish\linux-x64" | Remove-Item -Force -Recurse
 }
 
 
 # Publish Core clients.
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x64 --self-contained --configuration Release --output "$Root\Agent\bin\Release\net7.0\win10-x64\publish" "$Root\Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --self-contained --configuration Release --output "$Root\Agent\bin\Release\net7.0\linux-x64\publish" "$Root\Agent"
-dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win10-x86 --self-contained --configuration Release --output "$Root\Agent\bin\Release\net7.0\win10-x86\publish" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win-x64 --self-contained --configuration Release --output "$Root\Agent\bin\publish\win-x64" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --self-contained --configuration Release --output "$Root\Agent\bin\publish\linux-x64" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win-x86 --self-contained --configuration Release --output "$Root\Agent\bin\publish\win-x86" "$Root\Agent"
 
-New-Item -Path "$Root\Agent\bin\Release\net7.0\win10-x64\publish\Desktop\" -ItemType Directory -Force
-New-Item -Path "$Root\Agent\bin\Release\net7.0\win10-x86\publish\Desktop\" -ItemType Directory -Force
-New-Item -Path "$Root\Agent\bin\Release\net7.0\linux-x64\publish\Desktop\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\publish\win-x64\Desktop\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\publish\win-x86\Desktop\" -ItemType Directory -Force
+New-Item -Path "$Root\Agent\bin\publish\linux-x64\Desktop\" -ItemType Directory -Force
 
 
 # Publish Linux ScreenCaster
@@ -155,26 +155,26 @@ if ($SignAssemblies) {
 }
 
 # Compress Core clients.
-$PublishDir =  "$Root\Agent\bin\Release\net7.0\win10-x64\publish"
-Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x64.zip" -Force
-while ((Test-Path -Path "$PublishDir\Remotely-Win10-x64.zip") -eq $false){
-    Write-Host "Waiting for archive to finish: $PublishDir\Remotely-Win10-x64.zip"
+$PublishDir =  "$Root\Agent\bin\publish\win-x64"
+Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win-x64.zip" -Force
+while ((Test-Path -Path "$PublishDir\Remotely-Win-x64.zip") -eq $false){
+    Write-Host "Waiting for archive to finish: $PublishDir\Remotely-Win-x64.zip"
     Start-Sleep -Seconds 3
 }
-Move-Item -Path "$PublishDir\Remotely-Win10-x64.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Win10-x64.zip" -Force
+Move-Item -Path "$PublishDir\Remotely-Win-x64.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Win-x64.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\Release\net7.0\win10-x86\publish"
-Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win10-x86.zip" -Force
-while ((Test-Path -Path "$PublishDir\Remotely-Win10-x86.zip") -eq $false){
-    Write-Host "Waiting for archive to finish: $PublishDir\Remotely-Win10-x86.zip"
+$PublishDir =  "$Root\Agent\bin\publish\win-x86"
+Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win-x86.zip" -Force
+while ((Test-Path -Path "$PublishDir\Remotely-Win-x86.zip") -eq $false){
+    Write-Host "Waiting for archive to finish: $PublishDir\Remotely-Win-x86.zip"
     Start-Sleep -Seconds 3
 }
-Move-Item -Path "$PublishDir\Remotely-Win10-x86.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Win10-x86.zip" -Force
+Move-Item -Path "$PublishDir\Remotely-Win-x86.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Win-x86.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\Release\net7.0\linux-x64\publish"
+$PublishDir =  "$Root\Agent\bin\publish\linux-x64"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Linux.zip" -Force
 while ((Test-Path -Path "$PublishDir\Remotely-Linux.zip") -eq $false){
-    Write-Host "Waiting for archive to finish: $PublishDir\Remotely-Win10-x86.zip"
+    Write-Host "Waiting for archive to finish: $PublishDir\Remotely-Win-x86.zip"
     Start-Sleep -Seconds 3
 }
 Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Linux.zip" -Force

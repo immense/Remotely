@@ -4,6 +4,7 @@ using Moq;
 using Remotely.Server.Services;
 using Remotely.Shared.Dtos;
 using Remotely.Shared.Entities;
+using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -11,7 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Remotely.Tests;
+namespace Remotely.Server.Tests;
 
 [TestClass]
 public class DataServiceTests
@@ -132,7 +133,7 @@ public class DataServiceTests
             Name = "GCI",
             Organization = _testData.Org1Admin1.Organization,
             OrganizationID = _testData.Org1Id,
-            Shell = Shared.Enums.ScriptingShell.PSCore
+            Shell = ScriptingShell.PSCore
         };
 
         await _dataService.AddOrUpdateSavedScript(savedScript, _testData.Org1Admin1.Id);
@@ -140,7 +141,7 @@ public class DataServiceTests
         var scriptRun = new ScriptRun()
         {
             Devices = new() { _testData.Org1Device1 },
-            InputType = Shared.Enums.ScriptInputType.ScheduledScript,
+            InputType = ScriptInputType.ScheduledScript,
             SavedScriptId = savedScript.Id,
             Initiator = _testData.Org1Admin1.UserName,
             RunAt = now,
@@ -166,10 +167,10 @@ public class DataServiceTests
         var dto = new ScriptResultDto()
         {
             DeviceID = _testData.Org1Device1.ID,
-            InputType = Shared.Enums.ScriptInputType.ScheduledScript,
+            InputType = ScriptInputType.ScheduledScript,
             SavedScriptId = savedScript.Id,
             ScriptRunId = scriptRun.Id,
-            Shell = Shared.Enums.ScriptingShell.PSCore,
+            Shell = ScriptingShell.PSCore,
             ScriptInput = "echo test"
         };
 

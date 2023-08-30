@@ -271,7 +271,7 @@ public class InstallerService
                     ProgressValueChanged?.Invoke(this, args.ProgressPercentage);
                 };
 
-                await client.DownloadFileTaskAsync($"{serverUrl}/Content/Remotely-Win10-{_platform}.zip", targetFile);
+                await client.DownloadFileTaskAsync($"{serverUrl}/Content/Remotely-Win-{_platform}.zip", targetFile);
             }
         }
 
@@ -290,7 +290,7 @@ public class InstallerService
             await Task.Delay(10);
         }
 
-        var wr = WebRequest.CreateHttp($"{serverUrl}/Content/Remotely-Win10-{_platform}.zip");
+        var wr = WebRequest.CreateHttp($"{serverUrl}/Content/Remotely-Win-{_platform}.zip");
         wr.Method = "Head";
         using (var response = (HttpWebResponse)await wr.GetResponseAsync())
         {

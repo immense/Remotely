@@ -3,37 +3,25 @@ using Immense.RemoteControl.Desktop.Shared.Services;
 using Immense.RemoteControl.Shared;
 using Immense.RemoteControl.Shared.Models;
 using Microsoft.Extensions.Logging;
-using Remotely.Shared;
 using Remotely.Shared.Entities;
-using Remotely.Shared.Enums;
 using Remotely.Shared.Services;
-using Remotely.Shared.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Remotely.Desktop.Shared.Services;
+namespace Desktop.Shared.Services;
 
 public class BrandingProvider : IBrandingProvider
 {
     private readonly IAppState _appState;
-    private readonly IOrganizationIdProvider _orgIdProvider;
     private readonly IEmbeddedServerDataSearcher _embeddedDataSearcher;
     private readonly ILogger<BrandingProvider> _logger;
-    private BrandingInfoBase _brandingInfo = new()
-    {
-        Product = "Remote Control"
-    };
+    private readonly IOrganizationIdProvider _orgIdProvider;
+    private BrandingInfoBase? _brandingInfo;
+
 
     public BrandingProvider(
-        IAppState appState, 
-        IOrganizationIdProvider orgIdProvider, 
+        IAppState appState,
+        IOrganizationIdProvider orgIdProvider,
         IEmbeddedServerDataSearcher embeddedServerDataSearcher,
         ILogger<BrandingProvider> logger)
     {
@@ -43,8 +31,16 @@ public class BrandingProvider : IBrandingProvider
         _logger = logger;
     }
 
-    public async Task<BrandingInfoBase> GetBrandingInfo()
+    public BrandingInfoBase CurrentBranding => _brandingInfo ??
+        throw new InvalidOperationException("Branding info has not been set or initialized.");
+
+    public async Task Initialize()
     {
+        if (_brandingInfo is not null)
+        {
+            return;
+        }
+
         var result = await TryGetBrandingInfo();
 
         if (result.IsSuccess)
@@ -54,9 +50,13 @@ public class BrandingProvider : IBrandingProvider
         else
         {
             _logger.LogWarning(result.Exception, "Failed to extract embedded service data.");
+            _brandingInfo = new()
+            {
+                Product = "Remote Control"
+            };
         }
 
-        if (!_brandingInfo.Icon.Any())
+        if (_brandingInfo.Icon?.Any() != true)
         {
             using var mrs = typeof(BrandingProvider).Assembly.GetManifestResourceStream("Desktop.Shared.Assets.Remotely_Icon.png");
             using var ms = new MemoryStream();
@@ -64,7 +64,6 @@ public class BrandingProvider : IBrandingProvider
 
             _brandingInfo.Icon = ms.ToArray();
         }
-        return _brandingInfo;
     }
 
     public void SetBrandingInfo(BrandingInfoBase brandingInfo)

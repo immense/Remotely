@@ -13,7 +13,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Remotely.Tests;
+namespace Remotely.Server.Tests;
 
 public class TestData
 {

@@ -3,23 +3,13 @@
 @attribute [Authorize(Policy = PolicyNames.OrganizationAdminRequired)]
 @inject IDataService DataService
 @inject IToastService ToastService
-@inject IJsInterop JsInterop 
+@inject IJsInterop JsInterop
 @using Remotely.Server.Models
 @using System.ComponentModel.DataAnnotations
 
 <h3 class="mb-3">Branding</h3>
 
 <AlertBanner Message="@_alertMessage" />
-
-<div class="row">
-    <div class="col-sm-8 col-lg-6 col-xl-5">
-        <div class="form-group">
-            <label class="mb-1">Branding Areas</label>
-            <br />
-            <img class="img-fluid" src="/images/Remotely_Desktop.png" />
-        </div>
-    </div>
-</div>
 
 <div class="row">
     <div class="col-sm-8 col-lg-6 col-xl-5">
@@ -32,30 +22,22 @@
                 <ValidationMessage For="() => _inputModel.ProductName" />
             </div>
 
-            @if (!string.IsNullOrWhiteSpace(_base64Icon))
-            {
-                <div class="form-group mb-4">
-                    <label class="text-info font-weight-bold">Current Icon</label>
-                    <br />
-                    <img class="img-fluid" src="data:image/png;base64,@_base64Icon" />
-                </div>
-            }
+            <div class="form-group mb-4">
+                <label class="text-info font-weight-bold d-block">Current Icon</label>
+                <br />
+                @if (!string.IsNullOrWhiteSpace(_base64Icon))
+                {
+                    <img class="branding-icon" src="data:image/png;base64,@_base64Icon" />
+                }
+                else
+                {
+                    <img class="branding-icon" src="/images/Remotely_Icon.png" />
+                }
+            </div>
 
             <div class="form-group mb-5">
                 <label class="text-info font-weight-bold">New Icon</label>
                 <InputFile type="file" accept="image/png" class="form-control" OnChange="IconUploadInputChanged" />
-            </div>
-            <div class="form-group mb-5">
-                <label class="text-info font-weight-bold">Title Foreground</label>
-                <ColorPicker @bind-Color="_inputModel.TitleForegroundColor" />
-            </div>
-            <div class="form-group mb-5">
-                <label class="text-info font-weight-bold">Title Background</label>
-                <ColorPicker @bind-Color="_inputModel.TitleBackgroundColor" />
-            </div>
-            <div class="form-group mb-5">
-                <label class="text-info font-weight-bold">Button Color</label>
-                <ColorPicker @bind-Color="_inputModel.TitleButtonColor" />
             </div>
             <div class="form-group text-right">
                 <button class="btn btn-secondary mr-3" type="button" @onclick="ResetBranding">Reset</button>
@@ -76,10 +58,6 @@
         [Display(Name = "Product Name")]
         public string ProductName { get; set; } = string.Empty;
 
-        public ColorPickerModel TitleForegroundColor { get; set; } = new();
-        public ColorPickerModel TitleBackgroundColor { get; set; } = new();
-        public ColorPickerModel TitleButtonColor { get; set; } = new();
-
         public byte[] IconBytes { get; set; } = Array.Empty<byte>();
     }
 
@@ -97,10 +75,7 @@
         await DataService.UpdateBrandingInfo(
             User.OrganizationID,
             _inputModel.ProductName,
-            _inputModel.IconBytes,
-            _inputModel.TitleForegroundColor,
-            _inputModel.TitleBackgroundColor,
-            _inputModel.TitleButtonColor);
+            _inputModel.IconBytes);
 
         if (_inputModel?.IconBytes?.Any() == true)
         {
@@ -139,7 +114,7 @@
             return;
         }
 
-        var brandingResult= await DataService.GetBrandingInfo(orgResult.Value.ID);
+        var brandingResult = await DataService.GetBrandingInfo(orgResult.Value.ID);
 
         if (!brandingResult.IsSuccess)
         {
@@ -154,18 +129,6 @@
         {
             _base64Icon = Convert.ToBase64String(brandingInfo.Icon);
         }
-
-        _inputModel.TitleForegroundColor.Red = brandingInfo.TitleForegroundRed;
-        _inputModel.TitleForegroundColor.Green = brandingInfo.TitleForegroundGreen;
-        _inputModel.TitleForegroundColor.Blue = brandingInfo.TitleForegroundBlue;
-
-        _inputModel.TitleBackgroundColor.Red = brandingInfo.TitleBackgroundRed;
-        _inputModel.TitleBackgroundColor.Green = brandingInfo.TitleBackgroundGreen;
-        _inputModel.TitleBackgroundColor.Blue = brandingInfo.TitleBackgroundBlue;
-
-        _inputModel.TitleButtonColor.Red = brandingInfo.ButtonForegroundRed;
-        _inputModel.TitleButtonColor.Green = brandingInfo.ButtonForegroundGreen;
-        _inputModel.TitleButtonColor.Blue = brandingInfo.ButtonForegroundBlue;
     }
 
     private async Task ResetBranding()

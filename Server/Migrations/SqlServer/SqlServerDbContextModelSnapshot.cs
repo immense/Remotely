@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.SqlServer
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -359,15 +359,6 @@ namespace Remotely.Server.Migrations.SqlServer
                         .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<byte>("ButtonForegroundBlue")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("ButtonForegroundGreen")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("ButtonForegroundRed")
-                        .HasColumnType("tinyint");
-
                     b.Property<byte[]>("Icon")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
@@ -379,24 +370,6 @@ namespace Remotely.Server.Migrations.SqlServer
                         .IsRequired()
                         .HasMaxLength(25)
                         .HasColumnType("nvarchar(25)");
-
-                    b.Property<byte>("TitleBackgroundBlue")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("TitleBackgroundGreen")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("TitleBackgroundRed")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("TitleForegroundBlue")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("TitleForegroundGreen")
-                        .HasColumnType("tinyint");
-
-                    b.Property<byte>("TitleForegroundRed")
-                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
 

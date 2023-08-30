@@ -85,6 +85,7 @@ public partial class ChatCard : AuthComponentBase, IAsyncDisposable
 
     private async Task CloseChatCard()
     {
+        await CircuitConnection.SendChat(string.Empty, $"{Session.DeviceId}", true);
         _ = ChatSessionStore.TryRemove($"{Session.DeviceId}", out _);
         var message = new ChatSessionsChangedMessage();
         await Messenger.Send(message, CircuitConnection.ConnectionId);

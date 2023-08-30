@@ -57,7 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Desktop.Shared\Desktop.Shared.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Linux\Immense.RemoteControl.Desktop.Linux.csproj" />
     <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Shared\Immense.RemoteControl.Desktop.Shared.csproj" />
-    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop\Immense.RemoteControl.Desktop.csproj" />
+    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.UI\Immense.RemoteControl.Desktop.UI.csproj" />
   </ItemGroup>
 </Project>
