@@ -1,7 +1,9 @@
 ﻿using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
@@ -29,7 +31,6 @@ public partial class DevicesFrame : AuthComponentBase
     private readonly string _deviceGroupAll = Guid.NewGuid().ToString();
     private readonly string _deviceGroupNone = Guid.NewGuid().ToString();
     private readonly List<DeviceGroup> _deviceGroups = new();
-    private readonly List<Device> _devicesForPage = new();
     private readonly SemaphoreSlim _devicesLock = new(1,1);
     private readonly List<Device> _filteredDevices = new();
     private readonly List<PropertyInfo> _sortableProperties = new();
@@ -45,25 +46,23 @@ public partial class DevicesFrame : AuthComponentBase
     private ISelectedCardsStore CardStore { get; init; } = null!;
 
     [Inject]
-    private ITerminalStore TerminalStore { get; init; } = null!;
-
-    [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
 
     [Inject]
     private IDataService DataService { get; init; } = null!;
 
+    private Device[] DisplayedDevices => GetDisplayedDevices();
+
+    [Inject]
+    private ILogger<DevicesFrame> Logger { get; init; } = null!;
+
+    [Inject]
+    private ITerminalStore TerminalStore { get; init; } = null!;
+
     [Inject]
     private IToastService ToastService { get; init; } = null!;
 
     private int TotalPages => (int)Math.Max(1, Math.Ceiling((decimal)_filteredDevices.Count / _devicesPerPage));
-
-    private async Task HandleDisplayNotificationMessage(DisplayNotificationMessage message)
-    {
-        TerminalStore.AddTerminalLine(message.ConsoleText);
-        ToastService.ShowToast(message.ToastText, classString: message.ClassName);
-        await InvokeAsync(StateHasChanged);
-    }
 
     public async Task Refresh()
     {
@@ -104,42 +103,6 @@ public partial class DevicesFrame : AuthComponentBase
         await LoadDevices();
     }
 
-    private async Task HandleScriptResultMessage(ScriptResultMessage message)
-    {
-        await AddScriptResult(message.ScriptResult);
-    }
-
-    private async Task HandleDeviceStateChangedMessage(DeviceStateChangedMessage message)
-    {
-        await _devicesLock.WaitAsync();
-
-        try
-        {
-            var device = message.Device;
-
-            foreach (var collection in new[] { _allDevices, _devicesForPage })
-            {
-                var index = collection.FindIndex(x => x.ID == device.ID);
-                if (index > -1)
-                {
-                    collection[index] = device;
-                }
-            }
-
-            Debouncer.Debounce(TimeSpan.FromSeconds(2), Refresh);
-        }
-        finally
-        {
-            _devicesLock.Release();
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-        await FilterDevices();
-    }
-
     private async Task AddScriptResult(ScriptResult result)
     {
         var deviceResult = await DataService.GetDevice(result.DeviceID);
@@ -167,13 +130,13 @@ public partial class DevicesFrame : AuthComponentBase
     private async Task ClearSelectedCard()
     {
         await Messenger.Send(
-            new DeviceCardStateChangedMessage(string.Empty, DeviceCardState.Normal), 
+            new DeviceCardStateChangedMessage(string.Empty, DeviceCardState.Normal),
             CircuitConnection.ConnectionId);
     }
 
-    private async Task FilterDevices()
+    private Device[] GetDisplayedDevices()
     {
-        await _devicesLock.WaitAsync();
+        _devicesLock.Wait();
         try
         {
             _filteredDevices.Clear();
@@ -205,7 +168,7 @@ public partial class DevicesFrame : AuthComponentBase
                 if (_selectedGroupId == _deviceGroupAll ||
                     _selectedGroupId == device.DeviceGroupID ||
                     (
-                        _selectedGroupId == _deviceGroupNone && 
+                        _selectedGroupId == _deviceGroupNone &&
                         string.IsNullOrWhiteSpace(device.DeviceGroupID
                     )))
                 {
@@ -238,17 +201,19 @@ public partial class DevicesFrame : AuthComponentBase
                 .Skip(skipCount)
                 .Take(_devicesPerPage);
 
-            _devicesForPage.Clear();
-            _devicesForPage.AddRange(appendDevices.Concat(devicesForPage));
-
+            return appendDevices.Concat(devicesForPage).ToArray();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while filtering devices.");
+            ToastService.ShowToast2("Filter devices failed", ToastType.Error);
+            return Array.Empty<Device>();
         }
         finally
         {
             _devicesLock.Release();
         }
     }
-
-
     private string GetDisplayName(PropertyInfo propInfo)
     {
         return propInfo.GetCustomAttribute<DisplayAttribute>()?.Name ?? propInfo.Name;
@@ -259,12 +224,44 @@ public partial class DevicesFrame : AuthComponentBase
         return $"oi-sort-{_sortDirection.ToString().ToLower()}";
     }
 
+    private async Task HandleDeviceStateChangedMessage(DeviceStateChangedMessage message)
+    {
+        await _devicesLock.WaitAsync();
+
+        try
+        {
+            var device = message.Device;
+
+            var index = _allDevices.FindIndex(x => x.ID == device.ID);
+            if (index > -1)
+            {
+                _allDevices[index] = device;
+            }
+
+            Debouncer.Debounce(TimeSpan.FromSeconds(2), Refresh);
+        }
+        finally
+        {
+            _devicesLock.Release();
+        }
+    }
+
+    private async Task HandleDisplayNotificationMessage(DisplayNotificationMessage message)
+    {
+        TerminalStore.AddTerminalLine(message.ConsoleText);
+        ToastService.ShowToast(message.ToastText, classString: message.ClassName);
+        await InvokeAsync(StateHasChanged);
+    }
     private async Task HandleRefreshClicked()
     {
         await Refresh();
         ToastService.ShowToast("Devices refreshed.");
     }
 
+    private async Task HandleScriptResultMessage(ScriptResultMessage message)
+    {
+        await AddScriptResult(message.ScriptResult);
+    }
     private async Task LoadDevices()
     {
         EnsureUserSet();
@@ -284,8 +281,6 @@ public partial class DevicesFrame : AuthComponentBase
         {
             _devicesLock.Release();
         }
-
-        await FilterDevices();
     }
     private void PageDown()
     {

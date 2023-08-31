@@ -86,7 +86,7 @@
         </div>
     </div>
     <div id="deviceListDiv" class="p-2 mb-5">
-        @foreach (var device in _devicesForPage)
+        @foreach (var device in DisplayedDevices)
         {
             <CascadingValue Value="this">
                 <DeviceCard @key="device.ID" Device="device" />
