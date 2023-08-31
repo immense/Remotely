@@ -33,11 +33,13 @@ public partial class DevicesFrame : AuthComponentBase
     private readonly List<DeviceGroup> _deviceGroups = new();
     private readonly SemaphoreSlim _devicesLock = new(1,1);
     private readonly List<Device> _filteredDevices = new();
+    private readonly List<Device> _prependedDevices = new();
     private readonly List<PropertyInfo> _sortableProperties = new();
     private int _currentPage = 1;
     private int _devicesPerPage = 25;
     private string? _filter;
     private bool _hideOfflineDevices = true;
+    private string _lastFilterState = string.Empty;
     private string? _selectedGroupId;
     private string _selectedSortProperty = "DeviceName";
     private ListSortDirection _sortDirection;
@@ -48,6 +50,20 @@ public partial class DevicesFrame : AuthComponentBase
     [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
 
+    private string CurrentFilterState
+    {
+        get
+        {
+            return
+                $"{_filter}" +
+                $"{_selectedGroupId}|" +
+                $"{_selectedSortProperty}|" +
+                $"{_sortDirection}|" +
+                $"{_hideOfflineDevices}|" +
+                $"{_currentPage}|" +
+                $"{_devicesPerPage}|";
+        }
+    }
     [Inject]
     private IDataService DataService { get; init; } = null!;
 
@@ -66,6 +82,7 @@ public partial class DevicesFrame : AuthComponentBase
 
     public async Task Refresh()
     {
+        _lastFilterState = string.Empty;
         await LoadDevices();
         await InvokeAsync(StateHasChanged);
     }
@@ -134,74 +151,83 @@ public partial class DevicesFrame : AuthComponentBase
             CircuitConnection.ConnectionId);
     }
 
+    private void FilterAndSortDevices()
+    {
+        _filteredDevices.Clear();
+        _prependedDevices.Clear();
+
+        foreach (var device in _allDevices)
+        {
+            if (CardStore.SelectedDevices.Contains(device.ID))
+            {
+                _prependedDevices.Add(device);
+            }
+
+            if (!device.IsOnline && _hideOfflineDevices)
+            {
+                continue;
+            }
+
+            if (!string.IsNullOrWhiteSpace(_filter) &&
+                    device.Alias?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.CurrentUser?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.DeviceName?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.Notes?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true)
+            {
+                continue;
+            }
+
+            if (_selectedGroupId == _deviceGroupAll ||
+                _selectedGroupId == device.DeviceGroupID ||
+                (
+                    _selectedGroupId == _deviceGroupNone &&
+                    string.IsNullOrWhiteSpace(device.DeviceGroupID
+                )))
+            {
+                _filteredDevices.Add(device);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(_selectedSortProperty))
+        {
+            var direction = _sortDirection == ListSortDirection.Ascending ? 1 : -1;
+            _filteredDevices.Sort((a, b) =>
+            {
+                if (a.IsOnline != b.IsOnline)
+                {
+                    return b.IsOnline.CompareTo(a.IsOnline);
+                }
+
+                var propInfo = _sortableProperties.Find(x => x.Name == _selectedSortProperty);
+
+                var valueA = propInfo?.GetValue(a);
+                var valueB = propInfo?.GetValue(b);
+
+                return Comparer.Default.Compare(valueA, valueB) * direction;
+            });
+        }
+    }
+
     private Device[] GetDisplayedDevices()
     {
         _devicesLock.Wait();
         try
         {
-            _filteredDevices.Clear();
-            var appendDevices = new List<Device>();
-
-            foreach (var device in _allDevices)
+            if (CurrentFilterState != _lastFilterState)
             {
-                if (CardStore.SelectedDevices.Contains(device.ID))
-                {
-                    appendDevices.Add(device);
-                }
-
-                if (!device.IsOnline && _hideOfflineDevices)
-                {
-                    continue;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_filter) &&
-                        device.Alias?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.CurrentUser?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.DeviceName?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.Notes?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true)
-                {
-                    continue;
-                }
-
-                if (_selectedGroupId == _deviceGroupAll ||
-                    _selectedGroupId == device.DeviceGroupID ||
-                    (
-                        _selectedGroupId == _deviceGroupNone &&
-                        string.IsNullOrWhiteSpace(device.DeviceGroupID
-                    )))
-                {
-                    _filteredDevices.Add(device);
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(_selectedSortProperty))
-            {
-                var direction = _sortDirection == ListSortDirection.Ascending ? 1 : -1;
-                _filteredDevices.Sort((a, b) =>
-                {
-                    if (a.IsOnline != b.IsOnline)
-                    {
-                        return b.IsOnline.CompareTo(a.IsOnline);
-                    }
-
-                    var propInfo = _sortableProperties.Find(x => x.Name == _selectedSortProperty);
-
-                    var valueA = propInfo?.GetValue(a);
-                    var valueB = propInfo?.GetValue(b);
-
-                    return Comparer.Default.Compare(valueA, valueB) * direction;
-                });
+                _lastFilterState = CurrentFilterState;
+                FilterAndSortDevices();
             }
 
             var skipCount = (_currentPage - 1) * _devicesPerPage;
             var devicesForPage = _filteredDevices
-                .Except(appendDevices)
+                .Except(_prependedDevices)
                 .Skip(skipCount)
                 .Take(_devicesPerPage);
 
-            return appendDevices.Concat(devicesForPage).ToArray();
+            return _prependedDevices.Concat(devicesForPage).ToArray();
         }
         catch (Exception ex)
         {
@@ -232,13 +258,27 @@ public partial class DevicesFrame : AuthComponentBase
         {
             var device = message.Device;
 
-            var index = _allDevices.FindIndex(x => x.ID == device.ID);
-            if (index > -1)
+            var collections = new[] { _allDevices, _filteredDevices };
+
+            foreach (var collection in collections)
             {
-                _allDevices[index] = device;
+                var index = collection.FindIndex(x => x.ID == device.ID);
+                if (index > -1)
+                {
+                    collection[index] = device;
+                }
+                else
+                {
+                    collection.Add(device);
+                }
             }
 
-            Debouncer.Debounce(TimeSpan.FromSeconds(2), Refresh);
+            Debouncer.Debounce(
+                   TimeSpan.FromSeconds(2),
+                   async () =>
+                   {
+                       await InvokeAsync(StateHasChanged);
+                   });
         }
         finally
         {
