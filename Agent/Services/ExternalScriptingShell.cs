@@ -21,7 +21,6 @@ public interface IExternalScriptingShell : IDisposable, IScriptingShell
 
 public class ExternalScriptingShell : IExternalScriptingShell
 {
-    private static readonly ConcurrentDictionary<string, IExternalScriptingShell> _sessions = new();
     private readonly IConfigService _configService;
     private readonly ILogger<ExternalScriptingShell> _logger;
     private readonly ManualResetEvent _outputDone = new(false);
@@ -151,7 +150,7 @@ public class ExternalScriptingShell : IExternalScriptingShell
             _errorOut += Environment.NewLine + ex.Message;
 
             // Something's wrong.  Let the next command start a new session.
-            RemoveSession();
+            Dispose();
         }
         finally
         {
@@ -167,7 +166,18 @@ public class ExternalScriptingShell : IExternalScriptingShell
         {
             if (disposing)
             {
-                ShellProcess?.Dispose();
+                try
+                {
+                    if (ShellProcess?.HasExited == false)
+                    {
+                        ShellProcess.Kill();
+                        ShellProcess.Dispose();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error while disposing scripting shell process.");
+                }
             }
 
             _disposedValue = true;
@@ -208,22 +218,12 @@ public class ExternalScriptingShell : IExternalScriptingShell
             HadErrors = !string.IsNullOrWhiteSpace(_errorOut) ||
                 (ShellProcess?.HasExited == true && ShellProcess.ExitCode != 0)
         };
-        RemoveSession();
+        Dispose();
         return partialResult;
     }
     private void ProcessIdleTimeout_Elapsed(object? sender, ElapsedEventArgs e)
     {
-        RemoveSession();
-    }
-
-    private void RemoveSession()
-    {
-        ShellProcess?.Kill();
-        if (_senderConnectionId is null)
-        {
-            return;
-        }
-        _sessions.TryRemove(_senderConnectionId, out _);
+        Dispose();
     }
 
     private void ShellProcess_ErrorDataReceived(object sender, DataReceivedEventArgs e)
