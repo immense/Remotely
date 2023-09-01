@@ -50,7 +50,6 @@ public class Device
     [Display(Name = "Last Online")]
     public DateTimeOffset LastOnline { get; set; }
 
-    [Sortable]
     [Display(Name = "MAC Addresses")]
     public string[] MacAddresses { get; set; } = Array.Empty<string>();
 

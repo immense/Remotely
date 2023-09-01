@@ -14,6 +14,7 @@ using Immense.RemoteControl.Desktop.UI.Services;
 using Avalonia;
 using Immense.RemoteControl.Desktop.UI;
 using Desktop.Shared.Services;
+using System.Runtime.Versioning;
 
 namespace Remotely.Desktop.Win;
 
@@ -26,6 +27,8 @@ public class Program
             .WithInterFont()
             .LogToTrace();
 
+
+    [SupportedOSPlatform("windows")]
     public static async Task Main(string[] args)
     {
         var version = AppVersionHelper.GetAppVersion();

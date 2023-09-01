@@ -1,7 +1,9 @@
 ﻿using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
@@ -29,14 +31,15 @@ public partial class DevicesFrame : AuthComponentBase
     private readonly string _deviceGroupAll = Guid.NewGuid().ToString();
     private readonly string _deviceGroupNone = Guid.NewGuid().ToString();
     private readonly List<DeviceGroup> _deviceGroups = new();
-    private readonly List<Device> _devicesForPage = new();
     private readonly SemaphoreSlim _devicesLock = new(1,1);
     private readonly List<Device> _filteredDevices = new();
+    private readonly List<Device> _prependedDevices = new();
     private readonly List<PropertyInfo> _sortableProperties = new();
     private int _currentPage = 1;
     private int _devicesPerPage = 25;
     private string? _filter;
     private bool _hideOfflineDevices = true;
+    private string _lastFilterState = string.Empty;
     private string? _selectedGroupId;
     private string _selectedSortProperty = "DeviceName";
     private ListSortDirection _sortDirection;
@@ -45,28 +48,41 @@ public partial class DevicesFrame : AuthComponentBase
     private ISelectedCardsStore CardStore { get; init; } = null!;
 
     [Inject]
-    private ITerminalStore TerminalStore { get; init; } = null!;
-
-    [Inject]
     private ICircuitConnection CircuitConnection { get; init; } = null!;
 
+    private string CurrentFilterState
+    {
+        get
+        {
+            return
+                $"{_filter}" +
+                $"{_selectedGroupId}|" +
+                $"{_selectedSortProperty}|" +
+                $"{_sortDirection}|" +
+                $"{_hideOfflineDevices}|" +
+                $"{_currentPage}|" +
+                $"{_devicesPerPage}|";
+        }
+    }
     [Inject]
     private IDataService DataService { get; init; } = null!;
+
+    private Device[] DisplayedDevices => GetDisplayedDevices();
+
+    [Inject]
+    private ILogger<DevicesFrame> Logger { get; init; } = null!;
+
+    [Inject]
+    private ITerminalStore TerminalStore { get; init; } = null!;
 
     [Inject]
     private IToastService ToastService { get; init; } = null!;
 
     private int TotalPages => (int)Math.Max(1, Math.Ceiling((decimal)_filteredDevices.Count / _devicesPerPage));
 
-    private async Task HandleDisplayNotificationMessage(DisplayNotificationMessage message)
-    {
-        TerminalStore.AddTerminalLine(message.ConsoleText);
-        ToastService.ShowToast(message.ToastText, classString: message.ClassName);
-        await InvokeAsync(StateHasChanged);
-    }
-
     public async Task Refresh()
     {
+        _lastFilterState = string.Empty;
         await LoadDevices();
         await InvokeAsync(StateHasChanged);
     }
@@ -104,42 +120,6 @@ public partial class DevicesFrame : AuthComponentBase
         await LoadDevices();
     }
 
-    private async Task HandleScriptResultMessage(ScriptResultMessage message)
-    {
-        await AddScriptResult(message.ScriptResult);
-    }
-
-    private async Task HandleDeviceStateChangedMessage(DeviceStateChangedMessage message)
-    {
-        await _devicesLock.WaitAsync();
-
-        try
-        {
-            var device = message.Device;
-
-            foreach (var collection in new[] { _allDevices, _devicesForPage })
-            {
-                var index = collection.FindIndex(x => x.ID == device.ID);
-                if (index > -1)
-                {
-                    collection[index] = device;
-                }
-            }
-
-            Debouncer.Debounce(TimeSpan.FromSeconds(2), Refresh);
-        }
-        finally
-        {
-            _devicesLock.Release();
-        }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-        await FilterDevices();
-    }
-
     private async Task AddScriptResult(ScriptResult result)
     {
         var deviceResult = await DataService.GetDevice(result.DeviceID);
@@ -167,88 +147,99 @@ public partial class DevicesFrame : AuthComponentBase
     private async Task ClearSelectedCard()
     {
         await Messenger.Send(
-            new DeviceCardStateChangedMessage(string.Empty, DeviceCardState.Normal), 
+            new DeviceCardStateChangedMessage(string.Empty, DeviceCardState.Normal),
             CircuitConnection.ConnectionId);
     }
 
-    private async Task FilterDevices()
+    private void FilterAndSortDevices()
     {
-        await _devicesLock.WaitAsync();
-        try
+        _filteredDevices.Clear();
+        _prependedDevices.Clear();
+
+        foreach (var device in _allDevices)
         {
-            _filteredDevices.Clear();
-            var appendDevices = new List<Device>();
-
-            foreach (var device in _allDevices)
+            if (CardStore.SelectedDevices.Contains(device.ID))
             {
-                if (CardStore.SelectedDevices.Contains(device.ID))
-                {
-                    appendDevices.Add(device);
-                }
-
-                if (!device.IsOnline && _hideOfflineDevices)
-                {
-                    continue;
-                }
-
-                if (!string.IsNullOrWhiteSpace(_filter) &&
-                        device.Alias?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.CurrentUser?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.DeviceName?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.Notes?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
-                        device.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true)
-                {
-                    continue;
-                }
-
-                if (_selectedGroupId == _deviceGroupAll ||
-                    _selectedGroupId == device.DeviceGroupID ||
-                    (
-                        _selectedGroupId == _deviceGroupNone && 
-                        string.IsNullOrWhiteSpace(device.DeviceGroupID
-                    )))
-                {
-                    _filteredDevices.Add(device);
-                }
+                _prependedDevices.Add(device);
             }
 
-            if (!string.IsNullOrWhiteSpace(_selectedSortProperty))
+            if (!device.IsOnline && _hideOfflineDevices)
             {
-                var direction = _sortDirection == ListSortDirection.Ascending ? 1 : -1;
-                _filteredDevices.Sort((a, b) =>
+                continue;
+            }
+
+            if (!string.IsNullOrWhiteSpace(_filter) &&
+                    device.Alias?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.CurrentUser?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.DeviceName?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.Notes?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.Platform?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true &&
+                    device.Tags?.Contains(_filter, StringComparison.OrdinalIgnoreCase) != true)
+            {
+                continue;
+            }
+
+            if (_selectedGroupId == _deviceGroupAll ||
+                _selectedGroupId == device.DeviceGroupID ||
+                (
+                    _selectedGroupId == _deviceGroupNone &&
+                    string.IsNullOrWhiteSpace(device.DeviceGroupID
+                )))
+            {
+                _filteredDevices.Add(device);
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(_selectedSortProperty))
+        {
+            var direction = _sortDirection == ListSortDirection.Ascending ? 1 : -1;
+            _filteredDevices.Sort((a, b) =>
+            {
+                if (a.IsOnline != b.IsOnline)
                 {
-                    if (a.IsOnline != b.IsOnline)
-                    {
-                        return b.IsOnline.CompareTo(a.IsOnline);
-                    }
+                    return b.IsOnline.CompareTo(a.IsOnline);
+                }
 
-                    var propInfo = _sortableProperties.Find(x => x.Name == _selectedSortProperty);
+                var propInfo = _sortableProperties.Find(x => x.Name == _selectedSortProperty);
 
-                    var valueA = propInfo?.GetValue(a);
-                    var valueB = propInfo?.GetValue(b);
+                var valueA = propInfo?.GetValue(a);
+                var valueB = propInfo?.GetValue(b);
 
-                    return Comparer.Default.Compare(valueA, valueB) * direction;
-                });
+                return Comparer.Default.Compare(valueA, valueB) * direction;
+            });
+        }
+    }
+
+    private Device[] GetDisplayedDevices()
+    {
+        _devicesLock.Wait();
+        try
+        {
+            if (CurrentFilterState != _lastFilterState)
+            {
+                _lastFilterState = CurrentFilterState;
+                FilterAndSortDevices();
             }
 
             var skipCount = (_currentPage - 1) * _devicesPerPage;
             var devicesForPage = _filteredDevices
-                .Except(appendDevices)
+                .Except(_prependedDevices)
                 .Skip(skipCount)
                 .Take(_devicesPerPage);
 
-            _devicesForPage.Clear();
-            _devicesForPage.AddRange(appendDevices.Concat(devicesForPage));
-
+            return _prependedDevices.Concat(devicesForPage).ToArray();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while filtering devices.");
+            ToastService.ShowToast2("Filter devices failed", ToastType.Error);
+            return Array.Empty<Device>();
         }
         finally
         {
             _devicesLock.Release();
         }
     }
-
-
     private string GetDisplayName(PropertyInfo propInfo)
     {
         return propInfo.GetCustomAttribute<DisplayAttribute>()?.Name ?? propInfo.Name;
@@ -259,12 +250,58 @@ public partial class DevicesFrame : AuthComponentBase
         return $"oi-sort-{_sortDirection.ToString().ToLower()}";
     }
 
+    private async Task HandleDeviceStateChangedMessage(DeviceStateChangedMessage message)
+    {
+        await _devicesLock.WaitAsync();
+
+        try
+        {
+            var device = message.Device;
+
+            var collections = new[] { _allDevices, _filteredDevices };
+
+            foreach (var collection in collections)
+            {
+                var index = collection.FindIndex(x => x.ID == device.ID);
+                if (index > -1)
+                {
+                    collection[index] = device;
+                }
+                else
+                {
+                    collection.Add(device);
+                }
+            }
+
+            Debouncer.Debounce(
+                   TimeSpan.FromSeconds(2),
+                   async () =>
+                   {
+                       await InvokeAsync(StateHasChanged);
+                   });
+        }
+        finally
+        {
+            _devicesLock.Release();
+        }
+    }
+
+    private async Task HandleDisplayNotificationMessage(DisplayNotificationMessage message)
+    {
+        TerminalStore.AddTerminalLine(message.ConsoleText);
+        ToastService.ShowToast(message.ToastText, classString: message.ClassName);
+        await InvokeAsync(StateHasChanged);
+    }
     private async Task HandleRefreshClicked()
     {
         await Refresh();
         ToastService.ShowToast("Devices refreshed.");
     }
 
+    private async Task HandleScriptResultMessage(ScriptResultMessage message)
+    {
+        await AddScriptResult(message.ScriptResult);
+    }
     private async Task LoadDevices()
     {
         EnsureUserSet();
@@ -284,8 +321,6 @@ public partial class DevicesFrame : AuthComponentBase
         {
             _devicesLock.Release();
         }
-
-        await FilterDevices();
     }
     private void PageDown()
     {
