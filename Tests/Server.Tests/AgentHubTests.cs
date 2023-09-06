@@ -1,5 +1,6 @@
-﻿using Remotely.Shared.Extensions;
-using Immense.RemoteControl.Server.Hubs;
+﻿using Immense.RemoteControl.Server.Hubs;
+using Immense.RemoteControl.Server.Services;
+using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,12 +9,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
+using Remotely.Shared.Extensions;
+using Remotely.Shared.Interfaces;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Remotely.Shared.Interfaces;
-using Immense.SimpleMessenger;
 
 namespace Remotely.Server.Tests;
 
@@ -35,6 +36,7 @@ public class AgentHubTests
         var viewerHub = new Mock<IHubContext<ViewerHub>>();
         var expiringTokenService = new Mock<IExpiringTokenService>();
         var serviceSessionCache = new Mock<IAgentHubSessionCache>();
+        var remoteControlSessions = new Mock<IRemoteControlSessionCache>();
         var messenger = new Mock<IMessenger>();
         var logger = new Mock<ILogger<AgentHub>>();
 
@@ -47,6 +49,7 @@ public class AgentHubTests
             viewerHub.Object,
             circuitManager.Object,
             expiringTokenService.Object,
+            remoteControlSessions.Object,
             messenger.Object,
             logger.Object);
 
@@ -74,6 +77,7 @@ public class AgentHubTests
         var viewerHub = new Mock<IHubContext<ViewerHub>>();
         var expiringTokenService = new Mock<IExpiringTokenService>();
         var serviceSessionCache = new Mock<IAgentHubSessionCache>();
+        var remoteControlSessions = new Mock<IRemoteControlSessionCache>();
         var messenger = new Mock<IMessenger>();
         var logger = new Mock<ILogger<AgentHub>>();
 
@@ -86,6 +90,7 @@ public class AgentHubTests
             viewerHub.Object,
             circuitManager.Object,
             expiringTokenService.Object,
+            remoteControlSessions.Object,
             messenger.Object,
             logger.Object);
 
