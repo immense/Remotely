@@ -1,6 +1,8 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
+using Immense.RemoteControl.Server.Hubs;
 using Immense.RemoteControl.Server.Models;
 using Immense.RemoteControl.Shared.Enums;
+using Immense.RemoteControl.Shared.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Hubs;
@@ -15,15 +17,18 @@ public class HubEventHandler : IHubEventHandler
 {
     private readonly IHubContext<AgentHub, IAgentHubClient> _serviceHub;
     private readonly IAgentHubSessionCache _agentCache;
+    private readonly IHubContext<ViewerHub, IViewerHubClient> _viewerHub;
     private readonly ILogger<HubEventHandler> _logger;
 
     public HubEventHandler(
-        IHubContext<AgentHub, IAgentHubClient> serviceHub,
+        IHubContext<AgentHub, IAgentHubClient> agentHub,
+        IHubContext<ViewerHub, IViewerHubClient> viewerHub,
         IAgentHubSessionCache agentHubSessionCache,
         ILogger<HubEventHandler> logger)
     {
-        _serviceHub = serviceHub;
+        _serviceHub = agentHub;
         _agentCache = agentHubSessionCache;
+        _viewerHub = viewerHub;
         _logger = logger;
     }
 
@@ -135,6 +140,9 @@ public class HubEventHandler : IHubEventHandler
 
         if (!_agentCache.TryGetConnectionId(sessionEx.DeviceId, out var agentConnectionId))
         {
+            await _viewerHub.Clients
+                .Clients(sessionEx.ViewerList)
+                .ShowMessage("Waiting for agent to come online");
 
             return;
         }
