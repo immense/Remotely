@@ -1,7 +1,8 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Immense.RemoteControl.Desktop.Shared.Native.Windows;
+using Immense.RemoteControl.Shared;
 using Microsoft.AspNetCore.SignalR.Client;
 using Remotely.Agent.Interfaces;
+using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services.MacOS;
 
@@ -22,5 +23,11 @@ public class AppLauncherMac : IAppLauncher
     public async Task RestartScreenCaster(string[] viewerIds, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection, int targetSessionID = -1)
     {
         await hubConnection.SendAsync("DisplayMessage", "Feature under development.", "Feature is under development.", "bg-warning", userConnectionId);
+    }
+
+    public Task<Result<BackstageSession>> StartBackstage(string remoteControlSessionId, string accessKey, string userConnectionId, HubConnection hubConnection)
+    {
+        return Task.FromResult(
+            Result.Fail<BackstageSession>("Backstage is unavailable on MacOS."));
     }
 }

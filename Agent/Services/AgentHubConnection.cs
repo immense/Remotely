@@ -1,4 +1,5 @@
 ﻿using Immense.RemoteControl.Desktop.Shared.Native.Windows;
+using Immense.RemoteControl.Shared;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -366,6 +367,40 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         }
     }
 
+    public async Task<Result> StartBackstage(Guid sessionId, string accessKey, string userConnectionId)
+    {
+        try
+        {
+            if (!OperatingSystem.IsWindows())
+            {
+                return Result.Fail("Only available on Windows.");
+            }
+
+            EnsureHubConnection();
+
+            if (!_isServerVerified)
+            {
+                _logger.LogWarning("Remote control attempted before server was verified.");
+                return Result.Fail("Agent trust issue with server.");
+            }
+
+            var result = await _appLauncher.StartBackstage($"{sessionId}", accessKey, userConnectionId, _hubConnection);
+            if (result.IsSuccess)
+            {
+                return Result.Ok();
+            }
+            else
+            {
+                return Result.Fail(result.Reason);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while starting backstage session.");
+            return Result.Fail("An error occurred while starting backstage.");
+        }
+    }
+
     public async Task RestartScreenCaster(string[] viewerIds, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId)
     {
         try
@@ -467,6 +502,8 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
             _logger.LogWarning(ex, "Error while sending heartbeat.");
         }
     }
+
+
 
     public async Task TransferFileFromBrowserToAgent(string transferId, string[] fileIds, string requesterId, string expiringToken)
     {
@@ -644,6 +681,8 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         _hubConnection.On(nameof(TriggerHeartbeat), TriggerHeartbeat);
 
         _hubConnection.On<string>(nameof(WakeDevice), WakeDevice);
+
+        _hubConnection.On<Guid, string, string, Result>(nameof(StartBackstage), StartBackstage);
     }
 
     private async Task<bool> VerifyServer()

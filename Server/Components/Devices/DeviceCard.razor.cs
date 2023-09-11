@@ -1,5 +1,4 @@
-﻿using Immense.SimpleMessenger;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Enums;
@@ -206,7 +205,7 @@ public partial class DeviceCard : AuthComponentBase
             ToastService.ShowToast("Unauthorized.", classString: "bg-warning");
             return;
         }
-       
+
         await DataService.UpdateDevice(Device.ID,
               Device.Tags,
               Device.Alias,
@@ -311,7 +310,36 @@ public partial class DeviceCard : AuthComponentBase
             $"/RemoteControl/Viewer" +
                 $"?mode=Unattended&sessionId={session.UnattendedSessionId}" +
                 $"&accessKey={session.AccessKey}" +
-                $"&viewonly={viewOnly}", 
+                $"&viewonly={viewOnly}",
+            "_blank");
+    }
+
+    private async Task StartBackstage()
+    {
+        if (!ServiceSessionCache.TryGetConnectionId(Device.ID, out _))
+        {
+            ToastService.ShowToast("Device connection not found", classString: "bg-danger");
+            return;
+        }
+
+        var result = await CircuitConnection.StartBackstage(Device.ID);
+        if (!result.IsSuccess)
+        {
+            return;
+        }
+
+        var session = result.Value;
+
+        if (!await session.WaitForSessionReady(TimeSpan.FromSeconds(20)))
+        {
+            ToastService.ShowToast("Session failed to start", classString: "bg-danger");
+            return;
+        }
+
+        JsInterop.OpenWindow(
+            $"/RemoteControl/Viewer" +
+                $"?mode=Unattended&sessionId={session.UnattendedSessionId}" +
+                $"&accessKey={session.AccessKey}",
             "_blank");
     }
 
@@ -349,13 +377,13 @@ public partial class DeviceCard : AuthComponentBase
         if (result.IsSuccess)
         {
             ToastService.ShowToast2(
-                $"Wake command sent to peer devices.", 
+                $"Wake command sent to peer devices.",
                 ToastType.Success);
         }
         else
         {
             ToastService.ShowToast2(
-                $"Wake command failed.  Reason: {result.Reason}", 
+                $"Wake command failed.  Reason: {result.Reason}",
                 ToastType.Error);
         }
     }

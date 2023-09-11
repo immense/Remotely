@@ -1,4 +1,5 @@
 ﻿using Immense.RemoteControl.Desktop.Shared.Native.Windows;
+using Immense.RemoteControl.Shared;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
@@ -215,6 +216,41 @@ public class AppLauncherWin : IAppLauncher
             await hubConnection.SendAsync("SendConnectionFailedToViewers", viewerIds);
             _logger.LogError(ex, "Error while restarting screen caster.");
             throw;
+        }
+    }
+
+    public async Task<Result<BackstageSession>> StartBackstage(string remoteControlSessionId, string accessKey, string userConnectionId, HubConnection hubConnection)
+    {
+        try
+        {
+            //if (Process.GetCurrentProcess().SessionId != 0)
+            //{
+            //    return Result.Fail<BackstageSession>("Backstage can only be started from session 0.");
+            //}
+
+            var windowStationName = $"Backstage-{remoteControlSessionId}";
+
+            var result = Win32Interop.StartProcessInBackstage(
+                  _rcBinaryPath +
+                      $" --mode Unattended" +
+                      $" --host {_connectionInfo.Host}" +
+                      $" --session-id \"{remoteControlSessionId}\"" +
+                      $" --access-key \"{accessKey}\"",
+                  windowStationName,
+                  _logger,
+                  out _);
+
+            if (!result.IsSuccess)
+            {
+                return Result.Fail<BackstageSession>("Backstage failed to start.");
+            }
+
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while starting backstage.");
+            return Result.Fail<BackstageSession>("Error while starting backstage.");
         }
     }
 }

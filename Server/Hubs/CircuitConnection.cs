@@ -46,6 +46,7 @@ public interface ICircuitConnection
     Task RunScript(IEnumerable<string> deviceIds, Guid savedScriptId, int scriptRunId, ScriptInputType scriptInputType, bool runAsHostedService);
 
     Task SendChat(string message, string deviceId, bool isDisconnecting = false);
+    Task<Result<RemoteControlSessionEx>> StartBackstage(string deviceId);
     Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds);
 
     Task TriggerHeartbeat(string deviceId);
@@ -71,16 +72,16 @@ public interface ICircuitConnection
 public class CircuitConnection : CircuitHandler, ICircuitConnection
 {
     private readonly IHubContext<AgentHub, IAgentHubClient> _agentHubContext;
+    private readonly IAgentHubSessionCache _agentSessionCache;
     private readonly IApplicationConfig _appConfig;
-    private readonly ISelectedCardsStore _cardStore;
     private readonly IAuthService _authService;
+    private readonly ISelectedCardsStore _cardStore;
     private readonly ICircuitManager _circuitManager;
     private readonly IDataService _dataService;
-    private readonly IRemoteControlSessionCache _remoteControlSessionCache;
     private readonly IExpiringTokenService _expiringTokenService;
     private readonly ILogger<CircuitConnection> _logger;
-    private readonly IAgentHubSessionCache _agentSessionCache;
     private readonly IMessenger _messenger;
+    private readonly IRemoteControlSessionCache _remoteControlSessionCache;
     private readonly IToastService _toastService;
     private RemotelyUser? _user;
 
@@ -226,7 +227,15 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         _dataService.RemoveDevices(deviceIDs);
     }
 
-    public async Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceId, bool viewOnly)
+    public Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceId, bool viewOnly)
+    {
+        return RemoteControlImpl(deviceId, viewOnly, false);
+    }
+
+    public async Task<Result<RemoteControlSessionEx>> RemoteControlImpl(
+        string deviceId,
+        bool viewOnly,
+        bool isBackstage)
     {
         if (!_agentSessionCache.TryGetByDeviceId(deviceId, out var targetDevice))
         {
@@ -274,7 +283,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                 "Service connection not found.",
                 "Service connection not found.",
                 "bg-warning");
-            
+
             await _messenger.Send(message, ConnectionId);
             return Result.Fail<RemoteControlSessionEx>("Service connection not found.");
         }
@@ -289,8 +298,9 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             AgentConnectionId = serviceConnectionId,
             DeviceId = deviceId,
             ViewOnly = viewOnly,
+            IsBackstage = isBackstage,
             OrganizationId = User.OrganizationID,
-            RequireConsent = _appConfig.EnforceAttendedAccess,
+            RequireConsent = !isBackstage && _appConfig.EnforceAttendedAccess,
             NotifyUserOnStart = _appConfig.RemoteControlNotifyUser
         };
 
@@ -304,17 +314,28 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             return Result.Fail<RemoteControlSessionEx>(orgResult.Reason);
         }
 
-        await _agentHubContext.Clients.Client(serviceConnectionId).RemoteControl(
-            sessionId,
-            accessKey,
-            ConnectionId,
-            $"{User.UserOptions?.DisplayName}",
-            orgResult.Value,
-            User.OrganizationID);
+        if (isBackstage)
+        {
+            await _agentHubContext.Clients
+                .Client(serviceConnectionId)
+                .StartBackstage(
+                    sessionId,
+                    accessKey,
+                    ConnectionId);
+        }
+        else
+        {
+            await _agentHubContext.Clients.Client(serviceConnectionId).RemoteControl(
+               sessionId,
+               accessKey,
+               ConnectionId,
+               $"{User.UserOptions?.DisplayName}",
+               orgResult.Value,
+               User.OrganizationID);
+        }
 
         return Result.Ok(session);
     }
-
     public Task RemoveDevices(string[] deviceIDs)
     {
         if (User is not null)
@@ -394,6 +415,11 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             User.OrganizationID,
             isDisconnecting,
             ConnectionId);
+    }
+
+    public Task<Result<RemoteControlSessionEx>> StartBackstage(string deviceId)
+    {
+        return RemoteControlImpl(deviceId, false, true);
     }
 
     public async Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds)

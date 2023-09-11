@@ -1,4 +1,5 @@
-﻿using Immense.RemoteControl.Shared;
+﻿using Immense.RemoteControl.Desktop.Shared.Native.Windows;
+using Immense.RemoteControl.Shared;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
@@ -23,8 +24,8 @@ public class AppLauncherLinux : IAppLauncher
     private readonly IProcessInvoker _processInvoker;
 
     private readonly string _rcBinaryPath = Path.Combine(
-        AppDomain.CurrentDomain.BaseDirectory, 
-        "Desktop", 
+        AppDomain.CurrentDomain.BaseDirectory,
+        "Desktop",
         EnvironmentHelper.DesktopExecutableFileName);
 
     public AppLauncherLinux(
@@ -36,7 +37,6 @@ public class AppLauncherLinux : IAppLauncher
         _connectionInfo = configService.GetConnectionInfo();
         _logger = logger;
     }
-
 
     public async Task<int> LaunchChatService(string pipeName, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
     {
@@ -130,11 +130,16 @@ public class AppLauncherLinux : IAppLauncher
         }
     }
 
+    public Task<Result<BackstageSession>> StartBackstage(string remoteControlSessionId, string accessKey, string userConnectionId, HubConnection hubConnection)
+    {
+        return Task.FromResult(
+            Result.Fail<BackstageSession>("Backstage is unavailable on Linux."));
+    }
     private int StartLinuxDesktopApp(string args)
     {
         var xdisplay = ":0";
         var xauthority = string.Empty;
-        
+
         var xResult = TryGetXAuth("Xorg");
 
         if (!xResult.IsSuccess)
@@ -157,7 +162,7 @@ public class AppLauncherLinux : IAppLauncher
         {
             _logger.LogError("Failed to get X server auth.");
         }
-        
+
         var whoString = _processInvoker.InvokeProcessOutput("who", "")?.Trim();
         var username = "";
 

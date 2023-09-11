@@ -34,6 +34,11 @@ public class HubEventHandler : IHubEventHandler
 
     public Task ChangeWindowsSession(RemoteControlSession session, string viewerConnectionId, int targetWindowsSession)
     {
+        if (session.IsBackstage)
+        {
+            return Task.CompletedTask;
+        }
+
         if (session is not RemoteControlSessionEx ex)
         {
             _logger.LogError("Event should have been for RemoteControlSessionEx.");
@@ -91,6 +96,11 @@ public class HubEventHandler : IHubEventHandler
 
     public Task NotifySessionChanged(RemoteControlSession session, SessionSwitchReasonEx reason, int currentSessionId)
     {
+        if (session.IsBackstage)
+        {
+            return Task.CompletedTask;
+        }
+
         if (session is not RemoteControlSessionEx ex)
         {
             _logger.LogError("Event should have been for RemoteControlSessionEx.");
@@ -125,6 +135,10 @@ public class HubEventHandler : IHubEventHandler
 
     public async Task RestartScreenCaster(RemoteControlSession session)
     {
+        if (session.IsBackstage)
+        {
+            return;
+        }
 
         if (session is not RemoteControlSessionEx sessionEx)
         {
