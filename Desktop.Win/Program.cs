@@ -1,20 +1,20 @@
-﻿using System.Threading.Tasks;
-using System.Threading;
-using System;
+﻿using Avalonia;
+using Desktop.Shared.Services;
+using Immense.RemoteControl.Desktop.Shared.Services;
+using Immense.RemoteControl.Desktop.Shared.Startup;
+using Immense.RemoteControl.Desktop.UI;
+using Immense.RemoteControl.Desktop.UI.Services;
+using Immense.RemoteControl.Desktop.Windows.Startup;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Services;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using System.Diagnostics;
 using Remotely.Shared.Utilities;
-using Immense.RemoteControl.Desktop.Shared.Startup;
+using System;
+using System.Diagnostics;
 using System.Linq;
-using Immense.RemoteControl.Desktop.Windows.Startup;
-using Immense.RemoteControl.Desktop.UI.Services;
-using Avalonia;
-using Immense.RemoteControl.Desktop.UI;
-using Desktop.Shared.Services;
 using System.Runtime.Versioning;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Remotely.Desktop.Win;
 
@@ -99,5 +99,8 @@ public class Program
             await Task.Delay(Timeout.InfiniteTimeSpan, dispatcher.ApplicationExitingToken);
         }
         catch (TaskCanceledException) { }
+
+        // Output type is WinExe, so we need to explicitly exit.
+        Environment.Exit(0);
     }
 }
