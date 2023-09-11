@@ -7,7 +7,6 @@
         xmlns:local="clr-namespace:Remotely.Agent.Installer.Win"
         mc:Ignorable="d"
         ResizeMode="CanResizeWithGrip"
-        AllowsTransparency="True"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         Loaded="Window_Loaded"
         WindowStartupLocation="CenterScreen"
