@@ -180,6 +180,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
                 _heartbeatTimer.Start();
 
                 await _hubConnection.SendAsync("CheckForPendingSriptRuns");
+                await _hubConnection.SendAsync("CheckForPendingRemoteControlSessions");
 
                 break;
             }
@@ -377,13 +378,13 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
                 return;
             }
             await _appLauncher.RestartScreenCaster(
-                viewerIds, 
-                sessionId, 
-                accessKey, 
-                userConnectionId, 
-                requesterName, 
-                orgName, 
-                orgId, 
+                viewerIds,
+                sessionId,
+                accessKey,
+                userConnectionId,
+                requesterName,
+                orgName,
+                orgId,
                 _hubConnection);
         }
         catch (Exception ex)
@@ -393,10 +394,10 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
     }
 
     public async Task RunScript(
-        Guid savedScriptId, 
-        int scriptRunId, 
-        string initiator, 
-        ScriptInputType scriptInputType, 
+        Guid savedScriptId,
+        int scriptRunId,
+        string initiator,
+        ScriptInputType scriptInputType,
         string authToken)
     {
         try
@@ -607,7 +608,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
 
         // TODO: Replace all these parameters with a single DTO per method.
         _hubConnection.On<string, string, string, string, string, string, string, int>(
-            nameof(ChangeWindowsSession), 
+            nameof(ChangeWindowsSession),
             ChangeWindowsSession);
 
         _hubConnection.On<string, string, string, string, bool, string>(nameof(SendChatMessage), SendChatMessage);
@@ -619,7 +620,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         _hubConnection.On<ScriptingShell, string, string, string, string>(nameof(ExecuteCommand), ExecuteCommand);
 
         _hubConnection.On<ScriptingShell, string, string, string, string>(nameof(ExecuteCommandFromApi), ExecuteCommandFromApi);
-      
+
         _hubConnection.On<string>(nameof(GetLogs), GetLogs);
 
         _hubConnection.On<string, int, CompletionIntent, bool?, string>(nameof(GetPowerShellCompletions), GetPowerShellCompletions);
@@ -631,13 +632,13 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         _hubConnection.On<Guid, string, string, string, string, string>(nameof(RemoteControl), RemoteControl);
 
         _hubConnection.On<string[], string, string, string, string, string, string>(
-            nameof(RestartScreenCaster), 
+            nameof(RestartScreenCaster),
             RestartScreenCaster);
 
         _hubConnection.On<Guid, int, string, ScriptInputType, string>(nameof(RunScript), RunScript);
 
         _hubConnection.On<string, string[], string, string>(
-            nameof(TransferFileFromBrowserToAgent), 
+            nameof(TransferFileFromBrowserToAgent),
             TransferFileFromBrowserToAgent);
 
         _hubConnection.On(nameof(TriggerHeartbeat), TriggerHeartbeat);

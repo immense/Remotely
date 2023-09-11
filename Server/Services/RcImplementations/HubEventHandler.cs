@@ -1,20 +1,14 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
+using Immense.RemoteControl.Server.Hubs;
 using Immense.RemoteControl.Server.Models;
 using Immense.RemoteControl.Shared.Enums;
+using Immense.RemoteControl.Shared.Interfaces;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
-using NuGet.Protocol.Core.Types;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
-using Remotely.Shared.Enums;
 using Remotely.Shared.Interfaces;
-using Remotely.Shared.Models;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Services.RcImplementations;
@@ -22,13 +16,19 @@ namespace Remotely.Server.Services.RcImplementations;
 public class HubEventHandler : IHubEventHandler
 {
     private readonly IHubContext<AgentHub, IAgentHubClient> _serviceHub;
+    private readonly IAgentHubSessionCache _agentCache;
+    private readonly IHubContext<ViewerHub, IViewerHubClient> _viewerHub;
     private readonly ILogger<HubEventHandler> _logger;
 
     public HubEventHandler(
-        IHubContext<AgentHub, IAgentHubClient> serviceHub,
+        IHubContext<AgentHub, IAgentHubClient> agentHub,
+        IHubContext<ViewerHub, IViewerHubClient> viewerHub,
+        IAgentHubSessionCache agentHubSessionCache,
         ILogger<HubEventHandler> logger)
     {
-        _serviceHub = serviceHub;
+        _serviceHub = agentHub;
+        _agentCache = agentHubSessionCache;
+        _viewerHub = viewerHub;
         _logger = logger;
     }
 
@@ -38,7 +38,7 @@ public class HubEventHandler : IHubEventHandler
         {
             _logger.LogError("Event should have been for RemoteControlSessionEx.");
             return Task.CompletedTask;
-        }   
+        }
 
         return _serviceHub.Clients
             .Client(ex.AgentConnectionId)
@@ -123,30 +123,41 @@ public class HubEventHandler : IHubEventHandler
                 ex.OrganizationId);
     }
 
-    public Task RestartScreenCaster(RemoteControlSession session, HashSet<string> viewerList)
+    public async Task RestartScreenCaster(RemoteControlSession session)
     {
 
-        if (session is not RemoteControlSessionEx ex)
+        if (session is not RemoteControlSessionEx sessionEx)
         {
             _logger.LogError("Event should have been for RemoteControlSessionEx.");
-            return Task.CompletedTask;
+            return;
         }
 
-        if (ex.RequireConsent)
+        if (sessionEx.RequireConsent)
         {
             // Don't restart if consent wasn't granted on the first request.
-            return Task.CompletedTask;
+            return;
         }
 
-        return _serviceHub.Clients
-                 .Client(ex.AgentConnectionId)
+        if (!_agentCache.TryGetConnectionId(sessionEx.DeviceId, out var agentConnectionId))
+        {
+            await _viewerHub.Clients
+                .Clients(sessionEx.ViewerList)
+                .ShowMessage("Waiting for agent to come online");
+
+            return;
+        }
+
+        sessionEx.AgentConnectionId = agentConnectionId;
+
+        await _serviceHub.Clients
+                 .Client(sessionEx.AgentConnectionId)
                  .RestartScreenCaster(
-                        viewerList.ToArray(),
-                        $"{ex.UnattendedSessionId}",
-                        ex.AccessKey,
-                        ex.UserConnectionId,
-                        ex.RequesterName,
-                        ex.OrganizationName,
-                        ex.OrganizationId);
+                        session.ViewerList.ToArray(),
+                        $"{sessionEx.UnattendedSessionId}",
+                        sessionEx.AccessKey,
+                        sessionEx.UserConnectionId,
+                        sessionEx.RequesterName,
+                        sessionEx.OrganizationName,
+                        sessionEx.OrganizationId);
     }
 }

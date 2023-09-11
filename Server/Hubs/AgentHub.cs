@@ -1,4 +1,5 @@
 ﻿using Immense.RemoteControl.Server.Hubs;
+using Immense.RemoteControl.Server.Services;
 using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
@@ -26,8 +27,9 @@ public class AgentHub : Hub<IAgentHubClient>
     private readonly ICircuitManager _circuitManager;
     private readonly IDataService _dataService;
     private readonly IExpiringTokenService _expiringTokenService;
-    private readonly IMessenger _messenger;
     private readonly ILogger<AgentHub> _logger;
+    private readonly IMessenger _messenger;
+    private readonly IRemoteControlSessionCache _remoteControlSessions;
     private readonly IAgentHubSessionCache _serviceSessionCache;
     private readonly IHubContext<ViewerHub> _viewerHubContext;
 
@@ -37,6 +39,7 @@ public class AgentHub : Hub<IAgentHubClient>
         IHubContext<ViewerHub> viewerHubContext,
         ICircuitManager circuitManager,
         IExpiringTokenService expiringTokenService,
+        IRemoteControlSessionCache remoteControlSessionCache,
         IMessenger messenger,
         ILogger<AgentHub> logger)
     {
@@ -46,6 +49,7 @@ public class AgentHub : Hub<IAgentHubClient>
         _appConfig = appConfig;
         _circuitManager = circuitManager;
         _expiringTokenService = expiringTokenService;
+        _remoteControlSessions = remoteControlSessionCache;
         _messenger = messenger;
         _logger = logger;
     }
@@ -57,7 +61,7 @@ public class AgentHub : Hub<IAgentHubClient>
     {
         get
         {
-            if (Context.Items["Device"] is Device device) 
+            if (Context.Items["Device"] is Device device)
             {
                 return device;
             }
@@ -94,6 +98,46 @@ public class AgentHub : Hub<IAgentHubClient>
         }
     }
 
+    public async Task CheckForPendingRemoteControlSessions()
+    {
+        try
+        {
+            if (Device is null)
+            {
+                return;
+            }
+
+            _logger.LogDebug(
+                "Checking for pending remote control sessions for device {deviceId}.",
+                Device.ID);
+
+            var waitingSessions = _remoteControlSessions
+                .Sessions
+                .OfType<RemoteControlSessionEx>()
+                .Where(x => x.DeviceId == Device.ID);
+
+            foreach (var session in waitingSessions)
+            {
+                _logger.LogDebug(
+                    "Restarting remote control session {sessionId}.",
+                    session.UnattendedSessionId);
+
+                session.AgentConnectionId = Context.ConnectionId;
+                await Clients.Caller.RestartScreenCaster(
+                    session.ViewerList.ToArray(),
+                    $"{session.UnattendedSessionId}",
+                    session.AccessKey,
+                    session.UserConnectionId,
+                    session.RequesterName,
+                    session.OrganizationName,
+                    session.OrganizationId);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while checking for pending remote control sessions.");
+        }
+    }
 
     public async Task CheckForPendingScriptRuns()
     {
@@ -142,32 +186,31 @@ public class AgentHub : Hub<IAgentHubClient>
             }
 
             var result = await _dataService.AddOrUpdateDevice(device);
-            if (result.IsSuccess)
-            {
-                Device = result.Value;
-
-                _serviceSessionCache.AddOrUpdateByConnectionId(Context.ConnectionId, Device);
-
-                var userIDs = _circuitManager.Connections.Select(x => x.User.Id);
-
-                var filteredUserIDs = _dataService.FilterUsersByDevicePermission(userIDs, Device.ID);
-
-                var connections = _circuitManager.Connections
-                    .Where(x => x.User.OrganizationID == Device.OrganizationID &&
-                        filteredUserIDs.Contains(x.User.Id));
-
-                foreach (var connection in connections)
-                {
-                    var message = new DeviceStateChangedMessage(Device);
-                    await _messenger.Send(message, connection.ConnectionId);
-                }
-                return true;
-            }
-            else
+            if (!result.IsSuccess)
             {
                 // Organization wasn't found.
                 return false;
             }
+
+            Device = result.Value;
+
+            _serviceSessionCache.AddOrUpdateByConnectionId(Context.ConnectionId, Device);
+
+            var userIDs = _circuitManager.Connections.Select(x => x.User.Id);
+
+            var filteredUserIDs = _dataService.FilterUsersByDevicePermission(userIDs, Device.ID);
+
+            var connections = _circuitManager.Connections
+                .Where(x => x.User.OrganizationID == Device.OrganizationID &&
+                    filteredUserIDs.Contains(x.User.Id));
+
+            foreach (var connection in connections)
+            {
+                var message = new DeviceStateChangedMessage(Device);
+                await _messenger.Send(message, connection.ConnectionId);
+            }
+
+            return true;
         }
         catch (Exception ex)
         {
@@ -226,7 +269,6 @@ public class AgentHub : Hub<IAgentHubClient>
 
         await CheckForPendingScriptRuns();
     }
-
 
     public Task DisplayMessage(string consoleMessage, string popupMessage, string className, string requesterId)
     {
@@ -310,6 +352,7 @@ public class AgentHub : Hub<IAgentHubClient>
     {
         ApiScriptResults.Set(requestID, commandID, DateTimeOffset.Now.AddHours(1));
     }
+
     public Task SendConnectionFailedToViewers(List<string> viewerIDs)
     {
         return _viewerHubContext.Clients.Clients(viewerIDs).SendAsync("ConnectionFailed");
@@ -320,6 +363,7 @@ public class AgentHub : Hub<IAgentHubClient>
         var message = new ReceiveLogsMessage(logChunk);
         return _messenger.Send(message, requesterConnectionId);
     }
+
     public void SetServerVerificationToken(string verificationToken)
     {
         if (Device is null)
@@ -329,11 +373,13 @@ public class AgentHub : Hub<IAgentHubClient>
         Device.ServerVerificationToken = verificationToken;
         _dataService.SetServerVerificationToken(Device.ID, verificationToken);
     }
+
     public Task TransferCompleted(string transferId, string requesterId)
     {
         var message = new TransferCompleteMessage(transferId);
         return _messenger.Send(message, requesterId);
     }
+
     private async Task<bool> CheckForDeviceBan(params string[] deviceIdNameOrIPs)
     {
         foreach (var device in deviceIdNameOrIPs)
@@ -352,7 +398,7 @@ public class AgentHub : Hub<IAgentHubClient>
                 return true;
             }
         }
-       
+
         return false;
     }
 }
