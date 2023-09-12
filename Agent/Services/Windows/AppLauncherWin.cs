@@ -232,7 +232,7 @@ public class AppLauncherWin : IAppLauncher
             }
 
             var windowStationName = "WinSta0";
-            //var desktopName = "AppPatchistanBackDoor";
+            //var desktopName = "ImmenseDesktop";
             var desktopName = "ScreenConnectDesktop";
 
             var result = Win32Interop.StartProcessInBackstage(
