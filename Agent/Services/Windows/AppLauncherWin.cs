@@ -1,5 +1,6 @@
 ﻿using Immense.RemoteControl.Desktop.Shared.Native.Windows;
 using Immense.RemoteControl.Shared;
+using Immense.RemoteControl.Shared.Extensions;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
@@ -219,38 +220,55 @@ public class AppLauncherWin : IAppLauncher
         }
     }
 
-    public async Task<Result<BackstageSession>> StartBackstage(string remoteControlSessionId, string accessKey, string userConnectionId, HubConnection hubConnection)
+    public Task<Result<BackstageSession>> StartBackstage(string remoteControlSessionId, string accessKey, string userConnectionId, HubConnection hubConnection)
     {
         try
         {
-            //if (Process.GetCurrentProcess().SessionId != 0)
-            //{
-            //    return Result.Fail<BackstageSession>("Backstage can only be started from session 0.");
-            //}
+            if (Process.GetCurrentProcess().SessionId != 0)
+            {
+                return Result
+                    .Fail<BackstageSession>("Backstage can only be started from session 0.")
+                    .AsTaskResult();
+            }
 
-            var windowStationName = $"Backstage-{remoteControlSessionId}";
+            var windowStationName = "WinSta0";
+            //var desktopName = "AppPatchistanBackDoor";
+            var desktopName = "ScreenConnectDesktop";
 
             var result = Win32Interop.StartProcessInBackstage(
                   _rcBinaryPath +
                       $" --mode Unattended" +
                       $" --host {_connectionInfo.Host}" +
                       $" --session-id \"{remoteControlSessionId}\"" +
-                      $" --access-key \"{accessKey}\"",
+                      $" --access-key \"{accessKey}\"" +
+                      $" --viewers \"{userConnectionId}\"",
                   windowStationName,
+                  desktopName,
                   _logger,
                   out _);
 
             if (!result.IsSuccess)
             {
-                return Result.Fail<BackstageSession>("Backstage failed to start.");
+                return Result
+                    .Fail<BackstageSession>("Backstage failed to start.")
+                    .AsTaskResult();
             }
 
-            return result;
+            Win32Interop.StartProcessInBackstage(
+                 @"C:\Windows\system32\notepad.exe",
+                 windowStationName,
+                 desktopName,
+                 _logger,
+                 out _);
+
+            return result.AsTaskResult();
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error while starting backstage.");
-            return Result.Fail<BackstageSession>("Error while starting backstage.");
+            return Result
+                .Fail<BackstageSession>("Error while starting backstage.")
+                .AsTaskResult();
         }
     }
 }

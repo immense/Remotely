@@ -4,19 +4,21 @@ using Remotely.Agent.Interfaces;
 using Remotely.Shared.Dtos;
 using System;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services.Windows;
 
+[SupportedOSPlatform("windows")]
 public class DeviceInfoGeneratorWin : DeviceInfoGeneratorBase, IDeviceInformationService
 {
     private readonly ICpuUtilizationSampler _cpuUtilSampler;
 
     public DeviceInfoGeneratorWin(
-        ICpuUtilizationSampler cpuUtilSampler, 
+        ICpuUtilizationSampler cpuUtilSampler,
         ILogger<DeviceInfoGeneratorWin> logger)
         : base(logger)
-    { 
+    {
         _cpuUtilSampler = cpuUtilSampler;
     }
 
