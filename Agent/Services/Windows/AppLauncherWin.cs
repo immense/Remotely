@@ -231,8 +231,8 @@ public class AppLauncherWin : IAppLauncher
                     .AsTaskResult();
             }
 
-            //var desktopName = "ImmenseDesktop";
-            var desktopName = "ScreenConnectDesktop";
+            var desktopName = "ImmenseDesktop";
+            //var desktopName = "ScreenConnectDesktop";
 
             var result = Win32Interop.StartProcessInBackstage(
                   _rcBinaryPath +
