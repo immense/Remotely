@@ -231,7 +231,6 @@ public class AppLauncherWin : IAppLauncher
                     .AsTaskResult();
             }
 
-            var windowStationName = "WinSta0";
             //var desktopName = "ImmenseDesktop";
             var desktopName = "ScreenConnectDesktop";
 
@@ -242,7 +241,6 @@ public class AppLauncherWin : IAppLauncher
                       $" --session-id \"{remoteControlSessionId}\"" +
                       $" --access-key \"{accessKey}\"" +
                       $" --viewers \"{userConnectionId}\"",
-                  windowStationName,
                   desktopName,
                   _logger,
                   out _);
@@ -254,9 +252,9 @@ public class AppLauncherWin : IAppLauncher
                     .AsTaskResult();
             }
 
+            // TODO:  Replace with "CheckForRunningShell" and launch if not running.
             Win32Interop.StartProcessInBackstage(
                  @"C:\Windows\system32\notepad.exe",
-                 windowStationName,
                  desktopName,
                  _logger,
                  out _);
