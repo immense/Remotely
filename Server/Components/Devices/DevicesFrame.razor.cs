@@ -250,7 +250,7 @@ public partial class DevicesFrame : AuthComponentBase
         return $"oi-sort-{_sortDirection.ToString().ToLower()}";
     }
 
-    private async Task HandleDeviceStateChangedMessage(DeviceStateChangedMessage message)
+    private async Task HandleDeviceStateChangedMessage(object subscriber, DeviceStateChangedMessage message)
     {
         await _devicesLock.WaitAsync();
 
@@ -286,7 +286,7 @@ public partial class DevicesFrame : AuthComponentBase
         }
     }
 
-    private async Task HandleDisplayNotificationMessage(DisplayNotificationMessage message)
+    private async Task HandleDisplayNotificationMessage(object subscriber, DisplayNotificationMessage message)
     {
         TerminalStore.AddTerminalLine(message.ConsoleText);
         ToastService.ShowToast(message.ToastText, classString: message.ClassName);
@@ -298,7 +298,7 @@ public partial class DevicesFrame : AuthComponentBase
         ToastService.ShowToast("Devices refreshed.");
     }
 
-    private async Task HandleScriptResultMessage(ScriptResultMessage message)
+    private async Task HandleScriptResultMessage(object subscriber, ScriptResultMessage message)
     {
         await AddScriptResult(message.ScriptResult);
     }

@@ -17,7 +17,7 @@
         await Register<ShowLoaderMessage>(HandleShowLoaderMessage);
     }
 
-    private async Task HandleShowLoaderMessage(ShowLoaderMessage message)
+    private async Task HandleShowLoaderMessage(object subscriber, ShowLoaderMessage message)
     {
         _loaderShown = message.IsShown;
         _statusMessage = message.StatusMessage;

@@ -251,7 +251,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
         await CircuitConnection.GetPowerShellCompletions(_lastCompletionInput, _lastCursorIndex, CompletionIntent.NextResult, forward);
     }
 
-    private async Task HandlePowerShellCompletionsMessage(PowerShellCompletionsMessage message)
+    private async Task HandlePowerShellCompletionsMessage(object subscriber, PowerShellCompletionsMessage message)
     {
         var completion = message.Completion;
         var intent = message.Intent;

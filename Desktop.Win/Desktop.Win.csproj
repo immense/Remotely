@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <AssemblyName>Remotely_Desktop</AssemblyName>
     <RootNamespace>Remotely.Desktop.Win</RootNamespace>
     <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NAudio" Version="2.1.0" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="SharpDX" Version="4.2.0" />
     <PackageReference Include="SharpDX.Direct3D11" Version="4.2.0" />
     <PackageReference Include="SharpDX.DXGI" Version="4.2.0" />
@@ -60,7 +60,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="if $(SolutionDir) == *Undefined* (&#xD;&#xA;  exit 0&#xD;&#xA;)&#xD;&#xA;if $(ConfigurationName) == Debug (&#xD;&#xA;  if $(PlatformName) == AnyCPU (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\Debug\net7.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\Debug\net7.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x64 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x64\Debug\net7.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x64\Debug\net7.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x86 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x86\Debug\net7.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x86\Debug\net7.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;)" />
+    <Exec Command="if $(SolutionDir) == *Undefined* (&#xD;&#xA;  exit 0&#xD;&#xA;)&#xD;&#xA;if $(ConfigurationName) == Debug (&#xD;&#xA;  if $(PlatformName) == AnyCPU (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\Debug\net8.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\Debug\net8.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x64 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x64\Debug\net8.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x64\Debug\net8.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;  if $(PlatformName) == x86 (&#xD;&#xA;      md &quot;$(SolutionDir)Agent\bin\x86\Debug\net8.0\Desktop\&quot;&#xD;&#xA;      xcopy &quot;$(TargetDir)*&quot; &quot;$(SolutionDir)Agent\bin\x86\Debug\net8.0\Desktop\&quot; /y /e /i&#xD;&#xA;  )&#xD;&#xA;)" />
   </Target>
 
 </Project>

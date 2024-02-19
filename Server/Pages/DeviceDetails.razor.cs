@@ -83,7 +83,7 @@ public partial class DeviceDetails : AuthComponentBase
         _isLoading = false;
     }
 
-    private async Task HandleReceiveLogsMessage(ReceiveLogsMessage message)
+    private async Task HandleReceiveLogsMessage(object subscriber, ReceiveLogsMessage message)
     {
         _logLines.Enqueue(message.LogChunk);
         await InvokeAsync(StateHasChanged);

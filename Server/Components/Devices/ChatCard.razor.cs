@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
-public partial class ChatCard : AuthComponentBase, IAsyncDisposable
+public partial class ChatCard : AuthComponentBase
 {
     private ElementReference _chatMessagesWindow;
 
@@ -44,7 +44,7 @@ public partial class ChatCard : AuthComponentBase, IAsyncDisposable
             HandleChatMessageReceived);
     }
 
-    private async Task HandleChatMessageReceived(ChatReceivedMessage message)
+    private async Task HandleChatMessageReceived(object subscriber, ChatReceivedMessage message)
     {
         if (message.DeviceId != Session.DeviceId)
         {

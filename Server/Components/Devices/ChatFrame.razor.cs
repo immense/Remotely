@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
-public partial class ChatFrame : AuthComponentBase, IAsyncDisposable
+public partial class ChatFrame : AuthComponentBase
 {
     private ICollection<ChatSession> _chatSessions = Array.Empty<ChatSession>();
 
@@ -40,7 +40,7 @@ public partial class ChatFrame : AuthComponentBase, IAsyncDisposable
         await base.OnInitializedAsync();
     }
 
-    private async Task HandleChatMessageReceived(ChatReceivedMessage message)
+    private async Task HandleChatMessageReceived(object subscriber, ChatReceivedMessage message)
     {
         if (message.DidDisconnect ||
             ChatCache.ContainsKey(message.DeviceId))
@@ -66,7 +66,7 @@ public partial class ChatFrame : AuthComponentBase, IAsyncDisposable
         await Messenger.Send(new ChatSessionsChangedMessage(), CircuitConnection.ConnectionId);
     }
 
-    private async Task HandleChatSessionsChanged(ChatSessionsChangedMessage message)
+    private async Task HandleChatSessionsChanged(object subscriber, ChatSessionsChangedMessage message)
     {
         _chatSessions = ChatCache.GetAllSessions();
         await InvokeAsync(StateHasChanged);
