@@ -1,41 +1,44 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Logging;
-using Remotely.Server.Areas.Identity;
 using Remotely.Server.Auth;
 using Remotely.Server.Data;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
-using System.IO;
-using System.Linq;
 using System.Net;
 using Immense.RemoteControl.Server.Extensions;
 using Remotely.Server.Services.RcImplementations;
 using Remotely.Shared.Services;
-using System;
 using Serilog;
 using Microsoft.AspNetCore.RateLimiting;
 using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
 using Remotely.Shared.Entities;
 using Immense.SimpleMessenger;
 using Remotely.Server.Services.Stores;
+using Remotely.Server.Components.Account;
+using Remotely.Server.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
+
+services
+    .AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+services.AddRazorPages();
+
+services.AddCascadingAuthenticationState();
+services.AddScoped<IdentityUserAccessor>();
+services.AddScoped<IdentityRedirectManager>();
+services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
 ConfigureSerilog(builder);
 
@@ -67,19 +70,27 @@ else if (dbProvider == "postgresql")
     services.AddDbContext<AppDb, PostgreSqlDbContext>();
 }
 
-services.AddIdentity<RemotelyUser, IdentityRole>(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
+    .AddIdentityCookies();
+
+services.AddIdentityCore<RemotelyUser>(options =>
 {
     options.Stores.MaxLengthForKeys = 128;
     options.Password.RequireNonAlphanumeric = false;
 })
     .AddEntityFrameworkStores<AppDb>()
-    .AddDefaultUI()
+    .AddSignInManager()
     .AddDefaultTokenProviders();
 
 
 services.AddScoped<IAuthorizationHandler, TwoFactorRequiredHandler>();
 services.AddScoped<IAuthorizationHandler, OrganizationAdminRequirementHandler>();
 services.AddScoped<IAuthorizationHandler, ServerAdminRequirementHandler>();
+builder.Services.AddSingleton<IEmailSender<RemotelyUser>, IdentityNoOpEmailSender>();
 
 services.AddAuthorization(options =>
 {
@@ -99,9 +110,6 @@ services.AddAuthorization(options =>
     });
 });
 
-services.AddRazorPages();
-services.AddServerSideBlazor();
-services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<RemotelyUser>>();
 services.AddDatabaseDeveloperPageExceptionFilter();
 
 if (bool.TryParse(configuration["ApplicationOptions:UseHttpLogging"], out var useHttpLogging) &&
@@ -121,9 +129,9 @@ if (bool.TryParse(configuration["ApplicationOptions:UseHttpLogging"], out var us
 
 var trustedOrigins = configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
 
-if (trustedOrigins != null)
+services.AddCors(options =>
 {
-    services.AddCors(options =>
+    if (trustedOrigins != null)
     {
         options.AddPolicy("TrustedOriginPolicy", builder => builder
             .WithOrigins(trustedOrigins)
@@ -131,8 +139,9 @@ if (trustedOrigins != null)
             .AllowAnyMethod()
             .AllowCredentials()
         );
-    });
-}
+    }
+});
+
 
 var knownProxies = configuration.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
 services.Configure<ForwardedHeadersOptions>(options =>
@@ -163,11 +172,6 @@ services.AddSignalR(options =>
         options.PayloadSerializerOptions.PropertyNameCaseInsensitive = true;
     })
     .AddMessagePackProtocol();
-
-services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Remotely API", Version = "v1" });
-});
 
 services.AddRateLimiter(options =>
 {
@@ -227,6 +231,9 @@ services.AddRemoteControlServer(config =>
 
 services.AddSingleton<IAgentHubSessionCache, AgentHubSessionCache>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 app.UseRateLimiter();
@@ -244,6 +251,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseMigrationsEndPoint();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
@@ -260,26 +269,21 @@ else
 
 ConfigureStaticFiles();
 
-app.UseSwagger();
-
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remotely API V1");
-});
-
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("TrustedOriginPolicy");
 
-app.UseRemoteControlServer();
+app.UseAntiforgery();
 
+app.UseRemoteControlServer();
 
 app.MapHub<AgentHub>("/hubs/service");
 app.MapControllers();
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 using (var scope = app.Services.CreateScope())
 {

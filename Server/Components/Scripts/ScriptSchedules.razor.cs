@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Remotely.Server.Pages;
+using Remotely.Server.Components.Pages;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Utilities;

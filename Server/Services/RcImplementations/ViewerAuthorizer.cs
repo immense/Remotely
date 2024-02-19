@@ -19,7 +19,7 @@ public class ViewerAuthorizer : IViewerAuthorizer
         _otpProvider = otpProvider;
     }
 
-    public string UnauthorizedRedirectUrl { get; } = "/Identity/Account/Login";
+    public string UnauthorizedRedirectUrl { get; } = "/Account/Login";
 
     public Task<bool> IsAuthorized(AuthorizationFilterContext context)
     {

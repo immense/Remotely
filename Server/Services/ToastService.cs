@@ -68,7 +68,7 @@ public class ToastService : IToastService
 
         OnToastsChanged?.Invoke(this, EventArgs.Empty);
 
-        var removeToastTimer = new Timer(toastModel.Expiration.TotalMilliseconds + 1000)
+        var removeToastTimer = new System.Timers.Timer(toastModel.Expiration.TotalMilliseconds + 1000)
         {
             AutoReset = false
         };

@@ -59,7 +59,6 @@ public class Startup
 
         services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
          .AddEntityFrameworkStores<AppDb>()
-         .AddDefaultUI()
          .AddDefaultTokenProviders();
 
         services.AddTransient<IAppDbFactory, AppDbFactory>();

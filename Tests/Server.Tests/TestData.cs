@@ -1,16 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
-using Remotely.Server.Areas.Identity.Pages.Account.Manage;
 using Remotely.Server.Data;
 using Remotely.Server.Services;
 using Remotely.Shared.Dtos;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
-using System;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Tests;
