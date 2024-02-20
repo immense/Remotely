@@ -10,7 +10,7 @@
             </span>
             @Session.DeviceName
         </h6>
-        <div class="text-right">
+        <div class="text-end">
             <button class="btn btn-sm btn-secondary" title="Close" @onclick="CloseChatCard" @onclick:stopPropagation>
                 <i class="oi oi-x pointer"></i>
             </button>
@@ -34,7 +34,7 @@
             }
             else if (item.Origin == ChatHistoryItemOrigin.Self)
             {
-                <div @key="item" class="text-right mt-1">
+                <div @key="item" class="text-end mt-1">
                     <div class="chat-bubble d-inline-block bg-dark text-white">
                         <div class="small">
                             You
