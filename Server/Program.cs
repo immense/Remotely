@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.OpenApi.Models;
 using Remotely.Server.Auth;
 using Remotely.Server.Data;
 using Remotely.Server.Hubs;
@@ -28,6 +27,8 @@ using Remotely.Server.Components;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
+
+configuration.AddEnvironmentVariables("Remotely_");
 
 services
     .AddRazorComponents()

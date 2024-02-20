@@ -1,0 +1,51 @@
+version: '3.4'
+
+services:
+  server:
+    build:
+      context: ../Server
+      dockerfile: Dockerfile.local
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5000
+      - ASPNETCORE_HTTPS_PORTS=5001
+      - Remotely_ApplicationOptions__AllowApiLogin=false,
+      #- Remotely_ApplicationOptions__BannedDevices__0=,
+      - Remotely_ApplicationOptions__DataRetentionInDays=90,
+      - Remotely_ApplicationOptions__DBProvider=SQLite,
+      - Remotely_ApplicationOptions__EnableRemoteControlRecording=false,
+      - Remotely_ApplicationOptions__EnableWindowsEventLog=false,
+      - Remotely_ApplicationOptions__EnforceAttendedAccess=false,
+      - Remotely_ApplicationOptions__ForceClientHttps=false,
+      #- Remotely_ApplicationOptions__KnownProxies__0=,
+      - Remotely_ApplicationOptions__MaxConcurrentUpdates=10,
+      - Remotely_ApplicationOptions__MaxOrganizationCount=1,
+      - Remotely_ApplicationOptions__MessageOfTheDay=,
+      - Remotely_ApplicationOptions__RedirectToHttps=true,
+      - Remotely_ApplicationOptions__RemoteControlNotifyUser=true,
+      - Remotely_ApplicationOptions__RemoteControlRequiresAuthentication=true,
+      - Remotely_ApplicationOptions__RemoteControlSessionLimit=3,
+      - Remotely_ApplicationOptions__Require2FA=false,
+      - Remotely_ApplicationOptions__SmtpDisplayName=,
+      - Remotely_ApplicationOptions__SmtpEmail=,
+      - Remotely_ApplicationOptions__SmtpHost=,
+      - Remotely_ApplicationOptions__SmtpLocalDomain=,
+      - Remotely_ApplicationOptions__SmtpCheckCertificateRevocation=true,
+      - Remotely_ApplicationOptions__SmtpPassword=,
+      - Remotely_ApplicationOptions__SmtpPort=587,
+      - Remotely_ApplicationOptions__SmtpUserName=,
+      - Remotely_ApplicationOptions__Theme=Dark,
+      #- Remotely_ApplicationOptions__TrustedCorsOrigins__0=,
+      - Remotely_ApplicationOptions__UseHsts=false,
+      - Remotely_ApplicationOptions__UseHttpLogging=false
+    ports:
+      - "5000"
+      - "5001"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - remotely-data:/app/AppData
+ 
+volumes:
+  remotely-data:
+    name: remotely-data

@@ -31,7 +31,7 @@ if [ -z "$ETag" ]; then
 fi
 
 pacman -Sy
-pacman -S dotnet-runtime-7.0 --noconfirm
+pacman -S dotnet-runtime-8.0 --noconfirm
 pacman -S libx11 --noconfirm
 pacman -S unzip --noconfirm
 pacman -S libc6 --noconfirm
