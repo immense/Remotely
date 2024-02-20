@@ -190,8 +190,15 @@ services.AddRateLimiter(options =>
 });
 services.AddHttpClient();
 services.AddLogging();
-services.AddScoped<IEmailSenderEx, EmailSenderEx>();
 services.AddScoped<IEmailSender, EmailSender>();
+if (builder.Environment.IsDevelopment())
+{
+    services.AddScoped<IEmailSenderEx, EmailSenderFake>();
+}
+else
+{
+    services.AddScoped<IEmailSenderEx, EmailSenderEx>();
+}
 services.AddScoped<IAppDbFactory, AppDbFactory>();
 services.AddTransient<IDataService, DataService>();
 services.AddSingleton<IApplicationConfig, ApplicationConfig>();

@@ -28,26 +28,26 @@ else if (User is not null)
     {
         <h5 class="text-warning font-weight-bold mb-2 mt-4">Warning: The key's secret will only be shown once.  Save it now.</h5>
         <h5 class="mb-4">
-            <label class="mr-1">Key Secret:</label>
+            <label class="me-1">Key Secret:</label>
             <input class="form-control custom-control-inline" readonly value="@_newKeySecret" style="width:400px" />
         </h5>
     }
 
 
     <div class="mb-2 mt-4">
-        <label class="mr-1">New Token Name:</label>
+        <label class="me-1">New Token Name:</label>
         <input @bind="_createKeyName" @bind:event="oninput"
-               class="form-control form-control-sm custom-control-inline mr-1"
+               class="form-control form-control-sm custom-control-inline me-1"
                style="width:200px" />
 
         <button class="btn btn-primary" type="button" @onclick="CreateNewKey">Create</button>
 
-        <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowApiKeyHelp">
+        <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowApiKeyHelp">
             <span class="oi oi-question-mark"></span>
         </button>
     </div>
 
-    <table class="table table-hover table-striped">
+    <table class="table table-dark table-hover table-striped">
         <thead>
             <tr>
                 <th>Name</th>

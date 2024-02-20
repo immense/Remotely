@@ -225,7 +225,7 @@ public class InstallerService
         var shortcut = (IWshShortcut)shell.CreateShortcut(shortcutLocation);
         shortcut.Description = "Get IT support";
         shortcut.IconLocation = Path.Combine(_installPath, "Remotely_Agent.exe");
-        shortcut.TargetPath = serverUrl.TrimEnd('/') + $"/GetSupport?deviceID={deviceUuid}";
+        shortcut.TargetPath = serverUrl.TrimEnd('/') + $"/get-support?deviceID={deviceUuid}";
         shortcut.Save();
 
         if (createSupportShortcut)

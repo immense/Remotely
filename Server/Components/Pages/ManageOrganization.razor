@@ -43,7 +43,7 @@ else if (User is not null)
             {
                 <div class="form-group">
                     <label class="mb-1">Default Organization For Server</label>
-                    <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowDefaultOrgHelp">
+                    <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowDefaultOrgHelp">
                         <span class="oi oi-question-mark"></span>
                     </button>
                     <br />
@@ -58,7 +58,7 @@ else if (User is not null)
             @* Device Groups *@
             <div class="form-group">
                 <label class="mb-1">Device Groups</label>
-                <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowDeviceGroupHelp">
+                <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowDeviceGroupHelp">
                     <span class="oi oi-question-mark"></span>
                 </button>
 
@@ -90,10 +90,10 @@ else if (User is not null)
             @* Users *@
             <div class="form-group">
                 <label class="control-label">Users</label>
-                <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowUsersHelp">
+                <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowUsersHelp">
                     <span class="oi oi-question-mark"></span>
                 </button>
-                <table class="table table-striped table-hover" style="max-height: 400px">
+                <table class="table table-dark table-striped table-hover" style="max-height: 400px">
                     <thead>
                         <tr>
                             <th>User Name</th>
@@ -136,10 +136,10 @@ else if (User is not null)
         <div class="col-sm-12">
             <div class="form-group">
                 <label class="control-label">Invitations</label>
-                <button class="btn btn-sm btn-secondary ml-2" @onclick="ShowInvitesHelp">
+                <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowInvitesHelp">
                     <span class="oi oi-question-mark"></span>
                 </button>
-                <table id="invitesTable" class="table table-striped table-hover" style="max-height: 400px">
+                <table id="invitesTable" class="table table-dark table-striped table-hover" style="max-height: 400px">
                     <thead>
                         <tr>
                             <th>Invited User</th>
@@ -156,7 +156,7 @@ else if (User is not null)
                                 <td class="middle-aligned"><input type="checkbox" checked="@invite.IsAdmin" disabled /></td>
                                 <td class="middle-aligned">
                                     <label class="control-label">
-                                        <a href="@NavManager.BaseUri/Invite/?id=@invite.ID">Join Link</a>
+                                        <a href="@(NavManager.BaseUri)Invite/@invite.ID">Join Link</a>
                                     </label>
                                 </td>
                                 <td><button type="button" class="btn btn-danger" invite="@invite.ID" @onclick="() => DeleteInvite(invite)">Delete</button></td>
@@ -182,17 +182,11 @@ else if (User is not null)
                            required
                            class="form-control" />
 
-                    <div class="input-group-append">
-                        <span class="input-group-text pr-1">Admin?</span>
+                    <span class="input-group-text pe-1">Admin?</span>
+                    <div class="input-group-text ps-1">
+                        <input @bind="_inviteAsAdmin" type="checkbox" @onkeypress="EvaluateInviteInputKeypress" />
                     </div>
-                    <div class="input-group-append">
-                        <div class="input-group-text pl-1">
-                            <input @bind="_inviteAsAdmin" type="checkbox" @onkeypress="EvaluateInviteInputKeypress" />
-                        </div>
-                    </div>
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-primary" @onclick="SendInvite">Add</button>
-                    </div>
+                    <button type="button" class="btn btn-primary" @onclick="SendInvite">Add</button>
                 </div>
             </div>
         </div>

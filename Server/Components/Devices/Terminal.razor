@@ -3,15 +3,15 @@
 <div class="terminal-frame @_terminalOpenClass">
     <div class="terminal-header">
         <div>
-            <button class="btn btn-secondary terminal-button ml-4" @onclick="ToggleTerminalOpen">
+            <button class="btn btn-secondary terminal-button ms-4" @onclick="ToggleTerminalOpen">
                 <i class="oi oi-terminal"></i>
-                <span class="ml-2">Terminal</span>
+                <span class="ms-2">Terminal</span>
             </button>
         </div>
         <div class="text-right">
-            <button class="btn btn-secondary terminal-button mr-4" @onclick="ShowQuickScripts">
+            <button class="btn btn-secondary terminal-button me-4" @onclick="ShowQuickScripts">
                 <i class="oi oi-script"></i>
-                <span class="ml-2">Quick Scripts</span>
+                <span class="ms-2">Quick Scripts</span>
             </button>
         </div>
 
@@ -22,7 +22,7 @@
             
             @foreach (var line in TerminalStore.TerminalLines)
             {
-                <div @key="line.Id" class="ml-1 terminal-line @line.ClassName" title="@line.Title">
+                <div @key="line.Id" class="ms-1 terminal-line @line.ClassName" title="@line.Title">
                     @line.Text
                 </div>
             }
@@ -30,7 +30,7 @@
         <div>
             <div class="terminal-input-area px-2 mb-2">
                 <div>
-                    <button class="btn btn-sm btn-secondary mr-1"
+                    <button class="btn btn-sm btn-secondary me-1"
                             style="align-self: center" 
                             @onclick="ShowTerminalHelp">
                         <i class="oi oi-question-mark"></i>

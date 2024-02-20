@@ -94,7 +94,7 @@ public class FileLogsManager : IFileLogsManager
                 {
                     yield break;
                 }
-                yield return File.ReadAllBytes(file);
+                yield return chunk;
             }
         }
     }

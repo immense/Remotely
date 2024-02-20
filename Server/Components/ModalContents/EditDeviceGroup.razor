@@ -11,7 +11,7 @@
         <input 
             id="@group.ID" 
             type="checkbox" 
-            class="align-middle mr-2" 
+            class="align-middle me-2" 
             checked="@(DoesGroupContainUser(group))" 
             @onchange="ev => GroupCheckChanged(ev, group)" />
         <label class="align-middle mb-0" for="@group.ID">@group.Name</label>

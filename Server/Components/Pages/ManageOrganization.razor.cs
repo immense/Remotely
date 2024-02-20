@@ -340,7 +340,7 @@ public partial class ManageOrganization : AuthComponentBase
                 return;
             }
 
-            var inviteURL = $"{NavManager.BaseUri}Invite?id={newInvite.Value.ID}";
+            var inviteURL = $"{NavManager.BaseUri}Invite/{newInvite.Value.ID}";
             var emailResult = await EmailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
                     $@"<img src='{NavManager.BaseUri}images/Remotely_Logo.png'/>
                             <br><br>

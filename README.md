@@ -169,7 +169,7 @@ Ideally, you'd be doing remote control from an actual computer or laptop.  Howev
 - Click-and-drag: Long-press, then drag
 
 ## End User Support Page
-There's a page at `/GetSupport` where end users can request support.  When the form is submitted, an alert appears on the main page, above the grid.
+There's a page at `/get-support` where end users can request support.  When the form is submitted, an alert appears on the main page, above the grid.
 
 A shortcut to this page is placed in the `\Program Files\Remotely\` folder.  You can copy it anywhere you like.  You can also have it copied to the desktop automatically by using the `-supportshortcut` switch on the installer.
 	

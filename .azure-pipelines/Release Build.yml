@@ -41,7 +41,7 @@ jobs:
   - task: UseDotNet@2
     displayName: Use .NET SDK
     inputs:
-      version: 7.x
+      version: 8.x
 
   - task: DotNetCoreCLI@2
     displayName: dotnet publish x64
@@ -121,7 +121,7 @@ jobs:
   - task: UseDotNet@2
     displayName: Use .NET SDK
     inputs:
-      version: 7.x
+      version: 8.x
 
   - task: DotNetCoreCLI@2
     displayName: dotnet restore

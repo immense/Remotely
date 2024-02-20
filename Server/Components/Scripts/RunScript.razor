@@ -3,8 +3,8 @@
 
 <div class="main-grid mt-3 auto-height">
     <div style="grid-column: span 3">
-        <button class="btn btn-primary align-middle mr-4" @onclick="ExecuteScript">Run</button>
-        <input type="checkbox" class="mr-1 align-middle" @bind="_runOnNextConnect" />
+        <button class="btn btn-primary align-middle me-4" @onclick="ExecuteScript">Run</button>
+        <input type="checkbox" class="me-1 align-middle" @bind="_runOnNextConnect" />
         <span class="align-middle">If offline, run immediately when next connected</span>
     </div>
     <div class="column-wrapper h-100 pb-3">
@@ -31,7 +31,7 @@
             @foreach (var deviceGroup in _deviceGroups)
             {
                 <div @key="@deviceGroup.ID">
-                    <input class="mr-1" type="checkbox" 
+                    <input class="me-1" type="checkbox" 
                            checked="@(_selectedDeviceGroups.Contains(deviceGroup.ID))"
                            @onchange="ev => DeviceGroupSelectedChanged(ev, deviceGroup)" />
 
@@ -47,7 +47,7 @@
             @foreach (var device in _devices)
             {
                 <div @key="@device.ID">
-                    <input class="mr-1" type="checkbox"
+                    <input class="me-1" type="checkbox"
                            checked="@(_selectedDeviceGroups.Contains(device.ID))"
                            @onchange="ev => DeviceSelectedChanged(ev, device)" />
 

@@ -10,13 +10,13 @@
 <div class="row">
     <div class="col-md-8">
         <div class="mb-4" style="display:flex; justify-content: space-evenly">
-            <div class="d-inline-block text-center mr-2">
+            <div class="d-inline-block text-center me-2">
                 <label>Devices Online</label>
                 <br />
                 <span class="badge badge-primary p-2">@ServiceSessionCache.GetAllDevices().Count</span>
             </div>
 
-            <div class="d-inline-block text-center mr-2">
+            <div class="d-inline-block text-center me-2">
                 <label>Devices Outdated</label>
                 <br />
 
@@ -29,12 +29,12 @@
                 </button>
             </div>
 
-            <div class="d-inline-block text-center mr-2">
+            <div class="d-inline-block text-center me-2">
                 <label>Devices Total</label>
                 <br />
                 <span class="badge badge-primary p-2">@TotalDevices</span>
             </div>
-            <div class="d-inline-block text-center mr-2">
+            <div class="d-inline-block text-center me-2">
                 <label>Active Users</label>
                 <br />
                 <span class="badge badge-primary p-2">@CircuitManager.Connections.Count</span>
@@ -52,11 +52,11 @@
             <br />
 
             <div class="small">
-                <input class="align-middle mr-1" type="checkbox" @bind="_showMyOrgAdminsOnly" />
+                <input class="align-middle me-1" type="checkbox" @bind="_showMyOrgAdminsOnly" />
                 <span class="align-middle">Show my organization only</span>
             </div>
             <div class="small">
-                <input class="align-middle mr-1" type="checkbox" @bind="_showAdminsOnly" />
+                <input class="align-middle me-1" type="checkbox" @bind="_showAdminsOnly" />
                 <span class="align-middle">Show current admins only</span>
             </div>
 
@@ -66,7 +66,7 @@
                 {
                     <div @key="user.Id">
                         <input type="checkbox" disabled="@(user.Id == User?.Id)" checked="@user.IsServerAdmin" @onchange="ev => SetIsServerAdmin(ev, user)" />
-                        <span class="ml-2 align-top" style="line-height:1.3em">@user.UserName</span>
+                        <span class="ms-2 align-top" style="line-height:1.3em">@user.UserName</span>
                     </div>
                 }
             </div>

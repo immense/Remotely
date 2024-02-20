@@ -3,6 +3,7 @@ using MailKit.Security;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using MimeKit;
 using MimeKit.Text;
 using System;
@@ -97,5 +98,25 @@ public class EmailSenderEx : IEmailSenderEx
     public Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string? organizationID = null)
     {
         return SendEmailAsync(email, _appConfig.SmtpEmail, subject, htmlMessage, organizationID);
+    }
+}
+public class EmailSenderFake(ILogger<EmailSenderFake> _logger) : IEmailSenderEx
+{
+    public Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string? organizationID = null)
+    {
+        _logger.LogInformation(
+            "Fake EmailSender registered in dev mode. " +
+            "Email would have been sent to {email}." +
+            "\n\nSubject: {EmailSubject}. " +
+            "\n\nMessage: {EmailMessage}", 
+            email, 
+            subject,
+            htmlMessage);
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string? organizationID = null)
+    {
+        return SendEmailAsync(email, "", subject, htmlMessage, organizationID);
     }
 }
