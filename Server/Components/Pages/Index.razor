@@ -1,5 +1,4 @@
 ﻿@page "/"
-@inject IApplicationConfig AppConfig
 @inject IDataService DataService
  
 <AuthorizeView>
@@ -13,7 +12,7 @@
             <p class="lead">
                 <a class="btn btn-primary btn-lg me-2" href="Account/Login" role="button">Log In</a>
 
-                @if (AppConfig.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
+                @if (_isRegistrationEnabled)
                 {
                     <a class="btn btn-primary btn-lg" href="Account/Register" role="button">Register</a>
                 }
@@ -24,3 +23,15 @@
         <AuthorizedIndex />
     </Authorized>
 </AuthorizeView>
+
+@code 
+{
+    private bool _isRegistrationEnabled;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var settings = await DataService.GetSettings();
+        _isRegistrationEnabled = settings.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < settings.MaxOrganizationCount;
+        await base.OnInitializedAsync();
+    }
+}

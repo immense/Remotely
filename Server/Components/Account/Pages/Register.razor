@@ -16,13 +16,12 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 @inject IDataService DataService
-@inject IApplicationConfig AppConfig
 @inject IWebHostEnvironment HostEnv
 
 <PageTitle>Register</PageTitle>
 <h1>Register</h1>
 
-@if (!IsRegistrationEnabled())
+@if (!_registrationEnabled)
 {
     <h2>Registration is disabled.</h2>
 }
@@ -69,6 +68,7 @@ else
 @code {
     private IEnumerable<IdentityError>? identityErrors;
     private int _organizationCount;
+    private bool _registrationEnabled;
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
@@ -78,12 +78,13 @@ else
 
     private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        _registrationEnabled = await IsRegistrationEnabled();
         _organizationCount = DataService.GetOrganizationCount();
-        base.OnInitialized();
+        await base.OnInitializedAsync();
     }
-
+    
     public async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
@@ -155,9 +156,10 @@ else
         return (IUserEmailStore<RemotelyUser>)UserStore;
     }
 
-    private bool IsRegistrationEnabled()
+    private async Task<bool> IsRegistrationEnabled()
     {
-        return AppConfig.MaxOrganizationCount < 0 || _organizationCount < AppConfig.MaxOrganizationCount;
+        var settings = await DataService.GetSettings();
+        return settings.MaxOrganizationCount < 0 || _organizationCount < settings.MaxOrganizationCount;
     }
 
     private sealed class InputModel

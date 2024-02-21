@@ -8,18 +8,19 @@ namespace Remotely.Server.Services.RcImplementations;
 
 public class ViewerOptionsProvider : IViewerOptionsProvider
 {
-    private readonly IApplicationConfig _appConfig;
+    private readonly IDataService _dataService;
 
-    public ViewerOptionsProvider(IApplicationConfig appConfig) 
+    public ViewerOptionsProvider(IDataService dataService) 
     {
-        _appConfig = appConfig;
+        _dataService = dataService;
     }
-    public Task<RemoteControlViewerOptions> GetViewerOptions()
+    public async Task<RemoteControlViewerOptions> GetViewerOptions()
     {
+        var settings = await _dataService.GetSettings();
         var options = new RemoteControlViewerOptions()
         {
-            ShouldRecordSession = _appConfig.EnableRemoteControlRecording
+            ShouldRecordSession = settings.EnableRemoteControlRecording
         };
-        return Task.FromResult(options);
+        return options;
     }
 }

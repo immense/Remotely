@@ -1,7 +1,7 @@
 ﻿@implements IDisposable
 @inject NavigationManager NavigationManager
 @inject IAuthService AuthService 
-@inject IApplicationConfig AppConfig
+@inject IDataService DataService
 @inject IDataService DataService
 
 <div class="ps-4 pb-1 pe-0 pt-0 navbar navbar-dark" style="background-color: rgba(0,0,0,0.3)">
@@ -122,7 +122,7 @@
                 <li class="px-3 mt-3">
                     <a class="btn btn-link text-light" href="Account/Login">Log in</a>
                 </li>
-                @if (AppConfig.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < AppConfig.MaxOrganizationCount)
+                @if (_isRegistrationEnabled)
                 {
                     <li class="px-3">
                         <a class="btn btn-link text-light" href="Account/Register">Register</a>
@@ -139,7 +139,7 @@
 
 @code {
     private bool collapseNavMenu = true;
-
+    private bool _isRegistrationEnabled;
     private RemotelyUser? _user;
     private Organization? _organization;
     private string? _currentUrl;
@@ -151,6 +151,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var settings = await DataService.GetSettings();
+        _isRegistrationEnabled = settings.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < settings.MaxOrganizationCount;
+
         await base.OnInitializedAsync();
 
         _currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);

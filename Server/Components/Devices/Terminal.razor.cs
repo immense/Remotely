@@ -91,11 +91,6 @@ public partial class Terminal : AuthComponentBase, IDisposable
     [Inject]
     private IToastService ToastService { get; init; } = null!;
 
-    public void Dispose()
-    {
-        Messenger.Unregister<PowerShellCompletionsMessage, string>(this, CircuitConnection.ConnectionId);
-        GC.SuppressFinalize(this);
-    }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
     {

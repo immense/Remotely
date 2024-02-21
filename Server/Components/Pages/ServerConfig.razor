@@ -122,18 +122,6 @@
                 <ValidationMessage For="() => Input.DataRetentionInDays" />
             </div>
             <div class="form-group">
-                <label class="control-label">Database Provider</label>
-                <br />
-                <select class="form-control" @bind="Input.DBProvider">
-                    @foreach (var provider in Enum.GetValues<DbProvider>())
-                    {
-                        <option @key="provider" value="@provider">@provider</option>
-                    }
-                </select>
-                <br />
-                <ValidationMessage For="() => Input.DBProvider" />
-            </div>
-            <div class="form-group">
                 <label>Enable Remote Control Recording</label>
                 <br />
                 <InputCheckbox @bind-Value="Input.EnableRemoteControlRecording" autocomplete="off" />
@@ -356,34 +344,6 @@
                 <br />
                 <ValidationMessage For="() => Input.UseHttpLogging" />
             </div>
-
-            <h4>Connection Strings</h4>
-
-            <div class="form-group">
-                <label class="control-label">PostgreSQL</label>
-                <br />
-                <InputText @bind-Value="ConnectionStrings.PostgreSQL" class="form-control" autocomplete="off" />
-                <br />
-                <ValidationMessage For="() => ConnectionStrings.PostgreSQL" />
-            </div>
-
-            <div class="form-group">
-                <label class="control-label">SQLite</label>
-                <br />
-                <InputText @bind-Value="ConnectionStrings.SQLite" class="form-control" autocomplete="off" />
-                <br />
-                <ValidationMessage For="() => ConnectionStrings.SQLite" />
-            </div>
-
-
-            <div class="form-group">
-                <label class="control-label">SQL Server</label>
-                <br />
-                <InputText @bind-Value="ConnectionStrings.SQLServer" class="form-control" autocomplete="off" />
-                <br />
-                <ValidationMessage For="() => ConnectionStrings.SQLServer" />
-            </div>
-
 
             <div class="form-group mt-3">
                 <button type="button" class="btn btn-primary" @onclick="Save">Save</button>

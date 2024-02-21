@@ -12,12 +12,10 @@ namespace Remotely.Server.Services.RcImplementations;
 
 public class ViewerPageDataProvider : IViewerPageDataProvider
 {
-    private readonly IApplicationConfig _appConfig;
     private readonly IDataService _dataService;
-    public ViewerPageDataProvider(IDataService dataService, IApplicationConfig appConfig)
+    public ViewerPageDataProvider(IDataService dataService)
     {
         _dataService = dataService;
-        _appConfig = appConfig;
     }
 
     public Task<string> GetFaviconUrl(PageModel viewerModel)

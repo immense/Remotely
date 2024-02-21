@@ -2,13 +2,13 @@
 @inherits AuthComponentBase
 
 @inject NavigationManager NavManager
-@inject IApplicationConfig AppConfig
+@inject IDataService DataService
 @inject SignInManager<RemotelyUser> SignInManager
 
-@if (!string.IsNullOrWhiteSpace(AppConfig.MessageOfTheDay))
+@if (!string.IsNullOrWhiteSpace(_settings?.MessageOfTheDay))
 {
     <div class="me-5">
-        <AlertBanner Message="@AppConfig.MessageOfTheDay" StatusClass="info" />
+        <AlertBanner Message="@_settings?.MessageOfTheDay" StatusClass="info" />
     </div>
 }
 
@@ -17,11 +17,12 @@
 <ChatFrame />
 
 @code {
+    private SettingsModel? _settings;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (User is not null &&
-            AppConfig.Require2FA && 
+            _settings?.Require2FA == true &&
             !User.TwoFactorEnabled)
         {
             NavManager.NavigateTo("/TwoFactorRequired");
@@ -31,6 +32,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        _settings = await DataService.GetSettings();
         await base.OnInitializedAsync();
 
         var isAuthenticated = await AuthService.IsAuthenticated();

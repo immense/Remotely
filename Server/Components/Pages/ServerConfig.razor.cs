@@ -2,123 +2,18 @@
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR;
-using Remotely.Server.Components;
 using Remotely.Server.Hubs;
+using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
-using Remotely.Shared.Enums;
 using Remotely.Shared.Interfaces;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Remotely.Server.Components.Pages;
 
-public class AppSettingsModel
-{
-    [Display(Name = "Allow API Login")]
-    public bool AllowApiLogin { get; set; }
-
-    [Display(Name = "Banned Devices")]
-    public List<string> BannedDevices { get; set; } = new();
-
-    [Display(Name = "Data Retention (days)")]
-    public double DataRetentionInDays { get; set; }
-
-    [Display(Name = "Database Provider")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public DbProvider DBProvider { get; set; }
-
-    [Display(Name = "Enable Remote Control Recording")]
-    public bool EnableRemoteControlRecording { get; set; }
-
-    [Display(Name = "Enable Windows Event Log")]
-    public bool EnableWindowsEventLog { get; set; }
-
-    [Display(Name = "Enforce Attended Access")]
-    public bool EnforceAttendedAccess { get; set; }
-
-    [Display(Name = "Force Client HTTPS")]
-    public bool ForceClientHttps { get; set; }
-
-    [Display(Name = "Known Proxies")]
-    public List<string> KnownProxies { get; set; } = new();
-
-    [Display(Name = "Max Concurrent Updates")]
-    public int MaxConcurrentUpdates { get; set; }
-
-    [Display(Name = "Max Organizations")]
-    public int MaxOrganizationCount { get; set; }
-    [Display(Name = "Message of the Day")]
-    public string? MessageOfTheDay { get; set; }
-
-    [Display(Name = "Redirect To HTTPS")]
-    public bool RedirectToHttps { get; set; }
-
-    [Display(Name = "Remote Control Notify User")]
-    public bool RemoteControlNotifyUser { get; set; }
-
-    [Display(Name = "Remote Control Requires Authentication")]
-    public bool RemoteControlRequiresAuthentication { get; set; }
-
-    [Display(Name = "Remote Control Session Limit")]
-    public double RemoteControlSessionLimit { get; set; }
-
-    [Display(Name = "Require 2FA")]
-    public bool Require2FA { get; set; }
-
-    [Display(Name = "SMTP Display Name")]
-    public string? SmtpDisplayName { get; set; }
-
-    [Display(Name = "SMTP Email")]
-    [EmailAddress]
-    public string? SmtpEmail { get; set; }
-
-    [Display(Name = "SMTP Host")]
-    public string? SmtpHost { get; set; }
-    [Display(Name = "SMTP Local Domain")]
-    public string? SmtpLocalDomain { get; set; }
-
-    [Display(Name = "SMTP Check Certificate Revocation")]
-    public bool SmtpCheckCertificateRevocation { get; set; }
-
-    [Display(Name = "SMTP Password")]
-    public string? SmtpPassword { get; set; }
-
-    [Display(Name = "SMTP Port")]
-    public int SmtpPort { get; set; }
-
-    [Display(Name = "SMTP Username")]
-    public string? SmtpUserName { get; set; }
-
-    [Display(Name = "Theme")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public Theme Theme { get; set; }
-
-    [Display(Name = "Trusted CORS Origins")]
-    public List<string> TrustedCorsOrigins { get; set; } = new();
-
-    [Display(Name = "Use HSTS")]
-    public bool UseHsts { get; set; }
-
-    [Display(Name = "Use HTTP Logging")]
-    public bool UseHttpLogging { get; set; }
-}
-
-public class ConnectionStringsModel
-{
-    [Display(Name = "PostgreSQL")]
-    public string? PostgreSQL { get; set; }
-
-    [Display(Name = "SQLite")]
-    public string? SQLite { get; set; }
-
-    [Display(Name = "SQL Server")]
-    public string? SQLServer { get; set; }
-}
-
 public partial class ServerConfig : AuthComponentBase
 {
+    private readonly List<RemotelyUser> _userList = new();
     private string? _alertMessage;
     private string? _bannedDeviceSelected;
     private string? _bannedDeviceToAdd;
@@ -126,54 +21,44 @@ public partial class ServerConfig : AuthComponentBase
     private string? _knownProxySelected;
     private string? _knownProxyToAdd;
 
-    private bool _showMyOrgAdminsOnly = true;
     private bool _showAdminsOnly;
-
+    private bool _showMyOrgAdminsOnly = true;
     private string? _trustedCorsOriginSelected;
     private string? _trustedCorsOriginToAdd;
 
-    private readonly List<RemotelyUser> _userList = new();
-
+    [Inject]
+    public required IHubContext<AgentHub, IAgentHubClient> AgentHubContext { get; init; }
 
     [Inject]
-    private IHubContext<AgentHub, IAgentHubClient> AgentHubContext { get; init; } = null!;
+    public required ICircuitManager CircuitManager { get; init; }
 
     [Inject]
-    private IConfiguration Configuration { get; init; } = null!;
-
-    private ConnectionStringsModel ConnectionStrings { get; } = new();
+    public required IDataService DataService { get; init; }
 
     [Inject]
-    private IDataService DataService { get; init; } = null!;
+    public required IEmailSenderEx EmailSender { get; init; }
 
     [Inject]
-    private IEmailSenderEx EmailSender { get; init; } = null!;
+    public required IWebHostEnvironment HostEnv { get; init; }
 
     [Inject]
-    private IWebHostEnvironment HostEnv { get; init; } = null!;
+    public required ILogger<ServerConfig> Logger { get; init; }
 
     [Inject]
-    private ILogger<ServerConfig> Logger { get; init; } = null!;
+    public required IModalService ModalService { get; init; }
 
     [Inject]
-    private IAgentHubSessionCache ServiceSessionCache { get; init; } = null!;
-
-    private AppSettingsModel Input { get; } = new();
+    public required IAgentHubSessionCache ServiceSessionCache { get; init; }
 
     [Inject]
-    private IModalService ModalService { get; init; } = null!;
+    public required IToastService ToastService { get; init; }
 
     [Inject]
-    private IUpgradeService UpgradeService { get; init; } = null!;
+    public required IUpgradeService UpgradeService { get; init; }
 
-    [Inject]
-    private ICircuitManager CircuitManager { get; init; } = null!;
 
+    private SettingsModel Input { get; set; } = new();
     private IEnumerable<string> OutdatedDevices => GetOutdatedDevices();
-
-    [Inject]
-    private IToastService ToastService { get; init; } = null!;
-
     private int TotalDevices => DataService.GetTotalDevices();
 
     private IEnumerable<RemotelyUser> UserList
@@ -182,7 +67,7 @@ public partial class ServerConfig : AuthComponentBase
         {
             if (User is null)
             {
-                return Enumerable.Empty<RemotelyUser>();
+                return [];
             }
 
             EnsureUserSet();
@@ -202,8 +87,8 @@ public partial class ServerConfig : AuthComponentBase
             return;
         }
 
-        Configuration.Bind("ApplicationOptions", Input);
-        Configuration.Bind("ConnectionStrings", ConnectionStrings);
+        Input = await DataService.GetSettings();
+
         _userList.AddRange(DataService.GetAllUsersForServer().OrderBy(x => x.UserName));
     }
 
@@ -320,25 +205,18 @@ public partial class ServerConfig : AuthComponentBase
 
     private async Task Save()
     {
-        var resetEvent = new ManualResetEventSlim();
-
-        Configuration.GetReloadToken().RegisterChangeCallback((e) =>
-        {
-            resetEvent.Set();
-        }, null);
-
-        await SaveInputToAppSettings();
-
-        resetEvent.Wait(5_000);
+        
+        await DataService.SaveSettings(Input);
 
         ToastService.ShowToast("Configuration saved.");
-        _alertMessage = "Configuration saved.";
     }
 
     private async Task SaveAndTestSmtpSettings()
     {
         EnsureUserSet();
-        await SaveInputToAppSettings();
+
+        await DataService.SaveSettings(Input);
+
         if (string.IsNullOrWhiteSpace(User.Email))
         {
             ToastService.ShowToast2("User email is not set.", Enums.ToastType.Warning);
@@ -358,58 +236,6 @@ public partial class ServerConfig : AuthComponentBase
         }
     }
 
-    private async Task SaveInputToAppSettings()
-    {
-        string savePath;
-        var prodSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Production.json");
-        var stagingSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Staging.json");
-        var devSettings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.Development.json");
-        var settings = HostEnv.ContentRootFileProvider.GetFileInfo("appsettings.json");
-
-        if (HostEnv.IsProduction()
-            && prodSettings.Exists &&
-            !string.IsNullOrWhiteSpace(prodSettings.PhysicalPath))
-        {
-            savePath = prodSettings.PhysicalPath;
-        }
-        else if (
-            HostEnv.IsStaging() &&
-            stagingSettings.Exists &&
-            !string.IsNullOrWhiteSpace(stagingSettings.PhysicalPath))
-        {
-            savePath = stagingSettings.PhysicalPath;
-        }
-        else if (
-            HostEnv.IsDevelopment() &&
-            devSettings.Exists &&
-            !string.IsNullOrWhiteSpace(devSettings.PhysicalPath))
-        {
-            savePath = devSettings.PhysicalPath;
-        }
-        else if (settings.Exists && !string.IsNullOrWhiteSpace(settings.PhysicalPath))
-        {
-            savePath = settings.PhysicalPath;
-        }
-        else
-        {
-            return;
-        }
-
-        var settingsJson = JsonSerializer.Deserialize<IDictionary<string, object>>(await File.ReadAllTextAsync(savePath));
-        if (settingsJson is null)
-        {
-            return;
-        }
-        settingsJson["ApplicationOptions"] = Input;
-        settingsJson["ConnectionStrings"] = ConnectionStrings;
-
-        await File.WriteAllTextAsync(savePath, JsonSerializer.Serialize(settingsJson, new JsonSerializerOptions() { WriteIndented = true }));
-
-        if (Configuration is IConfigurationRoot root)
-        {
-            root.Reload();
-        }
-    }
     private void SetIsServerAdmin(ChangeEventArgs ev, RemotelyUser user)
     {
         if (ev.Value is not bool isAdmin)

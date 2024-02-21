@@ -1,45 +1,62 @@
 version: '3.4'
 
+volumes:
+  remotely-data:
+    name: remotely-data
+
 services:
   remotely:
-    image: immybot/remotely
+    image: immybot/remotely:latest
     volumes:
-      - /remotely-data:/app/AppData
+      - remotely-data:/app/AppData
     build:
-      context: ../Server
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: Server/Dockerfile
     ports:
       - "5000:5000"
+      - "5001:5001"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=5000
       - ASPNETCORE_HTTPS_PORTS=5001
-      - Remotely_ApplicationOptions__AllowApiLogin=false,
-      #- Remotely_ApplicationOptions__BannedDevices__0=,
-      - Remotely_ApplicationOptions__DataRetentionInDays=90,
-      - Remotely_ApplicationOptions__DBProvider=SQLite,
-      - Remotely_ApplicationOptions__EnableRemoteControlRecording=false,
-      - Remotely_ApplicationOptions__EnableWindowsEventLog=false,
-      - Remotely_ApplicationOptions__EnforceAttendedAccess=false,
-      - Remotely_ApplicationOptions__ForceClientHttps=false,
-      #- Remotely_ApplicationOptions__KnownProxies__0=,
-      - Remotely_ApplicationOptions__MaxConcurrentUpdates=10,
-      - Remotely_ApplicationOptions__MaxOrganizationCount=1,
-      - Remotely_ApplicationOptions__MessageOfTheDay=,
-      - Remotely_ApplicationOptions__RedirectToHttps=true,
-      - Remotely_ApplicationOptions__RemoteControlNotifyUser=true,
-      - Remotely_ApplicationOptions__RemoteControlRequiresAuthentication=true,
-      - Remotely_ApplicationOptions__RemoteControlSessionLimit=3,
-      - Remotely_ApplicationOptions__Require2FA=false,
-      - Remotely_ApplicationOptions__SmtpDisplayName=,
-      - Remotely_ApplicationOptions__SmtpEmail=,
-      - Remotely_ApplicationOptions__SmtpHost=,
-      - Remotely_ApplicationOptions__SmtpLocalDomain=,
-      - Remotely_ApplicationOptions__SmtpCheckCertificateRevocation=true,
-      - Remotely_ApplicationOptions__SmtpPassword=,
-      - Remotely_ApplicationOptions__SmtpPort=587,
-      - Remotely_ApplicationOptions__SmtpUserName=,
-      - Remotely_ApplicationOptions__Theme=Dark,
-      #- Remotely_ApplicationOptions__TrustedCorsOrigins__0=,
-      - Remotely_ApplicationOptions__UseHsts=false,
+      # Other ASP.NET Core configurations can be overridden here, such as Logging.
+      # See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-8.0
+
+      # Values for DbProvider are SQLite, SQLServer, and PostgreSQL.
+      - Remotely_ApplicationOptions__DbProvider=SQLite
+      # This path shouldn't be changed.  It points to the Docker volume.
+      - Remotely_ConnectionStrings__SQLite=Data Source=/app/AppData/Remotely.db
+      # If using SQL Server, change the connection string to point to your SQL Server instance.
+      - Remotely_ConnectionStrings__SQLServer=Server=(localdb)\\mssqllocaldb;Database=Remotely-Server-53bc9b9d-9d6a-45d4-8429-2a2761773502;Trusted_Connection=True;MultipleActiveResultSets=true
+      # If using PostgreSQL, change the connection string to point to your PostgreSQL instance.
+      - Remotely_ConnectionStrings__PostgreSQL=Server=Host=localhost;Database=Remotely;Username=postgres;
+
+      - Remotely_ApplicationOptions__AllowApiLogin=false
+      #- Remotely_ApplicationOptions__BannedDevices__0=
+      - Remotely_ApplicationOptions__DataRetentionInDays=90
+      - Remotely_ApplicationOptions__DBProvider=SQLite
+      - Remotely_ApplicationOptions__EnableRemoteControlRecording=false
+      - Remotely_ApplicationOptions__EnableWindowsEventLog=false
+      - Remotely_ApplicationOptions__EnforceAttendedAccess=false
+      - Remotely_ApplicationOptions__ForceClientHttps=false
+      #- Remotely_ApplicationOptions__KnownProxies__0=
+      - Remotely_ApplicationOptions__MaxConcurrentUpdates=10
+      - Remotely_ApplicationOptions__MaxOrganizationCount=1
+      - Remotely_ApplicationOptions__MessageOfTheDay=
+      - Remotely_ApplicationOptions__RedirectToHttps=true
+      - Remotely_ApplicationOptions__RemoteControlNotifyUser=true
+      - Remotely_ApplicationOptions__RemoteControlRequiresAuthentication=true
+      - Remotely_ApplicationOptions__RemoteControlSessionLimit=3
+      - Remotely_ApplicationOptions__Require2FA=false
+      - Remotely_ApplicationOptions__SmtpDisplayName=
+      - Remotely_ApplicationOptions__SmtpEmail=
+      - Remotely_ApplicationOptions__SmtpHost=
+      - Remotely_ApplicationOptions__SmtpLocalDomain=
+      - Remotely_ApplicationOptions__SmtpCheckCertificateRevocation=true
+      - Remotely_ApplicationOptions__SmtpPassword=
+      - Remotely_ApplicationOptions__SmtpPort=587
+      - Remotely_ApplicationOptions__SmtpUserName=
+      - Remotely_ApplicationOptions__Theme=Dark
+      #- Remotely_ApplicationOptions__TrustedCorsOrigins__0=
+      - Remotely_ApplicationOptions__UseHsts=false
       - Remotely_ApplicationOptions__UseHttpLogging=false

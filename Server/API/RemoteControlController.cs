@@ -27,10 +27,9 @@ public class RemoteControlController : ControllerBase
     private readonly IHubContext<AgentHub, IAgentHubClient> _agentHub;
     private readonly IRemoteControlSessionCache _remoteControlSessionCache;
     private readonly IAgentHubSessionCache _serviceSessionCache;
-    private readonly IApplicationConfig _appConfig;
+    private readonly IDataService _dataService;
     private readonly IOtpProvider _otpProvider;
     private readonly IHubEventHandler _hubEvents;
-    private readonly IDataService _dataService;
     private readonly SignInManager<RemotelyUser> _signInManager;
     private readonly ILogger<RemoteControlController> _logger;
 
@@ -42,14 +41,12 @@ public class RemoteControlController : ControllerBase
         IAgentHubSessionCache serviceSessionCache,
         IOtpProvider otpProvider,
         IHubEventHandler hubEvents,
-        IApplicationConfig appConfig,
         ILogger<RemoteControlController> logger)
     {
         _dataService = dataService;
         _agentHub = agentHub;
         _remoteControlSessionCache = remoteControlSessionCache;
         _serviceSessionCache = serviceSessionCache;
-        _appConfig = appConfig;
         _otpProvider = otpProvider;
         _hubEvents = hubEvents;
         _signInManager = signInManager;
@@ -72,7 +69,8 @@ public class RemoteControlController : ControllerBase
     [Obsolete("This method is deprecated. Use the GET method along with API keys instead.")]
     public async Task<IActionResult> Post([FromBody] RemoteControlRequest rcRequest)
     {
-        if (!_appConfig.AllowApiLogin)
+        var settings = await _dataService.GetSettings();
+        if (!settings.AllowApiLogin)
         {
             return NotFound();
         }
@@ -145,7 +143,8 @@ public class RemoteControlController : ControllerBase
                .OfType<RemoteControlSessionEx>()
                .Count(x => x.OrganizationId == orgId);
 
-        if (sessionCount > _appConfig.RemoteControlSessionLimit)
+        var settings = await _dataService.GetSettings();
+        if (sessionCount > settings.RemoteControlSessionLimit)
         {
             return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
         }

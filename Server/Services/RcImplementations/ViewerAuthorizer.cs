@@ -10,35 +10,36 @@ namespace Remotely.Server.Services.RcImplementations;
 
 public class ViewerAuthorizer : IViewerAuthorizer
 {
-    private readonly IApplicationConfig _appConfig;
+    private readonly IDataService _dataService;
     private readonly IOtpProvider _otpProvider;
 
-    public ViewerAuthorizer(IApplicationConfig appConfig, IOtpProvider otpProvider)
+    public ViewerAuthorizer(IDataService dataService, IOtpProvider otpProvider)
     {
-        _appConfig = appConfig;
+        _dataService = dataService;
         _otpProvider = otpProvider;
     }
 
     public string UnauthorizedRedirectUrl { get; } = "/Account/Login";
 
-    public Task<bool> IsAuthorized(AuthorizationFilterContext context)
+    public async Task<bool> IsAuthorized(AuthorizationFilterContext context)
     {
-        if (!_appConfig.RemoteControlRequiresAuthentication)
+        var settings = await _dataService.GetSettings();
+        if (!settings.RemoteControlRequiresAuthentication)
         {
-            return Task.FromResult(true);
+            return true;
         }
 
         if (context.HttpContext.User.Identity?.IsAuthenticated == true)
         {
-            return Task.FromResult(true);
+            return true;
         }
 
         if (context.HttpContext.Request.Query.TryGetValue("otp", out var otp) &&
             _otpProvider.Exists($"{otp}"))
         {
-            return Task.FromResult(true);
+            return true;
         }
 
-        return Task.FromResult(false);
+        return false;
     }
 }

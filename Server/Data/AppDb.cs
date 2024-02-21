@@ -1,17 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.Hosting;
 using Remotely.Server.Converters;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 
 namespace Remotely.Server.Data;
@@ -37,6 +32,7 @@ public class AppDb : IdentityDbContext
     public DbSet<DeviceGroup> DeviceGroups { get; set; }
     public DbSet<Device> Devices { get; set; }
     public DbSet<InviteLink> InviteLinks { get; set; }
+    public DbSet<KeyValueRecord> KeyValueRecords { get; set; }
     public DbSet<Organization> Organizations { get; set; }
     public DbSet<SavedScript> SavedScripts { get; set; }
     public DbSet<ScriptResult> ScriptResults { get; set; }
@@ -44,7 +40,6 @@ public class AppDb : IdentityDbContext
     public DbSet<ScriptSchedule> ScriptSchedules { get; set; }
     public DbSet<SharedFile> SharedFiles { get; set; }
     public new DbSet<RemotelyUser> Users { get; set; }
-
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
@@ -284,13 +279,13 @@ public class AppDb : IdentityDbContext
         {
             if (string.IsNullOrEmpty(value))
             {
-                return Array.Empty<string>();
+                return [];
             }
-            return JsonSerializer.Deserialize<string[]>(value, jsonOptions) ?? Array.Empty<string>();
+            return JsonSerializer.Deserialize<string[]>(value, jsonOptions) ?? [];
         }
         catch
         {
-            return Array.Empty<string>();
+            return [];
         }
     }
 

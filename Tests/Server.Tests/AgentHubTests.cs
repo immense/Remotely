@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Remotely.Server.Hubs;
+using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Extensions;
 using Remotely.Shared.Interfaces;
@@ -32,7 +33,6 @@ public class AgentHubTests
         var circuitConnection = new Mock<ICircuitConnection>();
         circuitManager.Setup(x => x.Connections).Returns(new[] { circuitConnection.Object });
         circuitConnection.Setup(x => x.User).Returns(_testData.Org1Admin1);
-        var appConfig = new Mock<IApplicationConfig>();
         var viewerHub = new Mock<IHubContext<ViewerHub>>();
         var expiringTokenService = new Mock<IExpiringTokenService>();
         var serviceSessionCache = new Mock<IAgentHubSessionCache>();
@@ -40,11 +40,12 @@ public class AgentHubTests
         var messenger = new Mock<IMessenger>();
         var logger = new Mock<ILogger<AgentHub>>();
 
-        appConfig.Setup(x => x.BannedDevices).Returns(new string[] { $"{_testData.Org1Device1.DeviceName}" });
+        var settings = await _dataService.GetSettings();
+        settings.BannedDevices = [_testData.Org1Device1.DeviceName!];
+        await _dataService.SaveSettings(settings);
 
         var hub = new AgentHub(
             _dataService,
-            appConfig.Object,
             serviceSessionCache.Object,
             viewerHub.Object,
             circuitManager.Object,
@@ -58,7 +59,8 @@ public class AgentHubTests
         hubClients.Setup(x => x.Caller).Returns(caller.Object);
         hub.Clients = hubClients.Object;
 
-        Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
+        var result = await hub.DeviceCameOnline(_testData.Org1Device1.ToDto());
+        Assert.IsFalse(result);
         hubClients.Verify(x => x.Caller, Times.Once);
         caller.Verify(x => x.UninstallAgent(), Times.Once);
     }
@@ -73,7 +75,6 @@ public class AgentHubTests
         var circuitConnection = new Mock<ICircuitConnection>();
         circuitManager.Setup(x => x.Connections).Returns(new[] { circuitConnection.Object });
         circuitConnection.Setup(x => x.User).Returns(_testData.Org1Admin1);
-        var appConfig = new Mock<IApplicationConfig>();
         var viewerHub = new Mock<IHubContext<ViewerHub>>();
         var expiringTokenService = new Mock<IExpiringTokenService>();
         var serviceSessionCache = new Mock<IAgentHubSessionCache>();
@@ -81,11 +82,13 @@ public class AgentHubTests
         var messenger = new Mock<IMessenger>();
         var logger = new Mock<ILogger<AgentHub>>();
 
-        appConfig.Setup(x => x.BannedDevices).Returns(new string[] { _testData.Org1Device1.ID });
+
+        var settings = await _dataService.GetSettings();
+        settings.BannedDevices = [$"{_testData.Org1Device1.ID}"];
+        await _dataService.SaveSettings(settings);
 
         var hub = new AgentHub(
             _dataService,
-            appConfig.Object,
             serviceSessionCache.Object,
             viewerHub.Object,
             circuitManager.Object,
@@ -99,7 +102,8 @@ public class AgentHubTests
         hubClients.Setup(x => x.Caller).Returns(caller.Object);
         hub.Clients = hubClients.Object;
 
-        Assert.IsFalse(await hub.DeviceCameOnline(_testData.Org1Device1.ToDto()));
+        var result = await hub.DeviceCameOnline(_testData.Org1Device1.ToDto());
+        Assert.IsFalse(result);
         hubClients.Verify(x => x.Caller, Times.Once);
         caller.Verify(x => x.UninstallAgent(), Times.Once);
     }
@@ -116,24 +120,5 @@ public class AgentHubTests
         _testData = new TestData();
         await _testData.Init();
         _dataService = IoCActivator.ServiceProvider.GetRequiredService<IDataService>();
-    }
-
-    private class CallerContext : HubCallerContext
-    {
-        public override string ConnectionId => "test-id";
-
-        public override string? UserIdentifier => null;
-        public override ClaimsPrincipal? User => null;
-
-        public override IDictionary<object, object?> Items { get; } = new Dictionary<object, object?>();
-
-        public override IFeatureCollection Features { get; } = new FeatureCollection();
-
-        public override CancellationToken ConnectionAborted => CancellationToken.None;
-
-        public override void Abort()
-        {
-
-        }
     }
 }

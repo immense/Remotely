@@ -1,22 +1,38 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
-USER app
+RUN apt -y update && apt -y install curl
+RUN mkdir -p /app/AppData
+RUN chown app:app -R /app/AppData
 
-SHELL ["/bin/bash", "-c"]
-
+WORKDIR /app
 EXPOSE 5000
 EXPOSE 5001
 
-COPY /_immense.Remotely/Server/linux-x64/Server /app
 
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["Directory.Build.props", "."]
+COPY ["Server/Server.csproj", "Server/"]
+COPY ["Shared/Shared.csproj", "Shared/"]
+COPY ["submodules/Immense.RemoteControl/Immense.RemoteControl.Shared/Immense.RemoteControl.Shared.csproj", "submodules/Immense.RemoteControl/Immense.RemoteControl.Shared/"]
+COPY ["submodules/Immense.RemoteControl/Immense.RemoteControl.Server/Immense.RemoteControl.Server.csproj", "submodules/Immense.RemoteControl/Immense.RemoteControl.Server/"]
+RUN dotnet restore "./Server/./Server.csproj"
+COPY . .
+WORKDIR "/src/Server"
+
+RUN dotnet build "./Server.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Server.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+
+FROM base AS final
 WORKDIR /app
+COPY --from=publish /app/publish .
 
-RUN \
-  apt-get -y update && \
-  apt-get -y install curl && \
-  mkdir -p /remotely-data && \
-  sed -i 's/DataSource=Remotely.db/DataSource=\/app\/AppData\/Remotely.db/' /app/appsettings.json
-
+USER app
 ENTRYPOINT ["dotnet", "Remotely_Server.dll"]
 
 HEALTHCHECK --interval=5m --timeout=3s \

@@ -23,12 +23,18 @@ using Immense.SimpleMessenger;
 using Remotely.Server.Services.Stores;
 using Remotely.Server.Components.Account;
 using Remotely.Server.Components;
+using Remotely.Server.Options;
+using Remotely.Server.Extensions;
+using Remotely.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 
 configuration.AddEnvironmentVariables("Remotely_");
+
+services.Configure<ApplicationOptions>(
+    configuration.GetSection(ApplicationOptions.SectionKey));
 
 services
     .AddRazorComponents()
@@ -41,21 +47,29 @@ services.AddScoped<IdentityUserAccessor>();
 services.AddScoped<IdentityRedirectManager>();
 services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-ConfigureSerilog(builder);
+var dbProvider = configuration["ApplicationOptions:DbProvider"]?.ToLower();
 
-builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
-
-if (OperatingSystem.IsWindows() &&
-    bool.TryParse(builder.Configuration["ApplicationOptions:EnableWindowsEventLog"], out var enableEventLog) &&
-    enableEventLog)
+switch (dbProvider)
 {
-    builder.Logging.AddEventLog();
-}
-
-var dbProvider = configuration["ApplicationOptions:DBProvider"]?.ToLower();
-if (string.IsNullOrWhiteSpace(dbProvider))
-{
-    throw new InvalidOperationException("DBProvider is missing from appsettings.json.");
+    case "sqlite":
+        services.AddDbContext<AppDb, SqliteDbContext>(
+            contextLifetime: ServiceLifetime.Transient, 
+            optionsLifetime: ServiceLifetime.Transient);
+        break;
+    case "sqlserver":
+        services.AddDbContext<AppDb, SqlServerDbContext>(
+            contextLifetime: ServiceLifetime.Transient,
+            optionsLifetime: ServiceLifetime.Transient);
+        break;
+    case "postgresql":
+        services.AddDbContext<AppDb, PostgreSqlDbContext>(
+            contextLifetime: ServiceLifetime.Transient,
+            optionsLifetime: ServiceLifetime.Transient);
+        break;
+    default:
+        throw new InvalidOperationException(
+            $"Invalid DBProvider: {dbProvider}.  Ensure a valid value " +
+            $"is set in appsettings.json or environment variables.");
 }
 
 if (dbProvider == "sqlite")
@@ -69,6 +83,26 @@ else if (dbProvider == "sqlserver")
 else if (dbProvider == "postgresql")
 {
     services.AddDbContext<AppDb, PostgreSqlDbContext>();
+}
+
+using AppDb appDb = dbProvider switch
+{
+    "sqlite" => new SqliteDbContext(builder.Configuration, builder.Environment),
+    "sqlserver" => new SqlServerDbContext(builder.Configuration, builder.Environment),
+    "postgresql" => new PostgreSqlDbContext(builder.Configuration, builder.Environment),
+    _ => throw new InvalidOperationException($"Invalid DBProvider: {dbProvider}")
+};
+
+await appDb.Database.MigrateAsync();
+var settings = await appDb.GetAppSettings();
+
+ConfigureSerilog(builder, settings);
+
+builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
+
+if (OperatingSystem.IsWindows() && settings.EnableWindowsEventLog)
+{
+    builder.Logging.AddEventLog();
 }
 
 builder.Services.AddAuthentication(options =>
@@ -113,8 +147,7 @@ services.AddAuthorization(options =>
 
 services.AddDatabaseDeveloperPageExceptionFilter();
 
-if (bool.TryParse(configuration["ApplicationOptions:UseHttpLogging"], out var useHttpLogging) &&
-    useHttpLogging)
+if (settings.UseHttpLogging)
 {
     services.AddHttpLogging(options =>
     {
@@ -128,14 +161,12 @@ if (bool.TryParse(configuration["ApplicationOptions:UseHttpLogging"], out var us
     });
 }
 
-var trustedOrigins = configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
-
 services.AddCors(options =>
 {
-    if (trustedOrigins != null)
+    if (settings.TrustedCorsOrigins is { Count: > 0} trustedOrigins)
     {
         options.AddPolicy("TrustedOriginPolicy", builder => builder
-            .WithOrigins(trustedOrigins)
+            .WithOrigins(trustedOrigins.ToArray())
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
@@ -144,7 +175,6 @@ services.AddCors(options =>
 });
 
 
-var knownProxies = configuration.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
 services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.All;
@@ -153,7 +183,7 @@ services.Configure<ForwardedHeadersOptions>(options =>
     // Default Docker host. We want to allow forwarded headers from this address.
     options.KnownProxies.Add(IPAddress.Parse("172.17.0.1"));
 
-    if (knownProxies?.Any() == true)
+    if (settings.KnownProxies is { Count: >0 } knownProxies)
     {
         foreach (var proxy in knownProxies)
         {
@@ -180,13 +210,10 @@ services.AddRateLimiter(options =>
     {
         clOptions.QueueLimit = int.MaxValue;
 
-        var concurrentPermits = configuration.GetSection("ApplicationOptions:MaxConcurrentUpdates").Get<int>();
-        if (concurrentPermits <= 0)
-        {
-            concurrentPermits = 10;
-        }
-
-        clOptions.PermitLimit = concurrentPermits;
+        clOptions.PermitLimit = 
+            settings.MaxConcurrentUpdates <= 0 ?
+                10 :
+                settings.MaxConcurrentUpdates;
     });
 });
 services.AddHttpClient();
@@ -202,7 +229,6 @@ else
 }
 services.AddScoped<IAppDbFactory, AppDbFactory>();
 services.AddTransient<IDataService, DataService>();
-services.AddSingleton<IApplicationConfig, ApplicationConfig>();
 services.AddScoped<ApiAuthorizationFilter>();
 services.AddScoped<LocalOnlyFilter>();
 services.AddScoped<ExpiringTokenFilter>();
@@ -246,9 +272,7 @@ var app = builder.Build();
 
 app.UseRateLimiter();
 
-var appConfig = app.Services.GetRequiredService<IApplicationConfig>();
-
-if (appConfig.UseHttpLogging)
+if (settings.UseHttpLogging)
 {
     app.UseHttpLogging();
 }
@@ -265,11 +289,11 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Error");
-    if (bool.TryParse(app.Configuration["ApplicationOptions:UseHsts"], out var hsts) && hsts)
+    if (settings.UseHsts)
     {
         app.UseHsts();
     }
-    if (bool.TryParse(app.Configuration["ApplicationOptions:RedirectToHttps"], out var redirect) && redirect)
+    if (settings.RedirectToHttps)
     {
         app.UseHttpsRedirection();
     }
@@ -297,13 +321,7 @@ app.MapAdditionalIdentityEndpoints();
 
 using (var scope = app.Services.CreateScope())
 {
-    using var context = scope.ServiceProvider.GetRequiredService<AppDb>();
     var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
-
-    if (context.Database.IsRelational())
-    {
-        await context.Database.MigrateAsync();
-    }
 
     await dataService.SetAllDevicesNotOnline();
     await dataService.CleanupOldRecords();
@@ -348,16 +366,17 @@ void ConfigureStaticFiles()
     }
 }
 
-void ConfigureSerilog(WebApplicationBuilder webAppBuilder)
+void ConfigureSerilog(WebApplicationBuilder webAppBuilder, SettingsModel settings)
 {
     try
     {
-        var dataRetentionDays = 7;
-        if (int.TryParse(webAppBuilder.Configuration["ApplicationOptions:DataRetentionInDays"], out var retentionSetting))
-        {
-            dataRetentionDays = retentionSetting;
-        }
 
+        var dataRetentionDays = settings.DataRetentionInDays;
+        if (dataRetentionDays <= 0)
+        {
+            dataRetentionDays = 7;
+        }
+       
         var logPath = LogsManager.DefaultLogsDirectory;
 
         void ApplySharedLoggerConfig(LoggerConfiguration loggerConfiguration)
@@ -366,8 +385,8 @@ void ConfigureSerilog(WebApplicationBuilder webAppBuilder)
                 .Enrich.FromLogContext()
                 .Enrich.WithThreadId()
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}")
-                .WriteTo.File($"{logPath}/Remotely_Server.log", 
-                    rollingInterval: RollingInterval.Day, 
+                .WriteTo.File($"{logPath}/Remotely_Server.log",
+                    rollingInterval: RollingInterval.Day,
                     retainedFileTimeLimit: TimeSpan.FromDays(dataRetentionDays),
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}",
                     shared: true);
