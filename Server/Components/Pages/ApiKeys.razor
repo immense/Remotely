@@ -37,7 +37,7 @@ else if (User is not null)
     <div class="mb-2 mt-4">
         <label class="me-1">New Token Name:</label>
         <input @bind="_createKeyName" @bind:event="oninput"
-               class="form-control form-control-sm custom-control-inline me-1"
+               class="form-control form-control-sm custom-control-inline me-1 d-inline-block"
                style="width:200px" />
 
         <button class="btn btn-primary" type="button" @onclick="CreateNewKey">Create</button>

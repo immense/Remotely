@@ -13,7 +13,7 @@
             <div class="d-inline-block text-center me-2">
                 <label>Devices Online</label>
                 <br />
-                <span class="badge badge-primary p-2">@ServiceSessionCache.GetAllDevices().Count</span>
+                <span class="badge text-bg-primary p-2">@ServiceSessionCache.GetAllDevices().Count</span>
             </div>
 
             <div class="d-inline-block text-center me-2">
@@ -23,7 +23,7 @@
                 <button class="btn btn-sm btn-secondary" @onclick="ShowOutdatedDevices">
                     <i class="oi oi-question-mark"></i>
                 </button>
-                <span class="badge badge-primary p-2 mx-2">@(OutdatedDevices?.Count() ?? 0)</span>
+                <span class="badge text-bg-primary p-2 mx-2">@(OutdatedDevices?.Count() ?? 0)</span>
                 <button class="btn btn-secondary btn-sm" type="button" title="Update All" @onclick="UpdateAllDevices">
                     <span class="oi oi-reload"></span>
                 </button>
@@ -32,12 +32,12 @@
             <div class="d-inline-block text-center me-2">
                 <label>Devices Total</label>
                 <br />
-                <span class="badge badge-primary p-2">@TotalDevices</span>
+                <span class="badge text-bg-primary p-2">@TotalDevices</span>
             </div>
             <div class="d-inline-block text-center me-2">
                 <label>Active Users</label>
                 <br />
-                <span class="badge badge-primary p-2">@CircuitManager.Connections.Count</span>
+                <span class="badge text-bg-primary p-2">@CircuitManager.Connections.Count</span>
             </div>
         </div>
     </div>

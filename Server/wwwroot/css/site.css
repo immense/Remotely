@@ -80,3 +80,7 @@ input[disabled], input[readonly], select[disabled] {
 .pointer {
     cursor: pointer;
 }
+
+#components-reconnect-modal {
+    color: black;
+}
