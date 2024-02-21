@@ -27,12 +27,6 @@ jobs:
     
   - task: VisualStudioTestPlatformInstaller@1
     displayName: Visual Studio Test Platform Installer
-  
-  - task: DownloadPipelineArtifact@2
-    displayName: Download macOS x64 Agent
-    inputs:
-      artifact: Mac-x64-Agent
-      path: $(Build.SourcesDirectory)\Server\wwwroot\Content\
 
   - task: PowerShell@2
     displayName: Add CurrentVersion Variable
