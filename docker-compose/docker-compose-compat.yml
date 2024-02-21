@@ -1,14 +1,17 @@
 version: '3.4'
 
-volumes:
-  remotely-data:
-    name: remotely-data
+# This compose file is compatible with existing Remotely containers prior to 2024.
+# In this file, the data volume is mapped to /remotely-data on the host.  In the
+# new file, a Docker volume is used.
+# For new installations, it's recommended to use the docker-compose.yml file.
+# You can migrate to the new version by copying your existing Remotelydb file
+# to the Docker volume and restarting the container.
 
 services:
   remotely:
     image: immybot/remotely:latest
     volumes:
-      - remotely-data:/app/AppData
+      - /remotely-data:/app/AppData
     build:
       context: ../
       dockerfile: Server/Dockerfile

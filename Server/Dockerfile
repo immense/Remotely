@@ -1,13 +1,13 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
+EXPOSE ${ASPNETCORE_HTTP_PORTS}
+EXPOSE ${ASPNETCORE_HTTPS_PORTS}
+
 RUN apt -y update && apt -y install curl
 RUN mkdir -p /app/AppData
 RUN chown app:app -R /app/AppData
 
 WORKDIR /app
-EXPOSE 5000
-EXPOSE 5001
-
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release

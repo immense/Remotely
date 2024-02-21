@@ -1,22 +1,17 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
-USER app
+EXPOSE ${ASPNETCORE_HTTP_PORTS}
+EXPOSE ${ASPNETCORE_HTTPS_PORTS}
 
-SHELL ["/bin/bash", "-c"]
-
-EXPOSE 5000
-EXPOSE 5001
+RUN apt -y update && apt -y install curl
+RUN mkdir -p /app/AppData
+RUN chown app:app -R /app/AppData
 
 COPY /_immense.Remotely/Server/linux-x64/Server /app
 
 WORKDIR /app
 
-RUN \
-  apt-get -y update && \
-  apt-get -y install curl && \
-  mkdir -p /app/AppData && \
-  sed -i 's/DataSource=Remotely.db/DataSource=\/app\/AppData\/Remotely.db/' /app/appsettings.json
-
+USER app
 ENTRYPOINT ["dotnet", "Remotely_Server.dll"]
 
 HEALTHCHECK --interval=5m --timeout=3s \

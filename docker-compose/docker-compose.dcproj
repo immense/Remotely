@@ -11,6 +11,7 @@
     <DockerServiceName>remotely</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="docker-compose-compat.yml" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
