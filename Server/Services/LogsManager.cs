@@ -46,12 +46,10 @@ public class LogsManager : ILogsManager
     {
         get
         {
-            var logsDir = Path.Combine(
+            return Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory, 
                 "AppData", 
                 "logs");
-
-            return logsDir;
         }
     }
 
