@@ -123,9 +123,8 @@ jobs:
     inputs:
       targetType: inline
       script: |
-        Copy-Item -Path "$(Build.SourcesDirectory)\Server\Dockerfile" -Destination "$(build.artifactstagingdirectory)\Dockerfile"
+        Copy-Item -Path "$(Build.SourcesDirectory)\Server\Dockerfile.pipelines" -Destination "$(build.artifactstagingdirectory)\Dockerfile"
         Copy-Item -Path "$(Build.SourcesDirectory)\docker-compose\docker-compose.yml" -Destination "$(build.artifactstagingdirectory)\docker-compose.yml"
-        Copy-Item -Path "$(Build.SourcesDirectory)\docker-compose\docker-compose-compat.yml" -Destination "$(build.artifactstagingdirectory)\docker-compose-compat.yml"
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifact
