@@ -72,19 +72,6 @@ switch (dbProvider)
             $"is set in appsettings.json or environment variables.");
 }
 
-if (dbProvider == "sqlite")
-{
-    services.AddDbContext<AppDb, SqliteDbContext>();
-}
-else if (dbProvider == "sqlserver")
-{
-    services.AddDbContext<AppDb, SqlServerDbContext>();
-}
-else if (dbProvider == "postgresql")
-{
-    services.AddDbContext<AppDb, PostgreSqlDbContext>();
-}
-
 using AppDb appDb = dbProvider switch
 {
     "sqlite" => new SqliteDbContext(builder.Configuration, builder.Environment),
@@ -227,7 +214,7 @@ else
 {
     services.AddScoped<IEmailSenderEx, EmailSenderEx>();
 }
-services.AddScoped<IAppDbFactory, AppDbFactory>();
+services.AddSingleton<IAppDbFactory, AppDbFactory>();
 services.AddTransient<IDataService, DataService>();
 services.AddScoped<ApiAuthorizationFilter>();
 services.AddScoped<LocalOnlyFilter>();
