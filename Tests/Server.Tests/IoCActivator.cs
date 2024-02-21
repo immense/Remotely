@@ -21,7 +21,8 @@ namespace Remotely.Server.Tests;
 [TestClass]
 public class IoCActivator
 {
-    public static IServiceProvider ServiceProvider { get; set; } = null!;
+    public static IServiceProvider ServiceProvider => _webApp?.Services ?? 
+        throw new InvalidOperationException("The web application has not been initialized.");
     private static WebApplicationBuilder? _builder;
     private static WebApplication? _webApp;
 
@@ -29,6 +30,12 @@ public class IoCActivator
     public static void AssemblyInit(TestContext context)
     {
         _builder = WebApplication.CreateBuilder();
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["ApplicationOptions:DbProvider"] = "inmemory"
+        };
+        _builder.Configuration.AddInMemoryCollection(appSettings);
 
         _builder.Services.AddDbContext<AppDb, TestingDbContext>(
             contextLifetime: ServiceLifetime.Transient,
@@ -44,7 +51,6 @@ public class IoCActivator
         _builder.Services.AddTransient<IEmailSenderEx, EmailSenderEx>();
 
         _webApp = _builder.Build();
-        ServiceProvider = _webApp.Services;
     }
 }
 
