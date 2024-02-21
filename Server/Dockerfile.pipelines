@@ -1,7 +1,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
 EXPOSE ${ASPNETCORE_HTTP_PORTS}
-EXPOSE ${ASPNETCORE_HTTPS_PORTS}
 
 RUN apt -y update && apt -y install curl
 RUN mkdir -p /app/AppData

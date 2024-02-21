@@ -9,16 +9,11 @@ services:
     image: immybot/remotely:latest
     volumes:
       - remotely-data:/app/AppData
-    build:
-      context: ../
-      dockerfile: Server/Dockerfile
     ports:
       - "5000:5000"
-      - "5001:5001"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_HTTP_PORTS=5000
-      - ASPNETCORE_HTTPS_PORTS=5001
       # Other ASP.NET Core configurations can be overridden here, such as Logging.
       # See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-8.0
 
