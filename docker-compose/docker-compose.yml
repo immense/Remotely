@@ -1,14 +1,10 @@
 version: '3.4'
 
-volumes:
-  remotely-data:
-    name: remotely-data
-
 services:
   remotely:
     image: immybot/remotely:latest
     volumes:
-      - remotely-data:/app/AppData
+      - /var/www/remotely:/app/AppData
     ports:
       - "5000:5000"
     environment:
