@@ -6,6 +6,8 @@
 @using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
 @using Remotely.Server.Data
+@using QRCoder;
+@using QRCoder.Extensions;
 
 @inject UserManager<RemotelyUser> UserManager
 @inject IdentityUserAccessor UserAccessor
@@ -38,8 +40,16 @@ else
             </li>
             <li>
                 <p>Scan the QR Code or enter this key <kbd>@sharedKey</kbd> into your two factor authenticator app. Spaces and casing do not matter.</p>
-                <div class="alert alert-info">Learn how to <a href="https://go.microsoft.com/fwlink/?Linkid=852423">enable QR code generation</a>.</div>
-                <div></div>
+                <div>
+                    @if (!string.IsNullOrWhiteSpace(_qrCodeDataUri))
+                    {
+                        <img src="@_qrCodeDataUri" alt="QR code" class="img-fluid" />
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">Failed to generate QR code.</div>
+                    }
+                </div>
                 <div data-url="@authenticatorUri"></div>
             </li>
             <li>
@@ -73,6 +83,7 @@ else
     private RemotelyUser user = default!;
     private string? sharedKey;
     private string? authenticatorUri;
+    private string? _qrCodeDataUri;
     private IEnumerable<string>? recoveryCodes;
 
     [CascadingParameter]
@@ -132,6 +143,23 @@ else
 
         var email = await UserManager.GetEmailAsync(user);
         authenticatorUri = GenerateQrCodeUri(email!, unformattedKey!);
+        _qrCodeDataUri = GetQrCodeDataUri(authenticatorUri);
+    }
+
+    private string? GetQrCodeDataUri(string authenticatorUri)
+    {
+        try
+        {
+            var qrCodeBytes = PngByteQRCodeHelper.GetQRCode(authenticatorUri, QRCodeGenerator.ECCLevel.Q, 5);
+            var base64QrCode = Convert.ToBase64String(qrCodeBytes);
+            return $"data:image/png;base64,{base64QrCode}";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error generating QR code");
+            return null;
+        }
+
     }
 
     private string FormatKey(string unformattedKey)
@@ -156,7 +184,7 @@ else
         return string.Format(
             CultureInfo.InvariantCulture,
             AuthenticatorUriFormat,
-            UrlEncoder.Encode("Microsoft.AspNetCore.Identity.UI"),
+            UrlEncoder.Encode("Remotely"),
             UrlEncoder.Encode(email),
             unformattedKey);
     }
