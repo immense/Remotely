@@ -181,7 +181,10 @@ services.Configure<ForwardedHeadersOptions>(options =>
     {
         foreach (var proxy in knownProxies)
         {
-            options.KnownProxies.Add(IPAddress.Parse(proxy));
+            if (IPAddress.TryParse(proxy, out var ip))
+            {
+                options.KnownProxies.Add(ip);
+            }
         }
     }
 });
