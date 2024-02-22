@@ -7,6 +7,7 @@ using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Interfaces;
+using System.Net;
 using System.Text.Json;
 
 namespace Remotely.Server.Components.Pages;
@@ -105,12 +106,15 @@ public partial class ServerConfig : AuthComponentBase
 
     private void AddKnownProxy()
     {
-        if (string.IsNullOrWhiteSpace(_knownProxyToAdd))
+        if (IPAddress.TryParse(_knownProxyToAdd, out _))
         {
-            return;
+            Input.KnownProxies.Add(_knownProxyToAdd);
+        }
+        else
+        {
+            ToastService.ShowToast2("Invalid IP address.", Enums.ToastType.Warning);
         }
 
-        Input.KnownProxies.Add(_knownProxyToAdd);
         _knownProxyToAdd = string.Empty;
     }
 
