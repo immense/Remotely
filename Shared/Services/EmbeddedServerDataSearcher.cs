@@ -1,7 +1,9 @@
 ﻿#nullable enable
 
 using Immense.RemoteControl.Shared;
+using MessagePack;
 using Microsoft.Extensions.Logging;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -17,115 +19,64 @@ namespace Remotely.Shared.Services;
 
 public interface IEmbeddedServerDataSearcher
 {
-    Task<Result<RewritableStream>> GetRewrittenStream(string filePath, EmbeddedServerData serverData);
+    Task<Result<AppendableStream>> GetAppendedStream(string filePath, EmbeddedServerData serverData);
     Task<Result<EmbeddedServerData>> TryGetEmbeddedData(string filePath);
 }
 
-public class EmbeddedServerDataSearcher : IEmbeddedServerDataSearcher
+public class EmbeddedServerDataSearcher() : IEmbeddedServerDataSearcher
 {
     public static EmbeddedServerDataSearcher Instance { get; } = new();
 
-    public Task<Result<EmbeddedServerData>> TryGetEmbeddedData(string filePath)
+    public async Task<Result<EmbeddedServerData>> TryGetEmbeddedData(string filePath)
     {
         try
         {
             if (!File.Exists(filePath))
             {
-                return Task.FromResult(Result.Fail<EmbeddedServerData>($"File path does not exist: {filePath}"));
+                return Result.Fail<EmbeddedServerData>($"File path does not exist: {filePath}");
             }
 
             using var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            var result = SearchBuffer(fs, AppConstants.EmbeddedImmySignature);
-            if (result == -1)
-            {
-                return Task.FromResult(Result.Fail<EmbeddedServerData>("Signature not found in file buffer."));
-            }
+            using var br = new BinaryReader(fs);
+            using var sr = new StreamReader(fs);
 
-            fs.Seek(result + AppConstants.EmbeddedImmySignature.Length, SeekOrigin.Begin);
+            fs.Seek(-4, SeekOrigin.End);
+            var dataSize = br.ReadInt32();
+            fs.Seek(-dataSize - 4, SeekOrigin.End);
 
-            using var reader = new BinaryReader(fs, Encoding.UTF8, true);
-            var serializedData = reader.ReadString();
+            var buffer = new byte[dataSize];
+            await fs.ReadExactlyAsync(buffer);
+            var json = Encoding.UTF8.GetString(buffer);
 
-            var embeddedData = JsonSerializer.Deserialize<EmbeddedServerData>(serializedData);
+            var embeddedData = JsonSerializer.Deserialize<EmbeddedServerData>(json);
 
             if (embeddedData is null)
             {
-                return Task.FromResult(Result.Fail<EmbeddedServerData>("Embedded data is empty."));
+                return Result.Fail<EmbeddedServerData>("Embedded data is empty.");
             }
 
-            return Task.FromResult(Result.Ok(embeddedData));
+            return Result.Ok(embeddedData);
         }
         catch (Exception ex)
         {
-            return Task.FromResult(Result.Fail<EmbeddedServerData>(ex));
+            return Result.Fail<EmbeddedServerData>(ex);
         }
     }
 
-    public async Task<Result<RewritableStream>> GetRewrittenStream(string filePath, EmbeddedServerData serverData)
+    public Task<Result<AppendableStream>> GetAppendedStream(string filePath, EmbeddedServerData serverData)
     {
         try
         {
-            using var dataStream = new MemoryStream();
-            using var writer = new BinaryWriter(dataStream, Encoding.UTF8, true);
-            var serializedData = JsonSerializer.Serialize(serverData);
-            writer.Write(serializedData);
-            var dataBytes = dataStream.ToArray();
-
-            if (dataBytes.Length > AppConstants.EmbeddedDataBlockLength)
-            {
-                throw new Exception($"Embedded data size exceeds the maximum of {AppConstants.EmbeddedDataBlockLength}");
-            }
-
+            var json = JsonSerializer.Serialize(serverData);
+            var jsonBytes = Encoding.UTF8.GetBytes(json);
+            byte[] appendPayload = [.. jsonBytes, .. BitConverter.GetBytes(jsonBytes.Length)];
             var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-
-            var result = SearchBuffer(fs, AppConstants.EmbeddedImmySignature);
-            if (result == -1)
-            {
-                await fs.DisposeAsync();
-                return Result.Fail<RewritableStream>("Signature not found in file buffer.");
-            }
-
-            var rewriteMap = new Dictionary<long, byte>();
-            var rewriteIndex = result + AppConstants.EmbeddedImmySignature.Length;
-
-            for (var i = 0; i < dataBytes.Length; i++)
-            {
-                rewriteMap.TryAdd(rewriteIndex++, dataBytes[i]);
-            }
-
-            fs.Seek(0, SeekOrigin.Begin);
-            var rewriteStream = new RewritableStream(fs, rewriteMap);
-            return Result.Ok(rewriteStream);
-
+            var appendableStream = new AppendableStream(fs, appendPayload);
+            return Task.FromResult(Result.Ok(appendableStream));
         }
         catch (Exception ex)
         {
-            return Result.Fail<RewritableStream>(ex);
+            return Task.FromResult(Result.Fail<AppendableStream>(ex));
         }
-    }
-
-    private long SearchBuffer(FileStream fileStream, byte[] matchPattern)
-    {
-        var matchSize = matchPattern.Length;
-        var limit = fileStream.Length - matchSize;
-
-        for (var i = 0; i <= limit; i++)
-        {
-            var k = 0;
-
-            for (; k < matchSize; k++)
-            {
-                if (matchPattern[k] != fileStream.ReadByte())
-                {
-                    break;
-                }
-            }
-
-            if (k == matchSize)
-            {
-                return fileStream.Position - matchSize;
-            }
-        }
-        return -1;
     }
 }

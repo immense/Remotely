@@ -55,14 +55,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Submodules", "Submodules", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Desktop.Shared", "Desktop.Shared\Desktop.Shared.csproj", "{38099844-F6B6-4975-BEC5-D58A547145F0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker", "Docker", "{963B5555-30AE-428E-9686-59C4B6FEC052}"
-	ProjectSection(SolutionItems) = preProject
-		.docker\Dockerfile = .docker\Dockerfile
-		.docker\Dockerfile.old = .docker\Dockerfile.old
-		.docker\Dockerfile.rootless = .docker\Dockerfile.rootless
-		.docker\DockerMain.sh = .docker\DockerMain.sh
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immense.RemoteControl.Desktop.Shared", "submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Shared\Immense.RemoteControl.Desktop.Shared.csproj", "{3EB48B01-A672-4658-868B-8CA21FF73929}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immense.RemoteControl.Desktop.Windows", "submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Windows\Immense.RemoteControl.Desktop.Windows.csproj", "{7FA4456D-8695-4990-B20A-B897CF9DF0EF}"
@@ -78,6 +70,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Immense.RemoteControl.Desktop.UI", "submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.UI\Immense.RemoteControl.Desktop.UI.csproj", "{3095BA44-D5E0-42B4-9161-7F7AB8E68A10}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose\docker-compose.dcproj", "{90EC49B2-B56A-4ECD-8F63-2162DD140F7C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{9484AB47-2F99-43DE-9F5D-5B8679B01B3B}"
+	ProjectSection(SolutionItems) = preProject
+		.azure-pipelines\Release Build.yml = .azure-pipelines\Release Build.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -301,7 +298,6 @@ Global
 		{48D9D0E6-5781-44A9-84C0-56F56C2A1193} = {0754E195-7080-4AAC-B5A3-A9923B1283CE}
 		{6C25240C-613D-4A86-A04E-784BA6726094} = {0754E195-7080-4AAC-B5A3-A9923B1283CE}
 		{B6C1030D-1F74-4143-BB70-FC79C0274653} = {0754E195-7080-4AAC-B5A3-A9923B1283CE}
-		{963B5555-30AE-428E-9686-59C4B6FEC052} = {2176596E-12DA-4766-96E1-4D23EA7DBEC8}
 		{3EB48B01-A672-4658-868B-8CA21FF73929} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
 		{7FA4456D-8695-4990-B20A-B897CF9DF0EF} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
 		{8CBED18D-64A8-44C0-8433-EE14E93B472A} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
@@ -309,6 +305,7 @@ Global
 		{E4D83C37-8B98-44FB-898B-9AA1BB223C66} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
 		{2FF27827-1F43-474E-A0E3-DA76BC598BCC} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
 		{3095BA44-D5E0-42B4-9161-7F7AB8E68A10} = {48C738FB-359E-43DB-B338-FD7CB1CCF6A8}
+		{9484AB47-2F99-43DE-9F5D-5B8679B01B3B} = {2176596E-12DA-4766-96E1-4D23EA7DBEC8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EAE10B28-119B-437C-9E68-06F0EE3F968A}

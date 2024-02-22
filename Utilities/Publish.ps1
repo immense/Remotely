@@ -69,18 +69,6 @@ function Replace-LineInFile($FilePath, $MatchPattern, $ReplaceLineWith, $MaxCoun
     ($Content | Out-String).Trim() | Out-File -FilePath $FilePath -Force -Encoding utf8
 }
 
-function Add-DataBlock($FilePath) {
-    [System.Byte[]]$ImmySignature = @(73, 109, 109, 121, 66, 111, 116, 32, 114, 111, 99, 107, 115, 32, 116, 104, 101, 32, 115, 111, 99, 107, 115, 32, 117, 110, 116, 105, 108, 32, 116, 104, 101, 32, 101, 113, 117, 105, 110, 111, 120, 33)
-    $DataBlock = New-Object System.Byte[] 256
-
-    $FS = [System.IO.File]::OpenWrite($FilePath)
-    $FS.Seek(0, [System.IO.SeekOrigin]::End)
-
-    $FS.Write($ImmySignature, 0, $ImmySignature.Length)
-    $FS.Write($DataBlock, 0, $DataBlock.Length)
-    $FS.Close()
-}
-
 function Wait-ForExists($FilePath) {
     while ((Test-Path -Path $FilePath) -eq $false){
         Write-Host "Waiting for file: $FilePath"
@@ -127,7 +115,6 @@ dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:Publ
 
 # Publish Linux GUI App
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=desktop-linux-x64 --configuration Release "$Root\Desktop.Linux\"
-Add-DataBlock -FilePath "$Root\Server\wwwroot\Content\Linux-x64\Remotely_Desktop"
 
 # Publish Windows ScreenCaster (32-bit)
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=packaged-win-x86 --configuration Release "$Root\Desktop.Win"
@@ -138,7 +125,6 @@ dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:Publ
 
 # Publish Windows GUI App (64-bit)
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=desktop-win-x64 --configuration Release "$Root\Desktop.Win"
-Add-DataBlock -FilePath "$Root\Server\wwwroot\Content\Win-x64\Remotely_Desktop.exe"
 
 if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /fd SHA256 /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Win-x64\Remotely_Desktop.exe"
@@ -147,7 +133,6 @@ if ($SignAssemblies) {
 
 # Publish Windows GUI App (32-bit)
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion -p:PublishProfile=desktop-win-x86 --configuration Release "$Root\Desktop.Win"
-Add-DataBlock -FilePath "$Root\Server\wwwroot\Content\Win-x86\Remotely_Desktop.exe"
 
 if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /fd SHA256 /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Win-x86\Remotely_Desktop.exe"
@@ -157,7 +142,6 @@ if ($SignAssemblies) {
 &"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Restore 
 &"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Build /p:Configuration=Release /p:Platform=AnyCPU /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion
 Copy-Item -Path "$Root\Agent.Installer.Win\bin\Release\Remotely_Installer.exe" -Destination "$Root\Server\wwwroot\Content\Remotely_Installer.exe" -Force
-Add-DataBlock -FilePath "$Root\Server\wwwroot\Content\Remotely_Installer.exe"
 
 if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /fd SHA256 /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Remotely_Installer.exe"

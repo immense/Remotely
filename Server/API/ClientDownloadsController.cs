@@ -1,18 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Auth;
 using Remotely.Server.Extensions;
 using Remotely.Server.Services;
+using Remotely.Shared.Extensions;
 using Remotely.Shared.Models;
 using Remotely.Shared.Services;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using FileIO = System.IO.File;
 
 namespace Remotely.Server.API;
 
@@ -25,6 +19,7 @@ public class ClientDownloadsController : ControllerBase
     private readonly SemaphoreSlim _fileLock = new(1, 1);
     private readonly IWebHostEnvironment _hostEnv;
     private readonly ILogger<ClientDownloadsController> _logger;
+
     public ClientDownloadsController(
         IWebHostEnvironment hostEnv,
         IEmbeddedServerDataSearcher embeddedDataSearcher,
@@ -128,7 +123,7 @@ public class ClientDownloadsController : ControllerBase
     private async Task<IActionResult> GetBashInstaller(string fileName, string organizationId)
     {
         var fileContents = new List<string>();
-        fileContents.AddRange(await System.IO.File.ReadAllLinesAsync(Path.Combine(_hostEnv.WebRootPath, "Content", fileName)));
+        fileContents.AddRange(await FileIO.ReadAllLinesAsync(Path.Combine(_hostEnv.WebRootPath, "Content", fileName)));
 
         var hostIndex = fileContents.IndexOf("HostName=");
         var orgIndex = fileContents.IndexOf("Organization=");
@@ -150,7 +145,7 @@ public class ClientDownloadsController : ControllerBase
         var effectiveScheme = settings.ForceClientHttps ? "https" : Request.Scheme;
         var serverUrl = $"{effectiveScheme}://{Request.Host}";
         var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
-        var result = await _embeddedDataSearcher.GetRewrittenStream(filePath, embeddedData);
+        var result = await _embeddedDataSearcher.GetAppendedStream(filePath, embeddedData);
 
         if (!result.IsSuccess)
         {
@@ -177,17 +172,39 @@ public class ClientDownloadsController : ControllerBase
                 case "WindowsInstaller":
                     {
                         var effectiveScheme = settings.ForceClientHttps ? "https" : Request.Scheme;
-                        var serverUrl = $"{effectiveScheme}://{Request.Host}";
-                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Installer.exe");
-                        var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
-                        var result = await _embeddedDataSearcher.GetRewrittenStream(filePath, embeddedData);
+                        //var serverUrl = $"{effectiveScheme}://{Request.Host}";
+                        //var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Installer.exe");
+                        //var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
+                        //var result = await _embeddedDataSearcher.GetAppendedStream(filePath, embeddedData);
 
-                        if (!result.IsSuccess)
+                        //if (!result.IsSuccess)
+                        //{
+                        //    throw result.Exception ?? new Exception(result.Reason);
+                        //}
+
+
+                        var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Install-Remotely.ps1");
+                        if (!FileIO.Exists(filePath))
                         {
-                            throw result.Exception ?? new Exception(result.Reason);
+                            return NotFound();
+                        }
+                        
+                        var fileContents = await FileIO.ReadAllLinesAsync(filePath);
+                        var hostIndex = fileContents.IndexWhere(x => 
+                            x.Contains("[string]$HostName = $null", StringComparison.OrdinalIgnoreCase));
+                        var orgIndex = fileContents.IndexWhere(x => 
+                            x.Contains("[string]$Organization = $null", StringComparison.OrdinalIgnoreCase));
+
+                        if (hostIndex < 0 || orgIndex < 0)
+                        {
+                            return NotFound();
                         }
 
-                        return File(result.Value, "application/octet-stream", "Remotely_Installer.exe");
+                        fileContents[hostIndex] = $"$HostName = \"{effectiveScheme}://{Request.Host}\"";
+                        fileContents[orgIndex] = $"$Organization = \"{organizationId}\"";
+                        var fileBytes = Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
+
+                        return File(fileBytes, "application/octet-stream", "Install-Remotely.ps1");
                     }
                 case "ManjaroInstaller-x64":
                     {

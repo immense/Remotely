@@ -4,8 +4,8 @@
 .DESCRIPTION
    Do not modify this script.  It was generated specifically for your account.
 .EXAMPLE
-   powershell.exe -f Install-Win.ps1
-   powershell.exe -f Install-Win.ps1 -DeviceAlias "My Super Computer" -DeviceGroup "My Stuff"
+   powershell.exe -f Install-Remotely.ps1
+   powershell.exe -f Install-Remotely.ps1 -DeviceAlias "My Super Computer" -DeviceGroup "My Stuff"
 #>
 
 param (
@@ -71,7 +71,7 @@ function Stop-Remotely {
 function Uninstall-Remotely {
 	Stop-Remotely
 	Remove-Item -Path $InstallPath -Force -Recurse -ErrorAction SilentlyContinue
-	Remove-NetFirewallRule -Name "Remotely ScreenCast" -ErrorAction SilentlyContinue
+	Remove-NetFirewallRule -Name "Remotely Desktop Unattended" -ErrorAction SilentlyContinue
 }
 
 function Install-Remotely {
@@ -118,7 +118,7 @@ function Install-Remotely {
 	}
 
 	Stop-Remotely
-	Get-ChildItem -Path "C:\Program Files\Remotely" | Where-Object {$_.Name -notlike "ConnectionInfo.json"} | Remove-Item -Recurse -Force
+	Get-ChildItem -Path $InstallPath | Where-Object {$_.Name -notlike "ConnectionInfo.json"} | Remove-Item -Recurse -Force
 
 	Expand-Archive -Path "$env:TEMP\Remotely-Win-$Platform.zip" -DestinationPath "$InstallPath"  -Force
 
@@ -127,7 +127,7 @@ function Install-Remotely {
 	if ($DeviceAlias -or $DeviceGroup) {
 		$DeviceSetupOptions = @{
 			DeviceAlias = $DeviceAlias;
-			DeviceGroup = $DeviceGroup;
+			DeviceGroupName = $DeviceGroup;
 			OrganizationID = $Organization;
 			DeviceID = $ConnectionInfo.DeviceID;
 		}
@@ -138,8 +138,6 @@ function Install-Remotely {
 	New-Service -Name "Remotely_Service" -BinaryPathName "$InstallPath\Remotely_Agent.exe" -DisplayName "Remotely Service" -StartupType Automatic -Description "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators."
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc.exe failure `"Remotely_Service`" reset=5 actions=restart/5000" -Wait -WindowStyle Hidden
 	Start-Service -Name Remotely_Service
-
-	New-NetFirewallRule -Name "Remotely Desktop Unattended" -DisplayName "Remotely Desktop Unattended" -Description "The agent that allows screen sharing and remote control for Remotely." -Direction Inbound -Enabled True -Action Allow -Program "C:\Program Files\Remotely\Desktop\Remotely_Desktop.exe" -ErrorAction SilentlyContinue
 }
 
 try {
