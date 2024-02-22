@@ -36,6 +36,10 @@ configuration.AddEnvironmentVariables("Remotely_");
 services.Configure<ApplicationOptions>(
     configuration.GetSection(ApplicationOptions.SectionKey));
 
+var appOptions = configuration
+    .GetSection(ApplicationOptions.SectionKey)
+    .Get<ApplicationOptions>();
+
 services
     .AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -47,7 +51,7 @@ services.AddScoped<IdentityUserAccessor>();
 services.AddScoped<IdentityRedirectManager>();
 services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-var dbProvider = configuration["ApplicationOptions:DbProvider"]?.ToLower();
+var dbProvider = appOptions?.DbProvider?.ToLower();
 
 switch (dbProvider)
 {
@@ -168,7 +172,10 @@ services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardLimit = null;
 
     // Default Docker host. We want to allow forwarded headers from this address.
-    options.KnownProxies.Add(IPAddress.Parse("172.17.0.1"));
+    if (IPAddress.TryParse(appOptions?.DockerGatewayIp, out var dockerGatewayIp))
+    {
+        options.KnownProxies.Add(dockerGatewayIp);
+    }
 
     if (settings.KnownProxies is { Count: >0 } knownProxies)
     {
@@ -257,14 +264,14 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+
 app.UseRateLimiter();
 
 if (settings.UseHttpLogging)
 {
     app.UseHttpLogging();
 }
-
-app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {

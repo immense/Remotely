@@ -12,13 +12,24 @@ param (
 	[string]$DeviceAlias,
 	[string]$DeviceGroup,
 	[string]$Path,
+	[string]$OrganizationId,
+	[string]$ServerUrl,
 	[switch]$Uninstall
 )
 
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 $LogPath = "$env:TEMP\Remotely_Install.txt"
+
 [string]$HostName = $null
+if ($ServerUrl) {
+	$HostName = $ServerUrl
+}
+
 [string]$Organization = $null
+if ($OrganizationId) {
+	$Organization = $OrganizationId
+}
+
 $ConnectionInfo = $null
 
 if ([System.Environment]::Is64BitOperatingSystem){
@@ -47,17 +58,35 @@ function Is-Administrator() {
 
 function Run-StartupChecks {
 
-	if ($HostName -eq $null -or $Organization -eq $null) {
+	if (!$HostName -or !$Organization) {
 		Write-Log "Required parameters are missing.  Please try downloading the installer again."
 		Do-Exit
 	}
 
-	if ((Is-Administrator) -eq $false) {
+	if (!(Is-Administrator)) {
 		Write-Log -Message "Install script requires elevation.  Attempting to self-elevate..."
 		Start-Sleep -Seconds 3
-		$param = "-f `"$($MyInvocation.ScriptName)`""
 
-		Start-Process -FilePath powershell.exe -ArgumentList "-DeviceAlias $DeviceAlias -DeviceGroup $DeviceGroup -Path $Path" -Verb RunAs
+		$Params = "-File `"$($MyInvocation.ScriptName)`"";
+		if ($OrganizationId) {
+			$Params += " -OrganizationId $OrganizationId"
+		}
+		if ($ServerUrl) {
+			$Params += " -ServerUrl $ServerUrl"
+		}
+		if ($DeviceAlias) {
+			$Params += " -DeviceAlias $DeviceAlias"
+		}
+		if ($DeviceGroup) {
+			$Params += " -DeviceGroup $DeviceGroup"
+		}
+		if ($Path) {
+			$Params += " -Path `"$Path`""
+		}
+		if ($Uninstall) {
+			$Params += " -Uninstall"
+		}
+		Start-Process -FilePath powershell.exe -ArgumentList $Params -Verb RunAs
 		exit
 	}
 }
@@ -75,9 +104,15 @@ function Uninstall-Remotely {
 }
 
 function Install-Remotely {
+	$HeadResponse = Invoke-WebRequest -Uri "$HostName/Content/Remotely-Win-$Platform.zip" -Method Head -UseBasicParsing
+	$ETag = $HeadResponse.Headers["ETag"]
+	if (!$Etag) {
+		Write-Host "Failed to get ETag from server.  Aborting install."
+	}
+
 	if ((Test-Path -Path "$InstallPath") -and (Test-Path -Path "$InstallPath\ConnectionInfo.json")) {
 		$ConnectionInfo = Get-Content -Path "$InstallPath\ConnectionInfo.json" | ConvertFrom-Json
-		if ($ConnectionInfo -ne $null) {
+		if ($ConnectionInfo) {
 			$ConnectionInfo.Host = $HostName
 			$ConnectionInfo.OrganizationID = $Organization
 			$ConnectionInfo.ServerVerificationToken = ""
@@ -87,7 +122,7 @@ function Install-Remotely {
 		New-Item -ItemType Directory -Path "$InstallPath" -Force
 	}
 
-	if ($ConnectionInfo -eq $null) {
+	if (!$ConnectionInfo) {
 		$ConnectionInfo = @{
 			DeviceID = (New-Guid).ToString();
 			Host = $HostName;
@@ -108,7 +143,7 @@ function Install-Remotely {
 	else {
 		$ProgressPreference = 'SilentlyContinue'
 		Write-Log "Downloading client..."
-		Invoke-WebRequest -Uri "$HostName/Content/Remotely-Win-$Platform.zip" -OutFile "$env:TEMP\Remotely-Win-$Platform.zip" 
+		Invoke-WebRequest -Uri "$HostName/Content/Remotely-Win-$Platform.zip" -OutFile "$env:TEMP\Remotely-Win-$Platform.zip" -UseBasicParsing
 		$ProgressPreference = 'Continue'
 	}
 
@@ -124,6 +159,8 @@ function Install-Remotely {
 
 	New-Item -ItemType File -Path "$InstallPath\ConnectionInfo.json" -Value (ConvertTo-Json -InputObject $ConnectionInfo) -Force
 
+	New-Item -ItemType File -Path "$InstallPath\etag.txt" -Value $ETag -Force
+
 	if ($DeviceAlias -or $DeviceGroup) {
 		$DeviceSetupOptions = @{
 			DeviceAlias = $DeviceAlias;
@@ -131,8 +168,9 @@ function Install-Remotely {
 			OrganizationID = $Organization;
 			DeviceID = $ConnectionInfo.DeviceID;
 		}
-
-		Invoke-RestMethod -Method Post -ContentType "application/json" -Uri "$HostName/api/devices" -Body $DeviceSetupOptions -UseBasicParsing
+		
+		$Body = $DeviceSetupOptions | ConvertTo-Json
+		Invoke-RestMethod -Method Post -ContentType "application/json" -Uri "$HostName/api/devices" -Body $Body
 	}
 
 	New-Service -Name "Remotely_Service" -BinaryPathName "$InstallPath\Remotely_Agent.exe" -DisplayName "Remotely Service" -StartupType Automatic -Description "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators."
@@ -144,7 +182,6 @@ try {
 	Run-StartupChecks
 
 	Write-Log "Install/uninstall logs are being written to `"$LogPath`""
-    Write-Log
 
 	if ($Uninstall) {
 		Write-Log "Uninstall started."
@@ -154,7 +191,6 @@ try {
 	}
 	else {
 		Write-Log "Install started."
-        Write-Log
 		Install-Remotely
 		Write-Log "Install completed."
 		exit

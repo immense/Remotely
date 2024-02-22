@@ -130,25 +130,23 @@ public class UpdaterWin : IUpdater
 
             var zipPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.zip");
 
-            var installerPath = Path.Combine(Path.GetTempPath(), "Remotely_Installer.exe");
+            var installerPath = Path.Combine(Path.GetTempPath(), "Install-Remotely.ps1");
             var platform = Environment.Is64BitOperatingSystem ? "x64" : "x86";
 
             await _updateDownloader.DownloadFile(
-                 $"{serverUrl}/Content/Remotely_Installer.exe",
+                 $"{serverUrl}/Content/Install-Remotely.ps1",
                  installerPath);
 
             await _updateDownloader.DownloadFile(
                $"{serverUrl}/api/AgentUpdate/DownloadPackage/win-{platform}",
                zipPath);
 
-            foreach (var proc in Process.GetProcessesByName("Remotely_Installer"))
-            {
-                proc.Kill();
-            }
-
             _logger.LogInformation("Launching installer to perform update.");
 
-            Process.Start(installerPath, $"-install -quiet -path {zipPath} -serverurl {serverUrl} -organizationid {connectionInfo.OrganizationID}");
+            Process.Start(
+                "powershell.exe", 
+                $"-ExecutionPolicy Bypass -File \"{installerPath}\" -Path \"{zipPath}\" " +
+                    $"-OrganizationId {connectionInfo.OrganizationID} -ServerUrl {connectionInfo.Host}");
         }
         catch (WebException ex) when (ex.Status == WebExceptionStatus.Timeout)
         {

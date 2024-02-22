@@ -200,8 +200,8 @@ public class ClientDownloadsController : ControllerBase
                             return NotFound();
                         }
 
-                        fileContents[hostIndex] = $"$HostName = \"{effectiveScheme}://{Request.Host}\"";
-                        fileContents[orgIndex] = $"$Organization = \"{organizationId}\"";
+                        fileContents[hostIndex] = $"[string]$HostName = \"{effectiveScheme}://{Request.Host}\"";
+                        fileContents[orgIndex] = $"[string]$Organization = \"{organizationId}\"";
                         var fileBytes = Encoding.UTF8.GetBytes(string.Join("\n", fileContents));
 
                         return File(fileBytes, "application/octet-stream", "Install-Remotely.ps1");
