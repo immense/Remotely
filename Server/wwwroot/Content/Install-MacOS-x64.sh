@@ -5,7 +5,7 @@ Organization=
 GUID="$(uuidgen)"
 UpdatePackagePath=""
 InstallDir="/usr/local/bin/Remotely"
-ETag=$(curl --head $HostName/Content/Remotely-Linux.zip | grep -i "etag" | cut -d' ' -f 2)
+ETag=$(curl --head $HostName/Content/Remotely-MacOS-x64.zip | grep -i "etag" | cut -d' ' -f 2)
 LogPath="/var/log/remotely/Agent_Install.log"
 
 mkdir -p /var/log/remotely
@@ -16,7 +16,7 @@ ArgLength=${#Args[@]}
 for (( i=0; i<${ArgLength}; i+=2 ));
 do
     if [ "${Args[$i]}" = "--uninstall" ]; then
-        launchctl unload -w /Library/LaunchDaemons/remotely-agent.plist
+        sudo launchctl bootout system /Library/LaunchDaemons/remotely-agent.plist
         rm -r -f $InstallDir/
         rm -f /Library/LaunchDaemons/remotely-agent.plist
         exit
@@ -40,9 +40,6 @@ fi
 Owner=$(ls -l /usr/local/bin/brew | awk '{print $3}')
 
 su - $Owner -c "brew update"
-
-# Install .NET Runtime
-su - $Owner -c "brew install --cask dotnet"
 
 # Install other dependencies
 su - $Owner -c "brew install curl"
@@ -71,9 +68,10 @@ else
     rm -f "$UpdatePackagePath"
 fi
 
-unzip -o $InstallDir/Remotely-MacOS-x64.zip
+unzip -o $InstallDir/Remotely-MacOS-x64.zip -d $InstallDir
 rm -f $InstallDir/Remotely-MacOS-x64.zip
-
+chmod +x $InstallDir/Remotely_Agent
+chmod +x $InstallDir/Desktop/Remotely_Desktop
 
 connectionInfo="{
     \"DeviceID\":\"$GUID\", 
@@ -95,8 +93,7 @@ plistFile="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <string>com.translucency.remotely-agent</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/local/bin/dotnet</string>
-        <string>$InstallDir/Remotely_Agent.dll</string>
+        <string>$InstallDir/Remotely_Agent</string>
     </array>
     <key>KeepAlive</key>
     <true/>
@@ -104,5 +101,5 @@ plistFile="<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 </plist>"
 echo "$plistFile" > "/Library/LaunchDaemons/remotely-agent.plist"
 
-launchctl load -w /Library/LaunchDaemons/remotely-agent.plist
-launchctl kickstart -k system/com.translucency.remotely-agent
+sudo launchctl bootstrap system /Library/LaunchDaemons/remotely-agent.plist
+sudo launchctl kickstart -k system/com.translucency.remotely-agent

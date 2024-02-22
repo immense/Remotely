@@ -1,0 +1,195 @@
+﻿@page "/manage-organization"
+@attribute [Authorize(Policy = PolicyNames.OrganizationAdminRequired)]
+@inherits AuthComponentBase
+
+<h3 class="mb-3">Manage Organization</h3>
+
+@if (_isLoading)
+{
+    <h5>Loading...</h5>
+}
+else if (User is not null)
+{
+    <div class="row">
+        <div class="col-sm-8">
+            @* Organization ID *@
+            <div class="form-group mw">
+                <label class="mb-1">Organization ID</label>
+                <input readonly class="form-control" value="@_organization?.ID" />
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-sm-8">
+            @* Organization Name *@
+            <div class="form-group mw">
+                <label class="mb-1">Organization Name</label>
+
+                <div class="input-group">
+                    <input @onchange="OrganizationNameChanged"
+                           value="@_organization?.OrganizationName"
+                           maxlength="25"
+                           placeholder="Enter a name for your organization" 
+                           class="form-control" 
+                           autocomplete="off" />
+                </div>
+                <div class="text-info small">
+                    * Requires browser refresh.
+                </div>
+            </div>
+            @if (User.IsServerAdmin)
+            {
+                <div class="form-group">
+                    <label class="mb-1">Default Organization For Server</label>
+                    <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowDefaultOrgHelp">
+                        <span class="oi oi-question-mark"></span>
+                    </button>
+                    <br />
+                    <input type="checkbox" checked="@_organization?.IsDefaultOrganization" @onchange="DefaultOrgCheckChanged" />
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-8">
+            @* Device Groups *@
+            <div class="form-group">
+                <label class="mb-1">Device Groups</label>
+                <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowDeviceGroupHelp">
+                    <span class="oi oi-question-mark"></span>
+                </button>
+
+                <select class="form-control mb-1" @bind="_selectedDeviceGroupId" size="4">
+                    @foreach (var deviceGroup in _deviceGroups)
+                    {
+                        <option @key="deviceGroup.ID" value="@deviceGroup.ID">@deviceGroup.Name</option>
+                    }
+                </select>
+
+                <div class="text-end mb-3">
+                    <button type="button" class="btn btn-danger" @onclick="DeleteSelectedDeviceGroup">Delete</button>
+                </div>
+
+                <div class="input-group">
+                    <input placeholder="Add new device group" class="form-control" maxlength="200"
+                           @bind="_newDeviceGroupName"
+                           @bind:event="oninput"
+                           @onkeypress="EvaluateNewDeviceGroupKeyPress" />
+                    <button type="submit" class="btn btn-secondary" @onclick="CreateNewDeviceGroup">Add</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            @* Users *@
+            <div class="form-group">
+                <label class="control-label">Users</label>
+                <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowUsersHelp">
+                    <span class="oi oi-question-mark"></span>
+                </button>
+                <table class="table table-dark table-striped table-hover" style="max-height: 400px">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th>Administrator</th>
+                            <th>Device Groups</th>
+                            <th>Reset Password</th>
+                            <th>Delete User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var orgUser in _orgUsers)
+                        {
+                            <tr @key="orgUser.Id">
+                                <td class="middle-aligned"><label class="control-label">@orgUser.UserName</label></td>
+                                @if (User.Id == orgUser.Id)
+                                {
+                                    <td><input type="checkbox" readonly disabled checked="@orgUser.IsAdministrator" /></td>
+                                    <td><button type="button" class="btn btn-secondary" title="Edit" @onclick="() => EditDeviceGroups(orgUser)">Edit</button></td>
+                                    <td></td>
+                                    <td><button type="button" class="btn btn-danger delete-user-button" disabled>Delete</button></td>
+                                }
+                                else
+                                {
+                                    <td><input type="checkbox" @onchange="(ev) => SetUserIsAdmin(ev, orgUser)" checked="@orgUser.IsAdministrator" /></td>
+                                    <td><button type="button" class="btn btn-secondary" title="Edit" @onclick="() => EditDeviceGroups(orgUser)">Edit</button></td>
+                                    <td><button type="button" class="btn btn-danger" title="Reset Password" @onclick="() => ResetPassword(orgUser)">Reset</button></td>
+                                    <td><button type="button" class="btn btn-danger" title="Delete User" @onclick="() => DeleteUser(orgUser)">Delete</button></td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    @* Invitations *@
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <label class="control-label">Invitations</label>
+                <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowInvitesHelp">
+                    <span class="oi oi-question-mark"></span>
+                </button>
+                <table id="invitesTable" class="table table-dark table-striped table-hover" style="max-height: 400px">
+                    <thead>
+                        <tr>
+                            <th>Invited User</th>
+                            <th>Administrator</th>
+                            <th>Link(s)</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var invite in _invites)
+                        {
+                            <tr @key="invite.ID">
+                                <td class="middle-aligned"><label class="control-label">@invite.InvitedUser</label></td>
+                                <td class="middle-aligned"><input type="checkbox" checked="@invite.IsAdmin" disabled /></td>
+                                <td class="middle-aligned">
+                                    <label class="control-label">
+                                        <a href="@(NavManager.BaseUri)Invite/@invite.ID">Join Link</a>
+                                    </label>
+                                </td>
+                                <td><button type="button" class="btn btn-danger" invite="@invite.ID" @onclick="() => DeleteInvite(invite)">Delete</button></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    @* Send Invites *@
+    <div class="row">
+        <div class="col-sm-8">
+            <div class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">Add User</label>
+                <div class="input-group">
+                    <input @bind="_inviteEmail" @bind:event="oninput"
+                           placeholder="Email of user to add"
+                           type="email"
+                           required
+                           class="form-control" />
+
+                    <span class="input-group-text pe-1">Admin?</span>
+                    <div class="input-group-text ps-1">
+                        <input @bind="_inviteAsAdmin" type="checkbox" @onkeypress="EvaluateInviteInputKeypress" />
+                    </div>
+                    <button type="button" class="btn btn-primary" @onclick="SendInvite">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

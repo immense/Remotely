@@ -44,11 +44,9 @@
         {
             NavManager.NavigateTo(NavigationUri);
         }
-        else
-        {
-            Parent?.SetActiveTab(this);
-            await InvokeAsync(StateHasChanged);
-            OnActivated?.Invoke();
-        }
+
+        Parent?.SetActiveTab(this);
+        await InvokeAsync(StateHasChanged);
+        OnActivated?.Invoke();
     }
 }

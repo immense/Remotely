@@ -17,7 +17,7 @@ namespace Remotely.Server.Migrations.PostgreSql
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -147,7 +147,8 @@ namespace Remotely.Server.Migrations.PostgreSql
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(13)
+                        .HasColumnType("character varying(13)");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -519,6 +520,20 @@ namespace Remotely.Server.Migrations.PostgreSql
                     b.HasIndex("OrganizationID");
 
                     b.ToTable("InviteLinks");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Entities.KeyValueRecord", b =>
+                {
+                    b.Property<Guid>("Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("text");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("KeyValueRecords");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Entities.Organization", b =>

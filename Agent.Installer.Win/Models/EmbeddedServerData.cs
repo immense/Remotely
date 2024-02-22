@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Runtime.Serialization;
 
 namespace Remotely.Agent.Installer.Models;
@@ -23,5 +24,5 @@ public class EmbeddedServerData
     public string OrganizationId { get; set; } = string.Empty;
 
     [DataMember]
-    public Uri ServerUrl { get; set; }
+    public Uri? ServerUrl { get; set; }
 }

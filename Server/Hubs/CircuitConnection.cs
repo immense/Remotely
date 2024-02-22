@@ -71,11 +71,10 @@ public interface ICircuitConnection
 public class CircuitConnection : CircuitHandler, ICircuitConnection
 {
     private readonly IHubContext<AgentHub, IAgentHubClient> _agentHubContext;
-    private readonly IApplicationConfig _appConfig;
+    private readonly IDataService _dataService;
     private readonly ISelectedCardsStore _cardStore;
     private readonly IAuthService _authService;
     private readonly ICircuitManager _circuitManager;
-    private readonly IDataService _dataService;
     private readonly IRemoteControlSessionCache _remoteControlSessionCache;
     private readonly IExpiringTokenService _expiringTokenService;
     private readonly ILogger<CircuitConnection> _logger;
@@ -89,7 +88,6 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         IDataService dataService,
         ISelectedCardsStore cardStore,
         IHubContext<AgentHub, IAgentHubClient> agentHubContext,
-        IApplicationConfig appConfig,
         ICircuitManager circuitManager,
         IToastService toastService,
         IExpiringTokenService expiringTokenService,
@@ -101,7 +99,6 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         _dataService = dataService;
         _agentHubContext = agentHubContext;
         _cardStore = cardStore;
-        _appConfig = appConfig;
         _authService = authService;
         _circuitManager = circuitManager;
         _toastService = toastService;
@@ -228,6 +225,8 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
     public async Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceId, bool viewOnly)
     {
+        var settings = await _dataService.GetSettings();
+
         if (!_agentSessionCache.TryGetByDeviceId(deviceId, out var targetDevice))
         {
             var message = new DisplayNotificationMessage(
@@ -256,7 +255,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                .OfType<RemoteControlSessionEx>()
                .Count(x => x.OrganizationId == User.OrganizationID);
 
-        if (sessionCount >= _appConfig.RemoteControlSessionLimit)
+        if (sessionCount >= settings.RemoteControlSessionLimit)
         {
             var message = new DisplayNotificationMessage(
                 "There are already the maximum amount of active remote control sessions for your organization.",
@@ -290,8 +289,8 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             DeviceId = deviceId,
             ViewOnly = viewOnly,
             OrganizationId = User.OrganizationID,
-            RequireConsent = _appConfig.EnforceAttendedAccess,
-            NotifyUserOnStart = _appConfig.RemoteControlNotifyUser
+            RequireConsent = settings.EnforceAttendedAccess,
+            NotifyUserOnStart = settings.RemoteControlNotifyUser
         };
 
         _remoteControlSessionCache.AddOrUpdate($"{sessionId}", session);

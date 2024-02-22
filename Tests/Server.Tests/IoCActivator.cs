@@ -21,56 +21,36 @@ namespace Remotely.Server.Tests;
 [TestClass]
 public class IoCActivator
 {
-    public static IServiceProvider ServiceProvider { get; set; } = null!;
-    private static IWebHostBuilder? _builder;
-
-    public static void Activate()
-    {
-        if (_builder is null)
-        {
-            _builder = WebHost.CreateDefaultBuilder()
-               .UseStartup<Startup>()
-               .CaptureStartupErrors(true)
-               .ConfigureAppConfiguration(config =>
-               {
-                   config.AddInMemoryCollection(new Dictionary<string, string?>()
-                   {
-                       ["ApplicationOptions:DBProvider"] = "InMemory"
-                   });
-               });
-
-            _builder.Build();
-        }
-    }
-
+    public static IServiceProvider ServiceProvider => _webApp?.Services ?? 
+        throw new InvalidOperationException("The web application has not been initialized.");
+    private static WebApplicationBuilder? _builder;
+    private static WebApplication? _webApp;
 
     [AssemblyInitialize]
     public static void AssemblyInit(TestContext context)
     {
-        Activate();
+        _builder = WebApplication.CreateBuilder();
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["ApplicationOptions:DbProvider"] = "inmemory"
+        };
+        _builder.Configuration.AddInMemoryCollection(appSettings);
+
+        _builder.Services.AddDbContext<AppDb, TestingDbContext>(
+            contextLifetime: ServiceLifetime.Transient,
+            optionsLifetime: ServiceLifetime.Transient);
+
+        _builder.Services.
+            AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
+                .AddEntityFrameworkStores<AppDb>()
+                .AddDefaultTokenProviders();
+
+        _builder.Services.AddTransient<IAppDbFactory, AppDbFactory>();
+        _builder.Services.AddTransient<IDataService, DataService>();
+        _builder.Services.AddTransient<IEmailSenderEx, EmailSenderEx>();
+
+        _webApp = _builder.Build();
     }
 }
 
-public class Startup
-{
-    public void ConfigureServices(IServiceCollection services)
-    {
-        services.AddDbContext<AppDb, TestingDbContext>();
-
-        services.AddIdentity<RemotelyUser, IdentityRole>(options => options.Stores.MaxLengthForKeys = 128)
-         .AddEntityFrameworkStores<AppDb>()
-         .AddDefaultUI()
-         .AddDefaultTokenProviders();
-
-        services.AddTransient<IAppDbFactory, AppDbFactory>();
-        services.AddTransient<IDataService, DataService>();
-        services.AddTransient<IApplicationConfig, ApplicationConfig>();
-        services.AddTransient<IEmailSenderEx, EmailSenderEx>();
-
-        IoCActivator.ServiceProvider = services.BuildServiceProvider();
-    }
-
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-    {
-    }
-}

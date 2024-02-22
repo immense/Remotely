@@ -1,0 +1,41 @@
+version: '3.4'
+
+networks:
+  remotely:
+    name: remotely-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.0.1
+
+services:
+  remotely:
+    image: immybot/remotely:latest
+    container_name: remotely
+    volumes:
+      - /var/www/remotely:/app/AppData
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    networks:
+      - remotely
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=5000
+      # Other ASP.NET Core configurations can be overridden here, such as Logging.
+      # See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-8.0
+
+      # Values for DbProvider are SQLite, SQLServer, and PostgreSQL.
+      - Remotely_ApplicationOptions__DbProvider=SQLite
+      # The Docker gateway will be used in Forwarded Headers, which is necessary to
+      # to correctly determine request hostname and scheme within the app.  If you change
+      # the network config, you must update this value as well.
+      - Remotely_ApplicationOptions__DockerGateway=172.28.0.1
+      # This path shouldn't be changed.  It points to the Docker volume.
+      - Remotely_ConnectionStrings__SQLite=Data Source=/app/AppData/Remotely.db
+      # If using SQL Server, change the connection string to point to your SQL Server instance.
+      - Remotely_ConnectionStrings__SQLServer=Server=(localdb)\\mssqllocaldb;Database=Remotely-Server-53bc9b9d-9d6a-45d4-8429-2a2761773502;Trusted_Connection=True;MultipleActiveResultSets=true
+      # If using PostgreSQL, change the connection string to point to your PostgreSQL instance.
+      - Remotely_ConnectionStrings__PostgreSQL=Server=Host=localhost;Database=Remotely;Username=postgres;
+    

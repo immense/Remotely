@@ -15,7 +15,7 @@ namespace Remotely.Server.Migrations.Sqlite
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.10");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.2");
 
             modelBuilder.Entity("DeviceGroupRemotelyUser", b =>
                 {
@@ -140,6 +140,7 @@ namespace Remotely.Server.Migrations.Sqlite
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
+                        .HasMaxLength(13)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
@@ -513,6 +514,20 @@ namespace Remotely.Server.Migrations.Sqlite
                     b.HasIndex("OrganizationID");
 
                     b.ToTable("InviteLinks");
+                });
+
+            modelBuilder.Entity("Remotely.Shared.Entities.KeyValueRecord", b =>
+                {
+                    b.Property<Guid>("Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("KeyValueRecords");
                 });
 
             modelBuilder.Entity("Remotely.Shared.Entities.Organization", b =>

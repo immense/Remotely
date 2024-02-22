@@ -123,6 +123,7 @@ public class Program
             services.AddSingleton<IAppLauncher, AppLauncherMac>();
             services.AddSingleton<IUpdater, UpdaterMac>();
             services.AddSingleton<IDeviceInformationService, DeviceInfoGeneratorMac>();
+            services.AddSingleton<IElevationDetector, ElevationDetectorMac>();
         }
         else
         {

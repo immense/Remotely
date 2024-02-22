@@ -10,25 +10,25 @@ public interface IAppDbFactory
     AppDb GetContext();
 }
 
+
 public class AppDbFactory : IAppDbFactory
 {
-    private readonly IApplicationConfig _appConfig;
     private readonly IConfiguration _configuration;
     private readonly IWebHostEnvironment _hostEnv;
 
     public AppDbFactory(
-        IApplicationConfig appConfig, 
         IConfiguration configuration,
         IWebHostEnvironment hostEnv)
     {
-        _appConfig = appConfig;
         _configuration = configuration;
         _hostEnv = hostEnv;
     }
 
     public AppDb GetContext()
     {
-        return _appConfig.DBProvider.ToLower() switch
+        var dbProvider = _configuration["ApplicationOptions:DbProvider"]?.ToLower();
+
+        return dbProvider switch
         {
             "sqlite" => new SqliteDbContext(_configuration, _hostEnv),
             "sqlserver" => new SqlServerDbContext(_configuration, _hostEnv),

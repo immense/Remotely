@@ -1,0 +1,353 @@
+﻿@page "/server-config"
+@attribute [Authorize(Policy = PolicyNames.ServerAdminRequired)]
+@inherits AuthComponentBase
+
+
+<AlertBanner Message="@_alertMessage" />
+
+<h3 class="mt-3">Server Info</h3>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="mb-4" style="display:flex; justify-content: space-evenly">
+            <div class="d-inline-block text-center me-2">
+                <label>Devices Online</label>
+                <br />
+                <span class="badge text-bg-primary p-2">@ServiceSessionCache.GetAllDevices().Count</span>
+            </div>
+
+            <div class="d-inline-block text-center me-2">
+                <label>Devices Outdated</label>
+                <br />
+
+                <button class="btn btn-sm btn-secondary" @onclick="ShowOutdatedDevices">
+                    <i class="oi oi-question-mark"></i>
+                </button>
+                <span class="badge text-bg-primary p-2 mx-2">@(OutdatedDevices?.Count() ?? 0)</span>
+                <button class="btn btn-secondary btn-sm" type="button" title="Update All" @onclick="UpdateAllDevices">
+                    <span class="oi oi-reload"></span>
+                </button>
+            </div>
+
+            <div class="d-inline-block text-center me-2">
+                <label>Devices Total</label>
+                <br />
+                <span class="badge text-bg-primary p-2">@TotalDevices</span>
+            </div>
+            <div class="d-inline-block text-center me-2">
+                <label>Active Users</label>
+                <br />
+                <span class="badge text-bg-primary p-2">@CircuitManager.Connections.Count</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <h3 class="mt3">Server Admins</h3>
+
+        <div class="form-group">
+            <label class="control-label">Server Admins</label>
+            <br />
+
+            <div class="small">
+                <input class="align-middle me-1" type="checkbox" @bind="_showMyOrgAdminsOnly" />
+                <span class="align-middle">Show my organization only</span>
+            </div>
+            <div class="small">
+                <input class="align-middle me-1" type="checkbox" @bind="_showAdminsOnly" />
+                <span class="align-middle">Show current admins only</span>
+            </div>
+
+            <br />
+            <div class="list-box">
+                @foreach (var user in UserList)
+                {
+                    <div @key="user.Id">
+                        <input type="checkbox" disabled="@(user.Id == User?.Id)" checked="@user.IsServerAdmin" @onchange="ev => SetIsServerAdmin(ev, user)" />
+                        <span class="ms-2 align-top" style="line-height:1.3em">@user.UserName</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <EditForm Model="Input" OnValidSubmit="HandleValidSubmit" autocomplete="off">
+            <DataAnnotationsValidator />
+
+            <h3 class="mt-3">Application Settings</h3>
+
+            <ValidationSummary Model="Input" />
+
+
+            <div class="form-group">
+                <label>Allow API Login</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.AllowApiLogin" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.AllowApiLogin" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Banned Devices</label>
+                <br />
+                <select size="4" class="form-control" @bind="_bannedDeviceSelected">
+                    @foreach (var bannedDevice in Input.BannedDevices)
+                    {
+                        <option @key="bannedDevice" value="@bannedDevice">@bannedDevice</option>
+                    }
+                </select>
+
+                <div class="text-end mb-2 mt-1">
+                    <button type="button" class="btn btn-secondary" @onclick="RemoveBannedDevice">Remove</button>
+                </div>
+                <div class="input-group">
+                    <input placeholder="Add banned device ID, name, or IP"
+                           class="form-control" autocomplete="off"
+                           @bind="_bannedDeviceToAdd"
+                           @bind:event="oninput"
+                           @onkeydown="HandleBannedDeviceKeyDown" />
+                    <button type="button" class="btn btn-secondary" @onclick="AddBannedDevice">Add</button>
+                </div>
+                <ValidationMessage For="() => Input.BannedDevices" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Data Retention in Days</label>
+                <br />
+                <InputNumber @bind-Value="Input.DataRetentionInDays" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.DataRetentionInDays" />
+            </div>
+            <div class="form-group">
+                <label>Enable Remote Control Recording</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.EnableRemoteControlRecording" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.EnableRemoteControlRecording" />
+            </div>
+            <div class="form-group">
+                <label>Enable Windows Event Log</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.EnableWindowsEventLog" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.EnableWindowsEventLog" />
+            </div>
+            <div class="form-group">
+                <label>Enforce Attended Access</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.EnforceAttendedAccess" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.EnforceAttendedAccess" />
+            </div>
+            <div class="form-group">
+                <label>Force Client HTTPS</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.ForceClientHttps" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.ForceClientHttps" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Known Proxies</label>
+                <br />
+                <select class="form-control" @bind="_knownProxySelected" size="4">
+                    @foreach (var proxy in Input.KnownProxies)
+                    {
+                        <option @key="proxy" value="@proxy">@proxy</option>
+                    }
+                </select>
+                <div class="text-end mb-2 mt-1">
+                    <button type="button" class="btn btn-secondary" @onclick="RemoveKnownProxy">Remove</button>
+                </div>
+                <div class="input-group">
+                    <input @bind="_knownProxyToAdd"
+                           @bind:event="oninput"
+                           placeholder="Add a known proxy"
+                           class="form-control"
+                           autocomplete="off"
+                           @onkeydown="HandleKnownProxyKeyDown" />
+
+                    <button type="button" class="btn btn-secondary" @onclick="AddKnownProxy">Add</button>
+                </div>
+                <ValidationMessage For="() => Input.KnownProxies" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Max Organization Count</label>
+                <br />
+                <InputNumber @bind-Value="Input.MaxOrganizationCount" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.MaxOrganizationCount" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Max Concurrent Updates</label>
+                <br />
+                <InputNumber @bind-Value="Input.MaxConcurrentUpdates" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.MaxConcurrentUpdates" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Message of the Day</label>
+                <br />
+                <InputText @bind-Value="Input.MessageOfTheDay" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.MessageOfTheDay" />
+            </div>
+            <div class="form-group">
+                <label>Redirect to HTTPS</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.RedirectToHttps" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.RedirectToHttps" />
+            </div>
+            <div class="form-group">
+                <label>Remote Control Notify User</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.RemoteControlNotifyUser" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.RemoteControlNotifyUser" />
+            </div>
+            <div class="form-group">
+                <label>Require Authentication on Remote Control Page</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.RemoteControlRequiresAuthentication" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.RemoteControlRequiresAuthentication" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Remote Control Session Limit</label>
+                <br />
+                <InputNumber @bind-Value="Input.RemoteControlSessionLimit" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.RemoteControlSessionLimit" />
+            </div>
+            <div class="form-group">
+                <label>Require 2FA</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.Require2FA" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.Require2FA" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">SMTP Display Name</label>
+                <br />
+                <InputText @bind-Value="Input.SmtpDisplayName" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.SmtpDisplayName" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">SMTP Email</label>
+                <br />
+                <InputText type="email" @bind-Value="Input.SmtpEmail" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.SmtpEmail" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">SMTP Host</label>
+                <br />
+                <InputText @bind-Value="Input.SmtpHost" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.SmtpHost" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">SMTP Port</label>
+                <br />
+                <InputNumber @bind-Value="Input.SmtpPort" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.SmtpPort" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">SMTP Check Certificate Revocation</label>
+                <div class="small text-muted">
+                    This sometimes needs to be disabled for Let's Encrypt certificates.
+                </div>
+                <br />
+                <InputCheckbox @bind-Value="Input.SmtpCheckCertificateRevocation" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.SmtpCheckCertificateRevocation" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">SMTP Local Domain</label>
+                <br />
+                <InputText @bind-Value="Input.SmtpLocalDomain" class="form-control" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.SmtpLocalDomain" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">SMTP Username</label>
+                <br />
+                <InputText @bind-Value="Input.SmtpUserName" class="form-control" autocomplete="new-password" />
+                <br />
+                <ValidationMessage For="() => Input.SmtpUserName" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">SMTP Password</label>
+                <br />
+                <InputText type="password" @bind-Value="Input.SmtpPassword" class="form-control" autocomplete="new-password" />
+                <br />
+                <ValidationMessage For="() => Input.SmtpPassword" />
+            </div>
+            <div class="form-group text-end">
+                <button id="sendTestEmailButton" type="button" class="btn btn-secondary" @onclick="SaveAndTestSmtpSettings">Test</button>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Theme</label>
+                <br />
+                <select class="form-control" @bind="Input.Theme">
+                    @foreach (var theme in Enum.GetValues<Theme>())
+                    {
+                        <option @key="theme" value="@theme">@theme</option>
+                    }
+
+                </select>
+                <br />
+                <ValidationMessage For="() => Input.Theme" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Trusted CORS Origins</label>
+                <br />
+                <select class="form-control" @bind="_trustedCorsOriginSelected" size="4">
+                    @foreach (var origin in Input.TrustedCorsOrigins)
+                    {
+                        <option @key="origin" value="@origin">@origin</option>
+                    }
+                </select>
+
+                <div class="text-end mb-2 mt-1">
+                    <button type="button" class="btn btn-secondary" @onclick="RemoveTrustedCorsOrigin">Remove</button>
+                </div>
+                <div class="input-group">
+                    <input placeholder="Add trusted URL"
+                           class="form-control"
+                           autocomplete="off"
+                           @bind="_trustedCorsOriginToAdd"
+                           @bind:event="oninput"
+                           @onkeydown="HandleTrustedCorsKeyDown" />
+
+                    <button id="trustedCorsAddButton" type="button" class="btn btn-secondary" @onclick="AddTrustedCorsOrigin">Add</button>
+                </div>
+                <ValidationMessage For="() => Input.TrustedCorsOrigins" />
+            </div>
+            <div class="form-group">
+                <label>Use HSTS</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.UseHsts" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.UseHsts" />
+            </div>
+
+            <div class="form-group">
+                <label>Use HTTP Logging</label>
+                <br />
+                <InputCheckbox @bind-Value="Input.UseHttpLogging" autocomplete="off" />
+                <br />
+                <ValidationMessage For="() => Input.UseHttpLogging" />
+            </div>
+
+            <div class="form-group mt-3">
+                <button type="button" class="btn btn-primary" @onclick="Save">Save</button>
+            </div>
+        </EditForm>
+    </div>
+</div>

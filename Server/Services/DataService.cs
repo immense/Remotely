@@ -21,6 +21,7 @@ using Remotely.Shared.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Services;
@@ -171,6 +172,8 @@ public interface IDataService
 
     List<string> GetServerAdmins();
 
+    Task<SettingsModel> GetSettings();
+
     Task<Result<SharedFile>> GetSharedFiled(string fileId);
 
     int GetTotalDevices();
@@ -192,6 +195,8 @@ public interface IDataService
     Task<Result> RenameApiToken(string userName, string tokenId, string tokenName);
 
     Task ResetBranding(string organizationId);
+
+    Task SaveSettings(SettingsModel settings);
 
     Task SetAllDevicesNotOnline();
 
@@ -224,18 +229,16 @@ public interface IDataService
 
 public class DataService : IDataService
 {
-    private readonly IApplicationConfig _appConfig;
     private readonly IAppDbFactory _appDbFactory;
     private readonly IHostEnvironment _hostEnvironment;
     private readonly ILogger<DataService> _logger;
+    private readonly SemaphoreSlim _settingsLock = new(1, 1);
 
     public DataService(
-        IApplicationConfig appConfig,
         IHostEnvironment hostEnvironment,
         IAppDbFactory appDbFactory,
         ILogger<DataService> logger)
     {
-        _appConfig = appConfig;
         _hostEnvironment = hostEnvironment;
         _appDbFactory = appDbFactory;
         _logger = logger;
@@ -639,14 +642,15 @@ public class DataService : IDataService
 
     public async Task CleanupOldRecords()
     {
+        var settings = await GetSettings();
         using var dbContext = _appDbFactory.GetContext();
 
-        if (_appConfig.DataRetentionInDays < 0)
+        if (settings.DataRetentionInDays < 0)
         {
             return;
         }
 
-        var expirationDate = DateTimeOffset.Now - TimeSpan.FromDays(_appConfig.DataRetentionInDays);
+        var expirationDate = DateTimeOffset.Now - TimeSpan.FromDays(settings.DataRetentionInDays);
 
         var scriptRuns = await dbContext.ScriptRuns
             .Include(x => x.Results)
@@ -1711,6 +1715,25 @@ public class DataService : IDataService
             .ToList();
     }
 
+    public async Task<SettingsModel> GetSettings()
+    {
+        await _settingsLock.WaitAsync();
+        try
+        {
+            using var dbContext = _appDbFactory.GetContext();
+            return await dbContext.GetAppSettings();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while getting settings from database.");
+            return new();
+        }
+        finally
+        {
+            _settingsLock.Release();
+        }
+    }
+
     public async Task<Result<SharedFile>> GetSharedFiled(string fileId)
     {
         using var dbContext = _appDbFactory.GetContext();
@@ -1928,6 +1951,35 @@ public class DataService : IDataService
         entry.CurrentValues.SetValues(BrandingInfoBase.Default);
         
         await dbContext.SaveChangesAsync();
+    }
+
+    public async Task SaveSettings(SettingsModel settings)
+    {
+        await _settingsLock.WaitAsync();
+        try
+        {
+            using var dbContext = _appDbFactory.GetContext();
+            var record = await dbContext.KeyValueRecords.FindAsync(SettingsModel.DbKey);
+            if (record is null)
+            {
+                record = new()
+                {
+                    Key = SettingsModel.DbKey,
+                };
+                await dbContext.KeyValueRecords.AddAsync(record);
+                await dbContext.SaveChangesAsync();
+            }
+            record.Value = JsonSerializer.Serialize(settings);
+            await dbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while saving settings to database.");
+        }
+        finally
+        {
+            _settingsLock.Release();
+        }
     }
 
     public async Task SetAllDevicesNotOnline()
@@ -2188,14 +2240,15 @@ public class DataService : IDataService
     }
 
     private async Task<string> AddSharedFileImpl(
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        string fileName,
+        string fileName,
         byte[] fileContents,
         string contentType,
         string organizationId)
     {
+        var settings = await GetSettings();
         using var dbContext = _appDbFactory.GetContext();
 
-        var expirationDate = DateTimeOffset.Now.AddDays(-_appConfig.DataRetentionInDays);
+        var expirationDate = DateTimeOffset.Now.AddDays(-settings.DataRetentionInDays);
         var expiredFiles = dbContext.SharedFiles.Where(x => x.Timestamp < expirationDate);
         dbContext.RemoveRange(expiredFiles);
 

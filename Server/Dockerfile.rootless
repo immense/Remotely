@@ -16,7 +16,7 @@ RUN \
   libssl1.0
 
 RUN \
-  apt-get -y install aspnetcore-runtime-7.0
+  apt-get -y install aspnetcore-runtime-8.0
 
 RUN \
   adduser --disabled-password --gecos '' -u 2001 remotely && \

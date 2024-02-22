@@ -39,17 +39,17 @@
             </div>
 
             <div class="custom-control custom-checkbox mt-2">
-                <input id="hideOfflineDevicesCheckbox" type="checkbox" class="custom-control-input" @bind="_hideOfflineDevices" />
-                <label class="custom-control-label" for="hideOfflineDevicesCheckbox">Hide offline devices</label>
+                <input id="hideOfflineDevicesCheckbox" type="checkbox" class="custom-control-input align-middle" @bind="_hideOfflineDevices" />
+                <label class="custom-control-label align-middle" for="hideOfflineDevicesCheckbox">Hide offline devices</label>
             </div>
             <div class="mt-2">
-                <button class="btn btn-sm btn-secondary mr-2" @onclick="SelectAllCards">Select All</button>
+                <button class="btn btn-sm btn-secondary me-2" @onclick="SelectAllCards">Select All</button>
                 <button class="btn btn-sm btn-primary" @onclick="HandleRefreshClicked">Refresh</button>
             </div>
         </div>
          
         <div>
-            <div class="d-inline-block text-left">
+            <div class="d-inline-block text-start">
                 <div>
                     <div>Search</div>
                     <input class="form-control d-inline"
@@ -78,7 +78,7 @@
                         <option value="100">100</option>
                         <option value="200">200</option>
                     </select>
-                    <span class="ml-1 small">per page</span>
+                    <span class="ms-1 small">per page</span>
                 </div>
             </div>
            

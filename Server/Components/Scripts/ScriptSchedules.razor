@@ -18,20 +18,20 @@
 
         <div class="mt-2 col-12">
             <div>
-                <button type="submit" class="btn btn-primary align-middle mr-3" disabled="@(!CanModifySchedule)">
+                <button type="submit" class="btn btn-primary align-middle me-3" disabled="@(!CanModifySchedule)">
                     Save
                 </button>
 
-                <button type="button" class="btn btn-success mr-3" @onclick="CreateNew">
+                <button type="button" class="btn btn-success me-3" @onclick="CreateNew">
                     New
                 </button>
-                <button class="btn btn-danger mr-4" type="button"
+                <button class="btn btn-danger me-4" type="button"
                         disabled="@(!CanDeleteSchedule)"
                         @onclick="DeleteSelectedSchedule">
                     Delete
                 </button>
 
-                <InputCheckbox class="mr-2 align-middle" @bind-Value="_selectedSchedule.RunOnNextConnect" />
+                <InputCheckbox class="me-2 align-middle" @bind-Value="_selectedSchedule.RunOnNextConnect" />
                 <span class="align-middle">If devices are offline, run immediately when next connected</span>
             </div>
         </div>
@@ -88,7 +88,7 @@
                 @foreach (var deviceGroup in _deviceGroups)
                 {
                     <div @key="@deviceGroup.ID">
-                        <input class="mr-1" type="checkbox"
+                        <input class="me-1" type="checkbox"
                                checked="@(_selectedDeviceGroups.Contains(deviceGroup.ID))"
                                @onchange="ev => DeviceGroupSelectedChanged(ev, deviceGroup)" />
 
@@ -104,7 +104,7 @@
                 @foreach (var device in _devices)
                 {
                     <div @key="@device.ID">
-                        <input class="mr-1" type="checkbox"
+                        <input class="me-1" type="checkbox"
                                checked="@(_selectedDevices.Contains(device.ID))"
                                @onchange="ev => DeviceSelectedChanged(ev, device)" />
 
@@ -119,7 +119,7 @@
    
 
 <h4 class="mt-5">Saved Schedules</h4>
-<table class="table table-striped table-hover">
+<table class="table table-dark table-striped table-hover">
     <thead>
         <tr>
             <th>Script Name</th>

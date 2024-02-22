@@ -39,7 +39,7 @@ wget -q https://packages.microsoft.com/config/ubuntu/$UbuntuVersion/packages-mic
 dpkg -i packages-microsoft-prod.deb
 apt-get update
 apt-get -y install apt-transport-https
-apt-get -y install dotnet-runtime-7.0
+apt-get -y install dotnet-runtime-8.0
 rm packages-microsoft-prod.deb
 
 apt-get -y install libx11-dev

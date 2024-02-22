@@ -4,13 +4,13 @@
 <div class="chat-card border border-secondary bg-secondary @Session.ExpandedClass">
     <div class="chat-header bg-primary text-white p-2" @onclick="HeaderClicked">
         <h6 class="mt-3">
-            <i class="oi oi-chat mr-1"></i>
-            <span class="badge badge-info badge-pill mr-1">
+            <i class="oi oi-chat me-1"></i>
+            <span class="badge bg-info rounded-pill me-1">
                 @Session.MissedChats
             </span>
             @Session.DeviceName
         </h6>
-        <div class="text-right">
+        <div class="text-end">
             <button class="btn btn-sm btn-secondary" title="Close" @onclick="CloseChatCard" @onclick:stopPropagation>
                 <i class="oi oi-x pointer"></i>
             </button>
@@ -34,7 +34,7 @@
             }
             else if (item.Origin == ChatHistoryItemOrigin.Self)
             {
-                <div @key="item" class="text-right mt-1">
+                <div @key="item" class="text-end mt-1">
                     <div class="chat-bubble d-inline-block bg-dark text-white">
                         <div class="small">
                             You

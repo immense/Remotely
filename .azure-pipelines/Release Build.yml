@@ -5,71 +5,9 @@ pr:
 - master
 
 jobs:
-- job: Mac_Build
-  displayName: Mac Build
+- job: Build
+  displayName: Build
   timeoutInMinutes: 360
-  pool:
-    vmImage: macos-latest
-  steps:
-  
-  - task: InstallSSHKey@0
-    inputs:
-      knownHostsEntry: |
-        github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
-        github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
-        github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=
-      sshKeySecureFile: 'pipelines_rsa'
-
-  - checkout: self
-    submodules: recursive
-    clean: true
-    fetchTags: false
-
-  - task: PowerShell@2
-    displayName: Add CurrentVersion Variable
-    inputs:
-      targetType: inline
-      script: |
-        $VersionString = git show -s --format=%ci $(Build.SourceVersion)
-        $VersionDate = [DateTimeOffset]::Parse($VersionString)
-        $CurrentVersion = $VersionDate.ToString("yyyy.MM.dd.HHmm")
-
-        [System.Console]::WriteLine("##vso[task.setvariable variable=CurrentVersion]$CurrentVersion")
-
-        Write-Host "Setting current version to $CurrentVersion."
-
-  - task: UseDotNet@2
-    displayName: Use .NET SDK
-    inputs:
-      version: 7.x
-
-  - task: DotNetCoreCLI@2
-    displayName: dotnet publish x64
-    inputs:
-      command: publish
-      publishWebProjects: false
-      projects: '**/Agent.csproj'
-      arguments: -c $(BuildConfiguration) -r osx-x64 -o "$(Build.SourcesDirectory)/Agent/bin/publish" /p:Version=$(CurrentVersion) /p:FileVersion=$(CurrentVersion)
-      zipAfterPublish: false
-      modifyOutputPath: false
-
-  - task: PowerShell@2
-    displayName: PowerShell Script
-    inputs:
-      targetType: inline
-      script: |
-        Compress-Archive -Path "$(Build.SourcesDirectory)/Agent/bin/publish/*" -DestinationPath "$(Build.SourcesDirectory)/Agent/bin/Remotely-MacOS-x64.zip" -Force
-
-  - task: PublishPipelineArtifact@1
-    displayName: Publish macOS x64 Agent
-    inputs:
-      path: $(Build.SourcesDirectory)/Agent/bin/Remotely-MacOS-x64.zip
-      artifactName: Mac-x64-Agent
-
-- job: Windows_Build
-  displayName: Windows Build
-  timeoutInMinutes: 360
-  dependsOn: Mac_Build
   pool:
     vmImage: windows-latest
 
@@ -89,12 +27,6 @@ jobs:
     
   - task: VisualStudioTestPlatformInstaller@1
     displayName: Visual Studio Test Platform Installer
-  
-  - task: DownloadPipelineArtifact@2
-    displayName: Download macOS x64 Agent
-    inputs:
-      artifact: Mac-x64-Agent
-      path: $(Build.SourcesDirectory)\Server\wwwroot\Content\
 
   - task: PowerShell@2
     displayName: Add CurrentVersion Variable
@@ -121,7 +53,7 @@ jobs:
   - task: UseDotNet@2
     displayName: Use .NET SDK
     inputs:
-      version: 7.x
+      version: 8.x
 
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
@@ -191,8 +123,8 @@ jobs:
     inputs:
       targetType: inline
       script: |
-        Copy-Item -Path "$(Build.SourcesDirectory)\Server\Dockerfile" -Destination "$(build.artifactstagingdirectory)\Dockerfile"
-        Copy-Item -Path "$(Build.SourcesDirectory)\Server\DockerMain.sh" -Destination "$(build.artifactstagingdirectory)\DockerMain.sh"
+        Copy-Item -Path "$(Build.SourcesDirectory)\Server\Dockerfile.pipelines" -Destination "$(build.artifactstagingdirectory)\Dockerfile"
+        Copy-Item -Path "$(Build.SourcesDirectory)\docker-compose\docker-compose.yml" -Destination "$(build.artifactstagingdirectory)\docker-compose.yml"
 
   - task: PublishBuildArtifacts@1
     displayName: Publish Artifact

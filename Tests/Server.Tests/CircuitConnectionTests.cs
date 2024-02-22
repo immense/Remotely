@@ -24,7 +24,6 @@ public class CircuitConnectionTests
     private Mock<IAuthService> _authService;
     private Mock<ISelectedCardsStore> _clientAppState;
     private HubContextFixture<AgentHub, IAgentHubClient> _agentHubContextFixture;
-    private Mock<IApplicationConfig> _appConfig;
     private Mock<ICircuitManager> _circuitManager;
     private Mock<IToastService> _toastService;
     private Mock<IExpiringTokenService> _expiringTokenService;
@@ -45,7 +44,6 @@ public class CircuitConnectionTests
         _authService = new Mock<IAuthService>();
         _clientAppState = new Mock<ISelectedCardsStore>();
         _agentHubContextFixture = new HubContextFixture<AgentHub, IAgentHubClient>();
-        _appConfig = new Mock<IApplicationConfig>();
         _circuitManager = new Mock<ICircuitManager>();
         _toastService = new Mock<IToastService>();
         _expiringTokenService = new Mock<IExpiringTokenService>();
@@ -59,7 +57,6 @@ public class CircuitConnectionTests
             _dataService,
             _clientAppState.Object,
             _agentHubContextFixture.HubContextMock.Object,
-            _appConfig.Object,
             _circuitManager.Object,
             _toastService.Object,
             _expiringTokenService.Object,

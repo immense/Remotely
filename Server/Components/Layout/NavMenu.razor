@@ -1,0 +1,202 @@
+﻿@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject IAuthService AuthService 
+@inject IDataService DataService
+@inject IDataService DataService
+
+<div class="ps-4 pb-1 pe-0 pt-0 navbar navbar-dark" style="background-color: rgba(0,0,0,0.3)">
+    <a class="navbar-brand text-start" href="">
+        <div class="logo-title">
+            @if (!string.IsNullOrWhiteSpace(_organization?.OrganizationName))
+            {
+                @_organization.OrganizationName
+            }
+            else
+            {
+                <span>Remotely</span>
+            }
+        </div>
+        <div class="logo-subtitle">Support Portal</div>
+    </a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/RemoteControl/Viewer" target="_blank">
+                <span class="oi oi-monitor" aria-hidden="true"></span> Remote Control
+            </NavLink>
+
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="downloads">
+                <span class="oi oi-cloud-download" aria-hidden="true"></span> Downloads
+            </NavLink>
+        </li>
+
+        <AuthorizeView>
+            <Authorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="scripts">
+                        <span class="oi oi-script" aria-hidden="true"></span> Scripts
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="device-details">
+                        <span class="oi oi-info" aria-hidden="true"></span> Device Details
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="user-options">
+                        <span class="oi oi-pencil" aria-hidden="true"></span> User Options
+                    </NavLink>
+                </li>
+
+            </Authorized>
+        </AuthorizeView>
+
+        @if (_user?.IsAdministrator == true)
+        {
+            <li class="nav-item px-3 pt-3 small text-muted">
+                Admin
+            </li>
+
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="manage-organization">
+                    <span class="oi oi-briefcase" aria-hidden="true"></span> Organization
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="branding">
+                    <span class="oi oi-brush" aria-hidden="true"></span> Branding
+                </NavLink>
+            </li>
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href="api-keys">
+                    <span class="oi oi-key" aria-hidden="true"></span> API Keys
+                </NavLink>
+            </li>
+
+            @if (_user?.IsServerAdmin == true)
+            {
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="server-logs">
+                        <span class="oi oi-document" aria-hidden="true"></span> Server Logs
+                    </NavLink>
+                </li>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="server-config">
+                        <span class="oi oi-wrench" aria-hidden="true"></span> Server Config
+                    </NavLink>
+                </li>
+            }
+        }
+
+        <AuthorizeView>
+            <Authorized>
+                <li class="px-3 mt-3">
+                    <a class="btn btn-link text-light" href="Account/Manage">
+                        Account
+                    </a>
+                </li>
+                <li class="px-3">
+                    <form action="Account/Logout" method="post">
+                        <AntiforgeryToken />
+                        <input type="hidden" name="ReturnUrl" value="@_currentUrl" />
+                        <button type="submit" class="btn btn-link text-light">
+                            Logout
+                        </button>
+                    </form>
+                </li>
+            </Authorized>
+            <NotAuthorized>
+                <li class="px-3 mt-3">
+                    <a class="btn btn-link text-light" href="Account/Login">Log in</a>
+                </li>
+                @if (_isRegistrationEnabled)
+                {
+                    <li class="px-3">
+                        <a class="btn btn-link text-light" href="Account/Register">Register</a>
+                    </li>
+                }
+            </NotAuthorized>
+        </AuthorizeView>
+
+        <li class="px-3 mt-3">
+            <a class="btn btn-link text-light" href="/about">About</a>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+    private bool _isRegistrationEnabled;
+    private RemotelyUser? _user;
+    private Organization? _organization;
+    private string? _currentUrl;
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var settings = await DataService.GetSettings();
+        _isRegistrationEnabled = settings.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < settings.MaxOrganizationCount;
+
+        await base.OnInitializedAsync();
+
+        _currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+
+        var userResult = await AuthService.GetUser();
+
+        if (!userResult.IsSuccess)
+        {
+            return;
+        }
+
+        _user = userResult.Value;
+
+        if (!string.IsNullOrWhiteSpace(_user?.OrganizationID))
+        {
+            var orgResult = await DataService.GetOrganizationById(_user.OrganizationID);
+            if (orgResult.IsSuccess)
+            {
+                _organization = orgResult.Value;
+            }
+        }
+        else
+        {
+            var orgResult = await DataService.GetDefaultOrganization();
+            if (orgResult.IsSuccess)
+            {
+                _organization = orgResult.Value;
+            }
+        }
+    }
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : "";
+
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        _currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        InvokeAsync(StateHasChanged);
+    }
+}

@@ -31,7 +31,7 @@ public static class FileLoggerDefaults
                 return logsPath;
             }
 
-            if (OperatingSystem.IsLinux())
+            if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
                 if (EnvironmentHelper.IsDebug)
                 {

@@ -64,17 +64,17 @@
                             Save
                         </button>
 
-                        <button class="btn btn-success ml-3" type="button" @onclick="CreateNew">
+                        <button class="btn btn-success ms-3" type="button" @onclick="CreateNew">
                             New
                         </button>
-                        <button class="btn btn-danger ml-3" type="button"
+                        <button class="btn btn-danger ms-3" type="button"
                                 disabled="@(!CanDeleteScript)"
                                 @onclick="DeleteSelectedScript">
                             Delete
                         </button>
                     </div>
                     <div class="mt-2 col-12">
-                        <button type="button" class="btn btn-link mr-3" @onclick="ToggleAlertOptionsShown">
+                        <button type="button" class="btn btn-link me-3" @onclick="ToggleAlertOptionsShown">
                             Alert Options
                         </button>
                         <button type="button" class="btn btn-link" @onclick="ToggleEnvironmentVarsShown">
@@ -83,7 +83,7 @@
                     </div>
                     <div class="my-2 col-12 collapse @_alertOptionsShowClass">
                         <h5>
-                            <span class="mr-2">On Error</span>
+                            <span class="me-2">On Error</span>
                             <button class="btn btn-sm btn-secondary" type="button" @onclick="ShowAlertErrorHelp">
                                 <span class="oi oi-question-mark" />
                             </button>

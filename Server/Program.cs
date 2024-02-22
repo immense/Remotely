@@ -1,85 +1,122 @@
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Logging;
-using Remotely.Server.Areas.Identity;
 using Remotely.Server.Auth;
 using Remotely.Server.Data;
 using Remotely.Server.Hubs;
 using Remotely.Server.Services;
-using System.IO;
-using System.Linq;
 using System.Net;
 using Immense.RemoteControl.Server.Extensions;
 using Remotely.Server.Services.RcImplementations;
 using Remotely.Shared.Services;
-using System;
 using Serilog;
 using Microsoft.AspNetCore.RateLimiting;
 using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
 using Remotely.Shared.Entities;
 using Immense.SimpleMessenger;
 using Remotely.Server.Services.Stores;
+using Remotely.Server.Components.Account;
+using Remotely.Server.Components;
+using Remotely.Server.Options;
+using Remotely.Server.Extensions;
+using Remotely.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 
-ConfigureSerilog(builder);
+configuration.AddEnvironmentVariables("Remotely_");
+
+services.Configure<ApplicationOptions>(
+    configuration.GetSection(ApplicationOptions.SectionKey));
+
+var appOptions = configuration
+    .GetSection(ApplicationOptions.SectionKey)
+    .Get<ApplicationOptions>();
+
+services
+    .AddRazorComponents()
+    .AddInteractiveServerComponents();
+
+services.AddRazorPages();
+
+services.AddCascadingAuthenticationState();
+services.AddScoped<IdentityUserAccessor>();
+services.AddScoped<IdentityRedirectManager>();
+services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+var dbProvider = appOptions?.DbProvider?.ToLower();
+
+switch (dbProvider)
+{
+    case "sqlite":
+        services.AddDbContext<AppDb, SqliteDbContext>(
+            contextLifetime: ServiceLifetime.Transient, 
+            optionsLifetime: ServiceLifetime.Transient);
+        break;
+    case "sqlserver":
+        services.AddDbContext<AppDb, SqlServerDbContext>(
+            contextLifetime: ServiceLifetime.Transient,
+            optionsLifetime: ServiceLifetime.Transient);
+        break;
+    case "postgresql":
+        services.AddDbContext<AppDb, PostgreSqlDbContext>(
+            contextLifetime: ServiceLifetime.Transient,
+            optionsLifetime: ServiceLifetime.Transient);
+        break;
+    default:
+        throw new InvalidOperationException(
+            $"Invalid DBProvider: {dbProvider}.  Ensure a valid value " +
+            $"is set in appsettings.json or environment variables.");
+}
+
+using AppDb appDb = dbProvider switch
+{
+    "sqlite" => new SqliteDbContext(builder.Configuration, builder.Environment),
+    "sqlserver" => new SqlServerDbContext(builder.Configuration, builder.Environment),
+    "postgresql" => new PostgreSqlDbContext(builder.Configuration, builder.Environment),
+    _ => throw new InvalidOperationException($"Invalid DBProvider: {dbProvider}")
+};
+
+await appDb.Database.MigrateAsync();
+var settings = await appDb.GetAppSettings();
+
+ConfigureSerilog(builder, settings);
 
 builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
 
-if (OperatingSystem.IsWindows() &&
-    bool.TryParse(builder.Configuration["ApplicationOptions:EnableWindowsEventLog"], out var enableEventLog) &&
-    enableEventLog)
+if (OperatingSystem.IsWindows() && settings.EnableWindowsEventLog)
 {
     builder.Logging.AddEventLog();
 }
 
-var dbProvider = configuration["ApplicationOptions:DBProvider"]?.ToLower();
-if (string.IsNullOrWhiteSpace(dbProvider))
+builder.Services.AddAuthentication(options =>
 {
-    throw new InvalidOperationException("DBProvider is missing from appsettings.json.");
-}
+    options.DefaultScheme = IdentityConstants.ApplicationScheme;
+    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+})
+    .AddIdentityCookies();
 
-if (dbProvider == "sqlite")
-{
-    services.AddDbContext<AppDb, SqliteDbContext>();
-}
-else if (dbProvider == "sqlserver")
-{
-    services.AddDbContext<AppDb, SqlServerDbContext>();
-}
-else if (dbProvider == "postgresql")
-{
-    services.AddDbContext<AppDb, PostgreSqlDbContext>();
-}
-
-services.AddIdentity<RemotelyUser, IdentityRole>(options =>
+services.AddIdentityCore<RemotelyUser>(options =>
 {
     options.Stores.MaxLengthForKeys = 128;
     options.Password.RequireNonAlphanumeric = false;
 })
     .AddEntityFrameworkStores<AppDb>()
-    .AddDefaultUI()
+    .AddSignInManager()
     .AddDefaultTokenProviders();
 
 
 services.AddScoped<IAuthorizationHandler, TwoFactorRequiredHandler>();
 services.AddScoped<IAuthorizationHandler, OrganizationAdminRequirementHandler>();
 services.AddScoped<IAuthorizationHandler, ServerAdminRequirementHandler>();
+builder.Services.AddSingleton<IEmailSender<RemotelyUser>, IdentityNoOpEmailSender>();
 
 services.AddAuthorization(options =>
 {
@@ -99,13 +136,9 @@ services.AddAuthorization(options =>
     });
 });
 
-services.AddRazorPages();
-services.AddServerSideBlazor();
-services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<RemotelyUser>>();
 services.AddDatabaseDeveloperPageExceptionFilter();
 
-if (bool.TryParse(configuration["ApplicationOptions:UseHttpLogging"], out var useHttpLogging) &&
-    useHttpLogging)
+if (settings.UseHttpLogging)
 {
     services.AddHttpLogging(options =>
     {
@@ -119,31 +152,32 @@ if (bool.TryParse(configuration["ApplicationOptions:UseHttpLogging"], out var us
     });
 }
 
-var trustedOrigins = configuration.GetSection("ApplicationOptions:TrustedCorsOrigins").Get<string[]>();
-
-if (trustedOrigins != null)
+services.AddCors(options =>
 {
-    services.AddCors(options =>
+    if (settings.TrustedCorsOrigins is { Count: > 0} trustedOrigins)
     {
         options.AddPolicy("TrustedOriginPolicy", builder => builder
-            .WithOrigins(trustedOrigins)
+            .WithOrigins(trustedOrigins.ToArray())
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
         );
-    });
-}
+    }
+});
 
-var knownProxies = configuration.GetSection("ApplicationOptions:KnownProxies").Get<string[]>();
+
 services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.All;
     options.ForwardLimit = null;
 
     // Default Docker host. We want to allow forwarded headers from this address.
-    options.KnownProxies.Add(IPAddress.Parse("172.17.0.1"));
+    if (IPAddress.TryParse(appOptions?.DockerGatewayIp, out var dockerGatewayIp))
+    {
+        options.KnownProxies.Add(dockerGatewayIp);
+    }
 
-    if (knownProxies?.Any() == true)
+    if (settings.KnownProxies is { Count: >0 } knownProxies)
     {
         foreach (var proxy in knownProxies)
         {
@@ -164,33 +198,31 @@ services.AddSignalR(options =>
     })
     .AddMessagePackProtocol();
 
-services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Remotely API", Version = "v1" });
-});
-
 services.AddRateLimiter(options =>
 {
     options.AddConcurrencyLimiter(RatePolicyNames.AgentUpdateDownloads, clOptions =>
     {
         clOptions.QueueLimit = int.MaxValue;
 
-        var concurrentPermits = configuration.GetSection("ApplicationOptions:MaxConcurrentUpdates").Get<int>();
-        if (concurrentPermits <= 0)
-        {
-            concurrentPermits = 10;
-        }
-
-        clOptions.PermitLimit = concurrentPermits;
+        clOptions.PermitLimit = 
+            settings.MaxConcurrentUpdates <= 0 ?
+                10 :
+                settings.MaxConcurrentUpdates;
     });
 });
 services.AddHttpClient();
 services.AddLogging();
-services.AddScoped<IEmailSenderEx, EmailSenderEx>();
 services.AddScoped<IEmailSender, EmailSender>();
-services.AddScoped<IAppDbFactory, AppDbFactory>();
+if (builder.Environment.IsDevelopment())
+{
+    services.AddScoped<IEmailSenderEx, EmailSenderFake>();
+}
+else
+{
+    services.AddScoped<IEmailSenderEx, EmailSenderEx>();
+}
+services.AddSingleton<IAppDbFactory, AppDbFactory>();
 services.AddTransient<IDataService, DataService>();
-services.AddSingleton<IApplicationConfig, ApplicationConfig>();
 services.AddScoped<ApiAuthorizationFilter>();
 services.AddScoped<LocalOnlyFilter>();
 services.AddScoped<ExpiringTokenFilter>();
@@ -227,32 +259,35 @@ services.AddRemoteControlServer(config =>
 
 services.AddSingleton<IAgentHubSessionCache, AgentHubSessionCache>();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 app.UseRateLimiter();
 
-var appConfig = app.Services.GetRequiredService<IApplicationConfig>();
-
-if (appConfig.UseHttpLogging)
+if (settings.UseHttpLogging)
 {
     app.UseHttpLogging();
 }
-
-app.UseForwardedHeaders();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseMigrationsEndPoint();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
     app.UseExceptionHandler("/Error");
-    if (bool.TryParse(app.Configuration["ApplicationOptions:UseHsts"], out var hsts) && hsts)
+    if (settings.UseHsts)
     {
         app.UseHsts();
     }
-    if (bool.TryParse(app.Configuration["ApplicationOptions:RedirectToHttps"], out var redirect) && redirect)
+    if (settings.RedirectToHttps)
     {
         app.UseHttpsRedirection();
     }
@@ -260,36 +295,27 @@ else
 
 ConfigureStaticFiles();
 
-app.UseSwagger();
-
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Remotely API V1");
-});
-
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors("TrustedOriginPolicy");
 
-app.UseRemoteControlServer();
+app.UseAntiforgery();
 
+app.UseRemoteControlServer();
 
 app.MapHub<AgentHub>("/hubs/service");
 app.MapControllers();
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
+
+app.MapAdditionalIdentityEndpoints();
 
 using (var scope = app.Services.CreateScope())
 {
-    using var context = scope.ServiceProvider.GetRequiredService<AppDb>();
     var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
-
-    if (context.Database.IsRelational())
-    {
-        await context.Database.MigrateAsync();
-    }
 
     await dataService.SetAllDevicesNotOnline();
     await dataService.CleanupOldRecords();
@@ -334,16 +360,17 @@ void ConfigureStaticFiles()
     }
 }
 
-void ConfigureSerilog(WebApplicationBuilder webAppBuilder)
+void ConfigureSerilog(WebApplicationBuilder webAppBuilder, SettingsModel settings)
 {
     try
     {
-        var dataRetentionDays = 7;
-        if (int.TryParse(webAppBuilder.Configuration["ApplicationOptions:DataRetentionInDays"], out var retentionSetting))
-        {
-            dataRetentionDays = retentionSetting;
-        }
 
+        var dataRetentionDays = settings.DataRetentionInDays;
+        if (dataRetentionDays <= 0)
+        {
+            dataRetentionDays = 7;
+        }
+       
         var logPath = LogsManager.DefaultLogsDirectory;
 
         void ApplySharedLoggerConfig(LoggerConfiguration loggerConfiguration)
@@ -352,8 +379,8 @@ void ConfigureSerilog(WebApplicationBuilder webAppBuilder)
                 .Enrich.FromLogContext()
                 .Enrich.WithThreadId()
                 .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}")
-                .WriteTo.File($"{logPath}/Remotely_Server.log", 
-                    rollingInterval: RollingInterval.Day, 
+                .WriteTo.File($"{logPath}/Remotely_Server.log",
+                    rollingInterval: RollingInterval.Day,
                     retainedFileTimeLimit: TimeSpan.FromDays(dataRetentionDays),
                     outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj} {Properties}{NewLine}{Exception}",
                     shared: true);

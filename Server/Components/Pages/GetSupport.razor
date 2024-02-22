@@ -1,0 +1,134 @@
+﻿@page "/get-support/{deviceId?}"
+@using System.ComponentModel.DataAnnotations
+
+@inject IDataService DataService
+@inject IEmailSenderEx EmailSender
+
+
+@if (string.IsNullOrWhiteSpace(DeviceId))
+{
+    <h3 class="mb-3">Get Support</h3>
+    <p>
+        Device ID is missing.  Please use a valid shortcut to the support page, which will include the device ID.
+    </p>
+}
+else
+{
+    <div class="col-sm-6">
+        @if (!string.IsNullOrWhiteSpace(_statusMessage))
+        {
+            <div class="alert @(_alertClass) alert-dismissible" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" @onclick="CloseAlert"></button>
+                @_statusMessage
+            </div>
+        }
+
+        <h3 class="mb-3 mt-3">Get Support</h3>
+        <EditForm Model="Input" OnValidSubmit="OnValidSubmitAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Name" class="form-control" placeholder="Please enter your name." />
+                <label for="name" class="form-label">Name</label>
+                <ValidationMessage For="() => Input.Name" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Email" class="form-control" autocomplete="email" placeholder="Please enter your email." />
+                <label for="email" class="form-label">Email</label>
+                <ValidationMessage For="() => Input.Email" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Phone" class="form-control" placeholder="Please enter your phone number (optional)." />
+                <label for="phone" class="form-label">Phone</label>
+                <ValidationMessage For="() => Input.Phone" />
+            </div>
+            <div class="form-check mb-3">
+                <InputCheckbox @bind-Value="Input.ChatResponseOk" class="form-check-input align-middle" />
+                <label class="form-check-label align-middle ms-1" for="ChatResponseOk">
+                    Chat Response OK?
+                </label>
+                <ValidationMessage For="() => Input.ChatResponseOk" />
+            </div>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </EditForm>
+    </div>
+
+}
+
+
+@code {
+    private string? _statusMessage;
+    private string _alertClass = "alert-success";
+
+    [Parameter]
+    public string? DeviceId { get; init; }
+
+    [SupplyParameterFromForm]
+    private InputModel Input { get; set; } = new();
+
+    private void CloseAlert()
+    {
+        _statusMessage = null;
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        if (string.IsNullOrWhiteSpace(DeviceId))
+        {
+            return;
+        }
+
+        var deviceResult = await DataService.GetDevice(DeviceId);
+        if (!deviceResult.IsSuccess)
+        {
+            _alertClass = "alert-danger";
+            _statusMessage = "Device not found.";
+            return;
+        }
+
+        var orgId = deviceResult.Value.OrganizationID;
+
+        var alertParts = new string[]
+        {
+            $"{Input.Name} is requesting support.",
+            $"Device ID: {DeviceId}",
+            $"Email: {Input.Email}.",
+            $"Phone: {Input.Phone}.",
+            $"Chat OK: {Input.ChatResponseOk}."
+        };
+
+        var alertMessage = string.Join("  ", alertParts);
+        await DataService.AddAlert(DeviceId, orgId, alertMessage);
+
+        var orgUsers = await DataService.GetAllUsersInOrganization(orgId);
+        var emailMessage = string.Join("<br />", alertParts);
+        foreach (var user in orgUsers)
+        {
+            if (string.IsNullOrWhiteSpace(user.Email))
+            {
+                continue;
+            }
+            await EmailSender.SendEmailAsync(user.Email, "Support Request", emailMessage);
+        }
+
+        _alertClass = "alert-success";
+        _statusMessage = "We got it!  Someone will contact you soon.";
+    }
+
+    private class InputModel
+    {
+        [StringLength(150)]
+        [Required]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        public string? Phone { get; set; }
+        public bool ChatResponseOk { get; set; }
+    }
+}

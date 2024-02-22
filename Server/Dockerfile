@@ -1,28 +1,13 @@
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-jammy
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
-SHELL ["/bin/bash", "-c"]
+EXPOSE ${ASPNETCORE_HTTP_PORTS}
 
-EXPOSE 5000
-
-ENV ASPNETCORE_ENVIRONMENT="Production"
-ENV ASPNETCORE_URLS="http://*:5000"
-
-COPY /_immense.Remotely/Server/DockerMain.sh /src/DockerMain.sh
-COPY /_immense.Remotely/Server/linux-x64/Server /app
+RUN apt -y update && apt -y install curl
+COPY Server/bin/publish /app
 
 WORKDIR /app
 
-RUN \
-  apt-get -y update && \
-  apt-get -y install curl && \
-  mkdir -p /remotely-data && \
-  sed -i 's/DataSource=Remotely.db/DataSource=\/remotely-data\/Remotely.db/' /app/appsettings.json
-
-VOLUME "/remotely-data"
-
-RUN chmod +x "/src/DockerMain.sh"
-
-ENTRYPOINT ["/src/DockerMain.sh"]
+ENTRYPOINT ["dotnet", "Remotely_Server.dll"]
 
 HEALTHCHECK --interval=5m --timeout=3s \
-  CMD curl -f http://localhost:5000/api/healthcheck || exit 1
+  CMD curl -f http://localhost:${ASPNETCORE_HTTP_PORTS}/api/healthcheck || exit 1

@@ -1,0 +1,162 @@
+﻿@page "/api-keys"
+@using Immense.RemoteControl.Shared.Helpers;
+@using Remotely.Shared.Entities;
+@attribute [Authorize(Policy = PolicyNames.OrganizationAdminRequired)]
+@inherits AuthComponentBase
+
+@inject IDataService DataService
+@inject AuthenticationStateProvider AuthProvider
+@inject IJsInterop JsInterop
+@inject IModalService ModalService
+@inject IToastService ToastService
+
+
+<h3>API Keys</h3>
+
+@if (!string.IsNullOrWhiteSpace(_alertMessage))
+{
+    <AlertBanner Message="@_alertMessage" />
+}
+
+@if (_isLoading)
+{
+    <h5>Loading...</h5>
+}
+else if (User is not null)
+{
+    if (!string.IsNullOrWhiteSpace(_newKeySecret))
+    {
+        <h5 class="text-warning font-weight-bold mb-2 mt-4">Warning: The key's secret will only be shown once.  Save it now.</h5>
+        <h5 class="mb-4">
+            <label class="me-1">Key Secret:</label>
+            <input class="form-control custom-control-inline" readonly value="@_newKeySecret" style="width:400px" />
+        </h5>
+    }
+
+
+    <div class="mb-2 mt-4">
+        <label class="me-1">New Token Name:</label>
+        <input @bind="_createKeyName" @bind:event="oninput"
+               class="form-control form-control-sm custom-control-inline me-1 d-inline-block"
+               style="width:200px" />
+
+        <button class="btn btn-primary" type="button" @onclick="CreateNewKey">Create</button>
+
+        <button class="btn btn-sm btn-secondary ms-2" @onclick="ShowApiKeyHelp">
+            <span class="oi oi-question-mark"></span>
+        </button>
+    </div>
+
+    <table class="table table-dark table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>ID</th>
+                <th>Last Used</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var apiToken in _apiTokens)
+            {
+                <tr @key="apiToken.ID">
+                    <td>@apiToken.Name</td>
+                    <td>@apiToken.ID</td>
+                    <td>@apiToken.LastUsed</td>
+                    <td>
+                        <button type="button" class="btn btn-primary" @onclick="() => RenameKey(apiToken.ID)">Rename</button>
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-danger" @onclick="() => DeleteKey(apiToken.ID)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private readonly List<ApiToken> _apiTokens = new();
+    private string _alertMessage = string.Empty;
+    private string _createKeyName = string.Empty;
+    private string _newKeySecret = string.Empty;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        RefreshData();
+        _isLoading = false;
+    }
+
+    private async Task CreateNewKey()
+    {
+        EnsureUserSet();
+
+        var secret = RandomGenerator.GenerateString(48);
+        var secretHash = new PasswordHasher<string>().HashPassword(string.Empty, secret);
+
+        var result = await DataService.CreateApiToken(UserName, _createKeyName, secretHash);
+        if (!result.IsSuccess)
+        {
+            ToastService.ShowToast2(result.Reason, ToastType.Error);
+            return;
+        }
+        RefreshData();
+        _alertMessage = "Key created.";
+        _newKeySecret = secret;
+    }
+
+    private async Task DeleteKey(string keyId)
+    {
+        EnsureUserSet();
+
+        var result = await JsInterop.Confirm("Are you sure you want to delete this key?");
+        if (!result)
+        {
+            return;
+        }
+
+        var deleteResult = await DataService.DeleteApiToken(UserName, keyId);
+        if (!deleteResult.IsSuccess)
+        {
+            ToastService.ShowToast2(deleteResult.Reason, ToastType.Error);
+            return;
+        }
+        RefreshData();
+        _alertMessage = "Key deleted.";
+    }
+
+    private void RefreshData()
+    {
+        EnsureUserSet();
+        _apiTokens.Clear();
+        _apiTokens.AddRange(DataService.GetAllApiTokens(User.Id));
+        _createKeyName = string.Empty;
+        _alertMessage = string.Empty;
+        _newKeySecret = string.Empty;
+    }
+
+
+    private async Task RenameKey(string keyId)
+    {
+        EnsureUserSet();
+        var newName = await JsInterop.Prompt("New key name");
+        if (!string.IsNullOrWhiteSpace(newName))
+        {
+            await DataService.RenameApiToken(UserName, keyId, newName);
+            RefreshData();
+            _alertMessage = "Key renamed.";
+        }
+    }
+
+    private void ShowApiKeyHelp()
+    {
+        ModalService.ShowModal("Using API Keys", new[]
+        {
+            "API keys should be added to the request header when making API calls.  The key should be \"X-Api-Key\", and value should be \"{key-id}:{key-secret}\".  Note the colon in between.",
+            "Example: X-Api-Key=e5da1c09-e851-4bd4-a8c1-532144b3f894:7uY6h5zBYm4+90pZVek4lD6ewbQ83nKcDpghBfG00hhZu6Ew"
+        });
+    }
+}

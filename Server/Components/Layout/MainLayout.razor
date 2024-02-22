@@ -1,0 +1,45 @@
+﻿@using Remotely.Server.Components 
+@using Remotely.Server.Auth 
+@inherits LayoutComponentBase
+
+<AuthorizeView Policy="@PolicyNames.TwoFactorRequired">
+    <Authorized>
+            <div class="page">
+                <div class="sidebar">
+                    <NavMenu />
+                </div>
+
+                <div class="main">
+                    <div class="content px-4">
+                        @Body
+                    </div>
+                </div>
+            </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="container mt-5">
+            <h3>Two-Factor Authentication Required</h3>
+
+            <hr />
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>Two-factor authentication is required.  Click the button below to set up your authenticator app.</p>
+                    <p>
+                        <a href="Account/Manage/TwoFactorAuthentication" class="btn btn-primary">Enable 2FA</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </NotAuthorized>
+</AuthorizeView>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+
+<ToastHarness />
+<LoaderHarness />
+<ModalHarness />

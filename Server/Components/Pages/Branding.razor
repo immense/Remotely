@@ -1,0 +1,146 @@
+﻿@page "/branding"
+@inherits AuthComponentBase
+@attribute [Authorize(Policy = PolicyNames.OrganizationAdminRequired)]
+@inject IDataService DataService
+@inject IToastService ToastService
+@inject IJsInterop JsInterop
+@using Remotely.Server.Models
+@using System.ComponentModel.DataAnnotations
+
+<h3 class="mb-3">Branding</h3>
+
+<AlertBanner Message="@_alertMessage" />
+
+<div class="row">
+    <div class="col-sm-8 col-lg-6 col-xl-5">
+        <EditForm OnValidSubmit="HandleValidSubmit" Model="_inputModel">
+            <DataAnnotationsValidator />
+
+            <div class="form-group mb-5">
+                <label class="text-info font-weight-bold">Product Name</label>
+                <InputText class="form-control" @bind-Value="_inputModel.ProductName" />
+                <ValidationMessage For="() => _inputModel.ProductName" />
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="text-info font-weight-bold d-block">Current Icon</label>
+                <br />
+                @if (!string.IsNullOrWhiteSpace(_base64Icon))
+                {
+                    <img class="branding-icon" src="data:image/png;base64,@_base64Icon" />
+                }
+                else
+                {
+                    <img class="branding-icon" src="/images/Remotely_Icon.png" />
+                }
+            </div>
+
+            <div class="form-group mb-5">
+                <label class="text-info font-weight-bold">New Icon</label>
+                <InputFile type="file" accept="image/png" class="form-control" OnChange="IconUploadInputChanged" />
+            </div>
+            <div class="form-group text-end">
+                <button class="btn btn-secondary me-3" type="button" @onclick="ResetBranding">Reset</button>
+                <button class="btn btn-primary" type="submit">Submit</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+@code {
+    private string? _alertMessage;
+    private string? _base64Icon;
+    private InputModel _inputModel = new();
+
+    private class InputModel
+    {
+        [StringLength(25)]
+        [Required]
+        [Display(Name = "Product Name")]
+        public string ProductName { get; set; } = string.Empty;
+
+        public byte[] IconBytes { get; set; } = Array.Empty<byte>();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await LoadBrandingInfo();
+    }
+
+    private async Task HandleValidSubmit(EditContext context)
+    {
+        EnsureUserSet();
+
+        await DataService.UpdateBrandingInfo(
+            User.OrganizationID,
+            _inputModel.ProductName,
+            _inputModel.IconBytes);
+
+        if (_inputModel?.IconBytes?.Any() == true)
+        {
+            _base64Icon = Convert.ToBase64String(_inputModel.IconBytes);
+        }
+
+        _alertMessage = "Branding saved.";
+        ToastService.ShowToast("Branding saved.");
+    }
+
+    private async Task IconUploadInputChanged(InputFileChangeEventArgs args)
+    {
+        if (args.File is null)
+        {
+            return;
+        }
+
+        if (args.File.Size > 1_024_000)
+        {
+            ToastService.ShowToast("File size must be under 1 MB.", classString: "bg-warning");
+            return;
+        }
+
+        using var rs = args.File.OpenReadStream(1_024_000);
+        _inputModel.IconBytes = new byte[args.File.Size];
+        await rs.ReadAsync(_inputModel.IconBytes, 0, (int)args.File.Size);
+    }
+
+    private async Task LoadBrandingInfo()
+    {
+        var orgResult = await DataService.GetOrganizationByUserName($"{UserName}");
+
+        if (!orgResult.IsSuccess)
+        {
+            ToastService.ShowToast2(orgResult.Reason, ToastType.Warning);
+            return;
+        }
+
+        var brandingResult = await DataService.GetBrandingInfo(orgResult.Value.ID);
+
+        if (!brandingResult.IsSuccess)
+        {
+            ToastService.ShowToast2(brandingResult.Reason, ToastType.Warning);
+            return;
+        }
+        var brandingInfo = brandingResult.Value;
+
+        _inputModel.ProductName = brandingInfo.Product;
+
+        if (brandingResult.Value?.Icon?.Any() == true)
+        {
+            _base64Icon = Convert.ToBase64String(brandingInfo.Icon);
+        }
+    }
+
+    private async Task ResetBranding()
+    {
+        EnsureUserSet();
+        var result = await JsInterop.Confirm("Are you sure you want to reset branding to default?");
+        if (result)
+        {
+            await DataService.ResetBranding(User.OrganizationID);
+            _base64Icon = string.Empty;
+            await LoadBrandingInfo();
+            ToastService.ShowToast("Branding reset.");
+        }
+    }
+}

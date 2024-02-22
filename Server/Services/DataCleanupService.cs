@@ -19,17 +19,17 @@ public class DataCleanupService : BackgroundService, IDisposable
     private readonly ILogger<DataCleanupService> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ISystemTime _systemTime;
-    private readonly IApplicationConfig _appConfig;
+    private readonly IDataService _dataService;
 
     public DataCleanupService(
         IServiceScopeFactory scopeFactory,
         ISystemTime systemTime,
-        IApplicationConfig appConfig,
+        IDataService dataService,
         ILogger<DataCleanupService> logger)
     {
         _scopeFactory = scopeFactory;
         _systemTime = systemTime;
-        _appConfig = appConfig;
+        _dataService = dataService;
         _logger = logger;
     }
 
@@ -76,14 +76,18 @@ public class DataCleanupService : BackgroundService, IDisposable
         await dataService.CleanupOldRecords();
     }
 
-    private Task RemoveExpiredRecordings()
+    private async Task RemoveExpiredRecordings()
     {
+        using var scope = _scopeFactory.CreateScope();
+        var dataService = scope.ServiceProvider.GetRequiredService<IDataService>();
+        var settings = await dataService.GetSettings();
+
         if (!Directory.Exists(SessionRecordingSink.RecordingsDirectory))
         {
-            return Task.CompletedTask;
+            return;
         }
 
-        var expirationDate = _systemTime.Now.UtcDateTime - TimeSpan.FromDays(_appConfig.DataRetentionInDays);
+        var expirationDate = _systemTime.Now.UtcDateTime - TimeSpan.FromDays(settings.DataRetentionInDays);
 
         var files = Directory
             .GetFiles(
@@ -106,7 +110,5 @@ public class DataCleanupService : BackgroundService, IDisposable
                 _logger.LogError(ex, "Error while deleting expired recording: {file}", file);
             }
         }
-
-        return Task.CompletedTask;
     }
 }

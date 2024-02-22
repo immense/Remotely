@@ -1,0 +1,146 @@
+﻿@page "/user-options"
+@attribute [Authorize]
+@inherits AuthComponentBase
+
+@inject AuthenticationStateProvider AuthProvider
+@inject UserManager<RemotelyUser> UserManager
+@inject IDataService DataService
+@inject IToastService ToastService
+@inject IModalService ModalService
+
+<h3 class="mb-3">User Options</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <partial name="_StatusMessage" for="Message" />
+        <EditForm Model="_options" OnValidSubmit="HandleValidSubmit" @onkeydown="EditFormKeyDown">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            @if (!string.IsNullOrWhiteSpace(_alertMessage))
+            {
+                <AlertBanner Message="@_alertMessage" />
+            }
+
+            <div class="form-group">
+                <label class="control-label">Your Name</label>
+                <br />
+                <InputText @bind-Value="_options.DisplayName" class="form-control" placeholder="Shown to clients instead of your email" />
+                <br />
+                <ValidationMessage For="() => _options.DisplayName" />
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Theme</label>
+                <br />
+                <InputSelect @bind-Value="_options.Theme" class="form-control">
+                    @foreach (var setting in Enum.GetValues(typeof(Theme)))
+                    {
+                        <option @key="setting" value="@setting">@setting</option>
+                    }
+                </InputSelect>
+                <div class="text-info small mt-1">* Requires browser refresh.</div>
+                <ValidationMessage For="() => _options.Theme" />
+            </div>
+
+            <div class="form-group mt-5">
+                <label class="control-label">
+                    <span class="text-info">Command Shortcuts</span>
+                    <button type="button" class="btn btn-secondary btn-sm ms-2" @onclick="ShowShortcutHelp">
+                        <span class="oi oi-question-mark pointer"></span>
+                    </button>
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">PowerShell Core</label>
+                <br />
+                <InputText @bind-Value="_options.CommandModeShortcutPSCore" class="form-control" />
+                <br />
+                <ValidationMessage For="() => _options.CommandModeShortcutPSCore" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Windows PowerShell</label>
+                <br />
+                <InputText @bind-Value="_options.CommandModeShortcutWinPS" class="form-control" />
+                <br />
+                <ValidationMessage For="() => _options.CommandModeShortcutWinPS" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">CMD</label>
+                <br />
+                <InputText @bind-Value="_options.CommandModeShortcutCMD" class="form-control" />
+                <br />
+                <ValidationMessage For="() => _options.CommandModeShortcutCMD" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Bash</label>
+                <br />
+                <InputText @bind-Value="_options.CommandModeShortcutBash" class="form-control" />
+                <br />
+                <ValidationMessage For="() => _options.CommandModeShortcutBash" />
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+
+@code {
+    private RemotelyUserOptions _options = new();
+    private string? _alertMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _options = User?.UserOptions ?? new();
+    }
+
+    private Task HandleValidSubmit()
+    {
+        EnsureUserSet();
+
+        if (!_options.CommandModeShortcutBash.StartsWith("/"))
+        {
+            _options.CommandModeShortcutBash = "/" + _options.CommandModeShortcutBash;
+        }
+        if (!_options.CommandModeShortcutCMD.StartsWith("/"))
+        {
+            _options.CommandModeShortcutCMD = "/" + _options.CommandModeShortcutCMD;
+        }
+        if (!_options.CommandModeShortcutPSCore.StartsWith("/"))
+        {
+            _options.CommandModeShortcutPSCore = "/" + _options.CommandModeShortcutPSCore;
+        }
+        if (!_options.CommandModeShortcutWinPS.StartsWith("/"))
+        {
+            _options.CommandModeShortcutWinPS = "/" + _options.CommandModeShortcutWinPS;
+        }
+
+        DataService.UpdateUserOptions(UserName, _options);
+
+        _alertMessage = "Options saved";
+
+        ToastService.ShowToast("Options saved.");
+
+        return Task.CompletedTask;
+    }
+
+    private void EditFormKeyDown()
+    {
+        _alertMessage = "";
+    }
+
+    private void ShowShortcutHelp()
+    {
+        var modalText = @"The shell shortcuts are used to quickly switch between terminal shells on the main page.
+        If you type one of these shortcuts into the terminal, it will select the corresponding command
+        mode (e.g. PowerShell Core, Bash, etc.).";
+
+        ModalService.ShowModal("Shell Shortcuts", new[] { modalText });
+    }
+}

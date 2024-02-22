@@ -3,8 +3,10 @@ using MailKit.Security;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 using MimeKit;
 using MimeKit.Text;
+using NuGet.Configuration;
 using System;
 using System.Net;
 using System.Threading.Tasks;
@@ -34,14 +36,14 @@ public class EmailSender : IEmailSender
 
 public class EmailSenderEx : IEmailSenderEx
 {
-    private readonly IApplicationConfig _appConfig;
+    private readonly IDataService _dataService;
     private readonly ILogger<EmailSenderEx> _logger;
 
     public EmailSenderEx(
-        IApplicationConfig appConfig,
+        IDataService dataService,
         ILogger<EmailSenderEx> logger)
     {
-        _appConfig = appConfig;
+        _dataService = dataService;
         _logger = logger;
     }
     public async Task<bool> SendEmailAsync(
@@ -53,8 +55,10 @@ public class EmailSenderEx : IEmailSenderEx
     {
         try
         {
+            var settings = await _dataService.GetSettings();
+
             var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(_appConfig.SmtpDisplayName, _appConfig.SmtpEmail));
+            message.From.Add(new MailboxAddress(settings.SmtpDisplayName, settings.SmtpEmail));
             message.To.Add(MailboxAddress.Parse(toEmail));
             message.ReplyTo.Add(MailboxAddress.Parse(replyTo));
             message.Subject = subject;
@@ -65,19 +69,19 @@ public class EmailSenderEx : IEmailSenderEx
 
             using var client = new SmtpClient();
             
-            if (!string.IsNullOrWhiteSpace(_appConfig.SmtpLocalDomain))
+            if (!string.IsNullOrWhiteSpace(settings.SmtpLocalDomain))
             {
-                client.LocalDomain = _appConfig.SmtpLocalDomain;
+                client.LocalDomain = settings.SmtpLocalDomain;
             }
 
-            client.CheckCertificateRevocation = _appConfig.SmtpCheckCertificateRevocation;
+            client.CheckCertificateRevocation = settings.SmtpCheckCertificateRevocation;
 
-            await client.ConnectAsync(_appConfig.SmtpHost, _appConfig.SmtpPort);
+            await client.ConnectAsync(settings.SmtpHost, settings.SmtpPort);
 
-            if (!string.IsNullOrWhiteSpace(_appConfig.SmtpUserName) &&
-                !string.IsNullOrWhiteSpace(_appConfig.SmtpPassword))
+            if (!string.IsNullOrWhiteSpace(settings.SmtpUserName) &&
+                !string.IsNullOrWhiteSpace(settings.SmtpPassword))
             {
-                await client.AuthenticateAsync(_appConfig.SmtpUserName, _appConfig.SmtpPassword);
+                await client.AuthenticateAsync(settings.SmtpUserName, settings.SmtpPassword);
             }
 
             await client.SendAsync(message);
@@ -94,8 +98,29 @@ public class EmailSenderEx : IEmailSenderEx
         }
     }
 
+    public async Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string? organizationID = null)
+    {
+        var settings = await _dataService.GetSettings();
+        return await SendEmailAsync(email, settings.SmtpEmail, subject, htmlMessage, organizationID);
+    }
+}
+public class EmailSenderFake(ILogger<EmailSenderFake> _logger) : IEmailSenderEx
+{
+    public Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string? organizationID = null)
+    {
+        _logger.LogInformation(
+            "Fake EmailSender registered in dev mode. " +
+            "Email would have been sent to {email}." +
+            "\n\nSubject: {EmailSubject}. " +
+            "\n\nMessage: {EmailMessage}", 
+            email, 
+            subject,
+            htmlMessage);
+        return Task.FromResult(true);
+    }
+
     public Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string? organizationID = null)
     {
-        return SendEmailAsync(email, _appConfig.SmtpEmail, subject, htmlMessage, organizationID);
+        return SendEmailAsync(email, "", subject, htmlMessage, organizationID);
     }
 }

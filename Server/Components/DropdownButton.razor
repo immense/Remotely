@@ -1,6 +1,6 @@
 ﻿@inject IJsInterop JsInterop
 
-<div class="dropdown @DropDownClass" @onmouseout="MouseLeft" @onmouseover="MouseEnter">
+<div class="@WrapperClass" @onmouseout="MouseLeft" @onmouseover="MouseEnter">
     <button class="btn dropdown-toggle @ButtonClass @_showClass"
             type="button"
             data-bs-toggle="dropdown"
@@ -25,7 +25,7 @@
     public RenderFragment? ButtonContent { get; set; }
 
     [Parameter]
-    public string? DropDownClass { get; set; }
+    public string? WrapperClass { get; set; }
 
     [Parameter]
     public string? DropDownMenuClass { get; set; }

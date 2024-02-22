@@ -21,18 +21,18 @@ public class AgentUpdateController : ControllerBase
 {
     private readonly IHubContext<AgentHub, IAgentHubClient> _agentHubContext;
     private readonly ILogger<AgentUpdateController> _logger;
-    private readonly IApplicationConfig _appConfig;
+    private readonly IDataService _dataService;
     private readonly IWebHostEnvironment _hostEnv;
     private readonly IAgentHubSessionCache _serviceSessionCache;
 
     public AgentUpdateController(IWebHostEnvironment hostingEnv,
-        IApplicationConfig appConfig,
+        IDataService dataService,
         IAgentHubSessionCache serviceSessionCache,
         IHubContext<AgentHub, IAgentHubClient> agentHubContext,
         ILogger<AgentUpdateController> logger)
     {
         _hostEnv = hostingEnv;
-        _appConfig = appConfig;
+        _dataService = dataService;
         _serviceSessionCache = serviceSessionCache;
         _agentHubContext = agentHubContext;
         _logger = logger;
@@ -105,7 +105,8 @@ public class AgentUpdateController : ControllerBase
             return false;
         }
 
-        if (_appConfig.BannedDevices.Contains(deviceIp))
+        var settings = await _dataService.GetSettings();
+        if (settings.BannedDevices.Contains(deviceIp))
         {
             _logger.LogInformation("Device IP ({deviceIp}) is banned.  Sending uninstall command.", deviceIp);
 

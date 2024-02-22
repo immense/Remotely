@@ -20,7 +20,6 @@ namespace Remotely.Server.API;
 [Obsolete("This controller is here only for legacy purposes.  For new integrations, use API tokens.")]
 public class LoginController : ControllerBase
 {
-    private readonly IApplicationConfig _appConfig;
     private readonly IDataService _dataService;
     private readonly IHubContext<DesktopHub> _desktopHub;
     private readonly IRemoteControlSessionCache _remoteControlSessionCache;
@@ -31,7 +30,6 @@ public class LoginController : ControllerBase
     public LoginController(
         SignInManager<RemotelyUser> signInManager,
         IDataService dataService,
-        IApplicationConfig appConfig,
         IHubContext<DesktopHub> casterHubContext,
         IRemoteControlSessionCache remoteControlSessionCache,
         IHubContext<ViewerHub> viewerHubContext,
@@ -39,7 +37,6 @@ public class LoginController : ControllerBase
     {
         _signInManager = signInManager;
         _dataService = dataService;
-        _appConfig = appConfig;
         _desktopHub = casterHubContext;
         _remoteControlSessionCache = remoteControlSessionCache;
         _viewerHub = viewerHubContext;
@@ -76,7 +73,8 @@ public class LoginController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Post([FromBody] ApiLogin login)
     {
-        if (!_appConfig.AllowApiLogin)
+        var settings = await _dataService.GetSettings();
+        if (!settings.AllowApiLogin)
         {
             return NotFound();
         }

@@ -316,7 +316,7 @@ public class OrganizationManagementController : ControllerBase
                 return BadRequest(newInvite.Reason);
             }
 
-            var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite?id={newInvite.Value.ID}";
+            var inviteURL = $"{Request.Scheme}://{Request.Host}/Invite/{newInvite.Value.ID}";
             var emailResult = await _emailSender.SendEmailAsync(invite.InvitedUser, "Invitation to Organization in Remotely",
                         $@"<img src='{Request.Scheme}://{Request.Host}/images/Remotely_Logo.png'/>
                             <br><br>

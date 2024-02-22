@@ -1,7 +1,7 @@
 ﻿@attribute [Authorize]
 @inherits AuthComponentBase
 
-<div @ref="_card" class="card border-secondary my-3 mr-3 device-card @_theme @GetCardStateClass()"
+<div @ref="_card" class="card border-secondary my-3 me-3 device-card @_theme @GetCardStateClass()"
      @onclick="ExpandCard"
      @onclick:stopPropagation
      @oncontextmenu="ContextMenuOpening"
@@ -28,7 +28,7 @@
                 <i class="oi oi-power-standby text-danger" title="Offline"></i>
             }
         </div>
-        <div class="overflow-hidden ml-2">
+        <div class="overflow-hidden ms-2">
             <div class="d-inline-block">
                 <div>@Device.DeviceName</div>
 
@@ -36,10 +36,10 @@
             </div>
             
         </div>
-        <div class="text-right">
+        <div class="text-end">
             @if (IsExpanded)
             {
-                <button class="btn btn-sm mr-2" title="Open in New Tab"
+                <button class="btn btn-sm me-2" title="Open in New Tab"
                         @onclick:stopPropagation
                         @onclick="OpenDeviceDetails">
                     <i class="oi oi-external-link" style="font-size: 1.3em"></i>
@@ -72,34 +72,34 @@
 
             <div style="grid-row: span 2" class="expanded-visible"></div>
             <div style="grid-row: span 2" class="expanded-visible">
-                <DropdownButton DropDownMenuClass="dropdown-menu-right mb-2" ButtonClass="btn-primary">
+                <DropdownButton DropDownMenuClass="dropdown-menu-end mb-2" ButtonClass="btn-primary">
                     <ButtonContent>
                         <i class="oi oi-bolt"></i>
-                        <span class="ml-2">Actions</span>
+                        <span class="ms-2">Actions</span>
                     </ButtonContent>
                     <ChildListItems>
                         <li>
                             <button class="dropdown-item" @onclick="StartChat">
                                 <i class="oi oi-chat" title="Chat"></i>
-                                <span class="ml-2">Chat</span>
+                                <span class="ms-2">Chat</span>
                             </button>
                         </li>
                         <li>
                             <button class="dropdown-item" @onclick="() => StartRemoteControl(false)">
                                 <i class="oi oi-laptop" title="Remote Control"></i>
-                                <span class="ml-2">Remote Control</span>
+                                <span class="ms-2">Remote Control</span>
                             </button>
                         </li>
                         <li>
                             <button class="dropdown-item" @onclick="() => StartRemoteControl(true)">
                                 <i class="oi oi-eye" title="View Only"></i>
-                                <span class="ml-2">View Only</span>
+                                <span class="ms-2">View Only</span>
                             </button>
                         </li>
                         <li>
                             <button class="dropdown-item" @onclick="() => WakeDevice()">
                                 <i class="oi oi-power-standby" title="Wake Device"></i>
-                                <span class="ml-2">Wake</span>
+                                <span class="ms-2">Wake</span>
                             </button>
                         </li>
                         <li>
@@ -107,14 +107,14 @@
                                              OnChanged="OnFileInputChanged">
                                 <ButtonContent>
                                     <i class="oi oi-data-transfer-upload" title="Upload File"></i>
-                                    <span class="ml-2">Upload File</span>
+                                    <span class="ms-2">Upload File</span>
                                 </ButtonContent>
                             </FileInputButton>
                         </li>
                         <li>
                             <button class="dropdown-item bg-danger" @onclick="UninstallAgent">
                                 <i class="oi oi-delete" title="Uninstall"></i>
-                                <span class="ml-2">Uninstall</span>
+                                <span class="ms-2">Uninstall</span>
                             </button>
                         </li>
                     </ChildListItems>
@@ -262,7 +262,7 @@
                             <ValidationSummary />
                         </div>
 
-                        <div class="text-right mt-2">
+                        <div class="text-end mt-2">
                             <button type="submit" class="btn btn-primary">Save</button>
                         </div>
                     </EditForm>

@@ -1,0 +1,37 @@
+﻿@page "/"
+@inject IDataService DataService
+ 
+<AuthorizeView>
+    <NotAuthorized>
+        <div class="jumbotron">
+            <h3 class="display-4">Remotely</h3>
+            <p class="lead">
+                An open-source remote support solution.
+            </p>
+            <hr class="my-4">
+            <p class="lead">
+                <a class="btn btn-primary btn-lg me-2" href="Account/Login" role="button">Log In</a>
+
+                @if (_isRegistrationEnabled)
+                {
+                    <a class="btn btn-primary btn-lg" href="Account/Register" role="button">Register</a>
+                }
+            </p>
+        </div>
+    </NotAuthorized>
+    <Authorized>
+        <AuthorizedIndex />
+    </Authorized>
+</AuthorizeView>
+
+@code 
+{
+    private bool _isRegistrationEnabled;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var settings = await DataService.GetSettings();
+        _isRegistrationEnabled = settings.MaxOrganizationCount < 0 || DataService.GetOrganizationCount() < settings.MaxOrganizationCount;
+        await base.OnInitializedAsync();
+    }
+}

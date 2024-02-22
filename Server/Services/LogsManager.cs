@@ -46,12 +46,10 @@ public class LogsManager : ILogsManager
     {
         get
         {
-            var logsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
-            if (Directory.Exists("/remotely-data"))
-            {
-                logsDir = "/remotely-data/logs";
-            }
-            return logsDir;
+            return Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory, 
+                "AppData", 
+                "logs");
         }
     }
 

@@ -90,7 +90,7 @@ public partial class DeviceCard : AuthComponentBase
             HandleDeviceStateChanged);
     }
 
-    private async Task HandleDeviceCardStateChanged(DeviceCardStateChangedMessage message)
+    private async Task HandleDeviceCardStateChanged(object subscriber, DeviceCardStateChangedMessage message)
     {
         if (message.DeviceId == Device.ID)
         {
@@ -113,7 +113,7 @@ public partial class DeviceCard : AuthComponentBase
         }
     }
 
-    private async Task HandleDeviceStateChanged(DeviceStateChangedMessage message)
+    private async Task HandleDeviceStateChanged(object subscriber, DeviceStateChangedMessage message)
     {
         if (message.Device.ID != Device.ID)
         {

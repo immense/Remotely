@@ -23,9 +23,8 @@ namespace Remotely.Server.Hubs;
 
 public class AgentHub : Hub<IAgentHubClient>
 {
-    private readonly IApplicationConfig _appConfig;
-    private readonly ICircuitManager _circuitManager;
     private readonly IDataService _dataService;
+    private readonly ICircuitManager _circuitManager;
     private readonly IExpiringTokenService _expiringTokenService;
     private readonly ILogger<AgentHub> _logger;
     private readonly IMessenger _messenger;
@@ -33,8 +32,8 @@ public class AgentHub : Hub<IAgentHubClient>
     private readonly IAgentHubSessionCache _serviceSessionCache;
     private readonly IHubContext<ViewerHub> _viewerHubContext;
 
-    public AgentHub(IDataService dataService,
-        IApplicationConfig appConfig,
+    public AgentHub(
+        IDataService dataService,
         IAgentHubSessionCache serviceSessionCache,
         IHubContext<ViewerHub> viewerHubContext,
         ICircuitManager circuitManager,
@@ -46,7 +45,6 @@ public class AgentHub : Hub<IAgentHubClient>
         _dataService = dataService;
         _serviceSessionCache = serviceSessionCache;
         _viewerHubContext = viewerHubContext;
-        _appConfig = appConfig;
         _circuitManager = circuitManager;
         _expiringTokenService = expiringTokenService;
         _remoteControlSessions = remoteControlSessionCache;
@@ -288,9 +286,10 @@ public class AgentHub : Hub<IAgentHubClient>
         return _messenger.Send(message, requesterId);
     }
 
-    public string GetServerUrl()
+    public async Task<string> GetServerUrl()
     {
-        return _appConfig.ServerUrl;
+        var settings = await _dataService.GetSettings();
+        return settings.ServerUrl;
     }
 
     public string GetServerVerificationToken()
@@ -382,6 +381,7 @@ public class AgentHub : Hub<IAgentHubClient>
 
     private async Task<bool> CheckForDeviceBan(params string[] deviceIdNameOrIPs)
     {
+        var settings = await _dataService.GetSettings();
         foreach (var device in deviceIdNameOrIPs)
         {
             if (string.IsNullOrWhiteSpace(device))
@@ -389,7 +389,7 @@ public class AgentHub : Hub<IAgentHubClient>
                 continue;
             }
 
-            if (_appConfig.BannedDevices.Any(x => !string.IsNullOrWhiteSpace(x) &&
+            if (settings.BannedDevices.Any(x => !string.IsNullOrWhiteSpace(x) &&
                 x.Equals(device, StringComparison.OrdinalIgnoreCase)))
             {
                 _logger.LogWarning("Device ID/name/IP ({device}) is banned.  Sending uninstall command.", device);

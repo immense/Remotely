@@ -1,11 +1,5 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
 using Immense.RemoteControl.Server.Models;
-using Microsoft.Build.Framework;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Services.RcImplementations;
 
@@ -22,12 +16,10 @@ public class SessionRecordingSink : ISessionRecordingSink
     {
         get
         {
-            var logsDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "recordings");
-            if (Directory.Exists("/remotely-data"))
-            {
-                logsDir = "/remotely-data/recordings";
-            }
-            return logsDir;
+            return Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory, 
+                "AppData", 
+                "recordings");
         }
     }
 

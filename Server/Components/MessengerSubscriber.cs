@@ -8,38 +8,40 @@ using System.Threading.Tasks;
 
 namespace Remotely.Server.Components;
 
-public class MessengerSubscriber : ComponentBase, IAsyncDisposable
+public class MessengerSubscriber : ComponentBase, IDisposable
 {
-    protected readonly ConcurrentQueue<IAsyncDisposable> _registrations = new();
+    protected readonly ConcurrentQueue<IDisposable> _registrations = new();
 
     [Inject]
     protected IMessenger Messenger { get; init; } = null!;
 
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
         while (_registrations.TryDequeue(out var registration))
         {
             try
             {
-                await registration.DisposeAsync();
+                registration.Dispose();
             }
             catch { }
         }
         GC.SuppressFinalize(this);
     }
 
-    protected async Task Register<TMessage, TChannel>(TChannel channel, Func<TMessage, Task> handler)
+    protected Task Register<TMessage, TChannel>(TChannel channel, RegistrationCallback<TMessage> handler)
         where TMessage : class 
         where TChannel : IEquatable<TChannel>
     {
-        var registration = await Messenger.Register(this, channel, handler);
+        var registration = Messenger.Register(this, channel, handler);
         _registrations.Enqueue(registration);
+        return Task.CompletedTask;
     }
 
-    protected async Task Register<TMessage>(Func<TMessage, Task> handler)
+    protected Task Register<TMessage>(RegistrationCallback<TMessage> handler)
            where TMessage : class
     {
-        var registration = await Messenger.Register(this, handler);
+        var registration = Messenger.Register(this, handler);
         _registrations.Enqueue(registration);
+        return Task.CompletedTask;
     }
 }

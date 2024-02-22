@@ -1,0 +1,276 @@
+﻿@page "/device-details/{deviceId?}/{activeTab?}"
+
+@attribute [Authorize]
+@inherits AuthComponentBase
+
+
+@if (string.IsNullOrWhiteSpace(DeviceId))
+{
+    <div class="row mt-5">
+        <div class="col-md-8 col-lg-6">
+
+            <h3>Device ID:</h3>
+            <div class="input-group mb-2">
+                <input type="text" class="form-control" placeholder="Enter a device ID to see its details"
+                       @bind="_inputDeviceId"
+                       @bind:event="oninput"
+                       @onkeydown="EvaluateDeviceIdInputKeyDown">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" @onclick="NavigateToDeviceId">Go</button>
+                </div>
+            </div>
+            <div class="text-muted">
+                You can also go directly to a device's details by:
+                <ul>
+                    <li>Right-clicking a device card on the main page while it's collapsed</li>
+                    <li>Clicking the "Open in New Tab" button in a device card's header while it's expanded</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+}
+else if (_isLoading)
+{
+    <h5>Loading...</h5>
+}
+else if (_device is null)
+{
+    <h3>Device not found.</h3>
+}
+else if (!_userHasAccess)
+{
+    <h3>Unauthorized.</h3>
+}
+else
+{
+    <TabControl InitialActiveTab="@(ActiveTab ?? "device")">
+        <TabHeaders>
+            <TabHeader Name="device" NavigationUri="@($"/device-details/{DeviceId}/device")">
+                Details
+            </TabHeader>
+            <TabHeader Name="remote-logs" OnActivated="GetRemoteLogs" NavigationUri="@($"/device-details/{DeviceId}/remote-logs")">
+                Remote Logs
+            </TabHeader>
+            <TabHeader Name="script-history" OnActivated="GetScriptHistory" NavigationUri="@($"/device-details/{DeviceId}/script-history")">
+                Script History
+            </TabHeader>
+        </TabHeaders>
+
+        <TabContents>
+            <TabContent Name="device">
+                <div class="col-sm-8 mb-2">
+                    <h3 class="mb-3 mt-3">
+                        Device Details
+                    </h3>
+
+                    <EditForm Model="_device" OnValidSubmit="HandleValidSubmit" @onkeydown="EditFormKeyDown">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        @if (!string.IsNullOrWhiteSpace(_alertMessage))
+                        {
+                            <AlertBanner Message="@_alertMessage" />
+                        }
+
+
+                        <div class="form-group row">
+                            <label for="device-name" class="col-sm-2 col-form-label">Device:</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="device-name" readonly value="@_device.DeviceName" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="device-id" class="col-sm-2 col-form-label">Device ID:</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="device-id" readonly value="@_device.ID" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="agent-version" class="col-sm-2 col-form-label">Agent Version:</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="agent-version" readonly value="@_device.AgentVersion" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="agent-platform" class="col-sm-2 col-form-label">Platform:</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="agent-platform" readonly value="@_device.Platform" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="agent-os-description" class="col-sm-2 col-form-label">Platform:</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="agent-os-description" readonly value="@_device.OSDescription" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="agent-storage-percent" class="col-sm-2 col-form-label">
+                                Disk:
+                                <button type="button" class="btn btn-link p-0 m-0" @onclick="ShowAllDisks" style="font-size: 50%">
+                                    (View All)
+                                </button>
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="agent-storage-percent" readonly value="@(MathHelper.GetFormattedPercent(_device.UsedStoragePercent))" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="agent-storage-total" class="col-sm-2 col-form-label">
+                                Total Storage:
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="agent-storage-total" readonly value="@(_device.TotalStorage)" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="agent-memory-percent" class="col-sm-2 col-form-label">
+                                Memory:
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="agent-memory-percent" readonly value="@(MathHelper.GetFormattedPercent(_device.UsedMemoryPercent))" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="agent-memory-total" class="col-sm-2 col-form-label">
+                                Total Memory:
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="agent-memory-total" readonly value="@(_device.TotalMemory)" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="agent-memory-total" class="col-sm-2 col-form-label">
+                                Public IP:
+                            </label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" name="agent-memory-total" readonly value="@(_device.PublicIP)" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="agent-memory-total" class="col-sm-2 col-form-label">
+                                MAC Addresses:
+                            </label>
+                            <div class="col-sm-10">
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    name="agent-memory-total" 
+                                    readonly
+                                       value="@(string.Join(", ", _device.MacAddresses ?? Array.Empty<string>()))" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="device-alias" class="col-sm-2 col-form-label">Device Alias:</label>
+                            <div class="col-sm-10">
+                                <InputText class="form-control" @bind-Value="@_device.Alias" />
+                                <ValidationMessage For="() => _device.Alias" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="device-groups" class="col-sm-2 col-form-label">Device Group:</label>
+                            <div class="col-sm-10">
+                                <InputSelect @bind-Value="_device.DeviceGroupID" class="form-control">
+                                    <option value="">None</option>
+
+                                    @foreach (var group in _deviceGroups)
+                                    {
+                                        <option @key="group.ID" value="@group.ID">@group.Name</option>
+                                    }
+                                </InputSelect>
+                                <ValidationMessage For="() => _device.DeviceGroupID" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="tags" class="col-sm-2 col-form-label">Tags:</label>
+                            <div class="col-sm-10">
+                                <InputText @bind-Value="_device.Tags" class="form-control" />
+                                <ValidationMessage For="() => _device.Tags" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="notes" class="col-sm-2 col-form-label">Notes:</label>
+                            <div class="col-sm-10">
+                                <InputTextArea @bind-Value="_device.Notes" style="width:100%; height: 10em;"></InputTextArea>
+                                <ValidationMessage For="() => _device.Notes" />
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </EditForm>
+                </div>
+            </TabContent>
+
+            <TabContent Name="remote-logs">
+                <div class="py-3">
+                    @if (!_device.IsOnline)
+                    {
+                        <h5 class="text-center mt-5">Device must be online to retrieve logs.</h5>
+                    }
+                    else
+                    {
+                        <div class="mb-2">
+                            <button class="btn btn-primary me-2" @onclick="GetRemoteLogs">Refresh</button>
+                            <button class="btn btn-danger" @onclick="DeleteLogs">Delete Logs</button>
+                        </div>
+
+                        @if (_logLines.Any())
+                        {
+                            <div style="white-space: pre;">
+                                @foreach (var line in _logLines)
+                                {
+                                    @line
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <LoadingSignal />
+                        }
+                    }
+
+                </div>
+
+            </TabContent>
+
+            <TabContent Name="script-history">
+
+                <h3 class="mb-3 mt-3">
+                    Script History
+                </h3>
+                <table class="table table-dark table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Shell</th>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Duration</th>
+                            <th>Input</th>
+                            <th>Output</th>
+                            <th>Error</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var scriptResult in _scriptResults)
+                        {
+                            <tr>
+                                <td>@scriptResult.Shell</td>
+                                <td>@scriptResult.TimeStamp</td>
+                                <td>@scriptResult.SenderUserName</td>
+                                <td>@scriptResult.RunTime</td>
+                                <td>@GetTrimmedText(scriptResult.ScriptInput, 25)</td>
+                                <td>@GetTrimmedText(scriptResult.StandardOutput, 25)</td>
+                                <td>@GetTrimmedText(scriptResult.ErrorOutput, 25)</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" @onclick="() => ShowFullScriptOutput(scriptResult)">Show Full</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </TabContent>
+        </TabContents>
+    </TabControl>
+}
