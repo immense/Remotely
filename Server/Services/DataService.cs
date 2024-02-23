@@ -908,19 +908,39 @@ public class DataService : IDataService
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        var script = dbContext.SavedScripts.Find(scriptId);
+        var schedules = await dbContext.ScriptSchedules
+            .Where(x => x.SavedScriptId == scriptId)
+            .ToListAsync();
+
+        if (schedules.Count > 0)
+        {
+            dbContext.ScriptSchedules.RemoveRange(schedules);
+        }
+
+        var script = await dbContext.SavedScripts
+            .Include(x => x.ScriptResults)
+            .Include(x => x.ScriptRuns)
+            .FirstOrDefaultAsync(x => x.Id == scriptId);
+
         if (script is not null)
         {
             dbContext.SavedScripts.Remove(script);
-            await dbContext.SaveChangesAsync();
         }
+
+        await dbContext.SaveChangesAsync();
     }
 
     public async Task DeleteScriptSchedule(int scriptScheduleId)
     {
         using var dbContext = _appDbFactory.GetContext();
 
-        var schedule = dbContext.ScriptSchedules.Find(scriptScheduleId);
+        var schedule = await dbContext.ScriptSchedules
+            .Include(x => x.ScriptRuns)
+            .ThenInclude(x => x.Results)
+            .Include(x => x.Devices)
+            .Include(x => x.DeviceGroups)
+            .FirstOrDefaultAsync(x => x.Id == scriptScheduleId);
+
         if (schedule is not null)
         {
             dbContext.ScriptSchedules.Remove(schedule);
