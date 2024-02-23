@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Remotely.Server.Components.Pages;
+using Remotely.Server.Enums;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Utilities;
@@ -47,6 +48,9 @@ public partial class ScriptSchedules : AuthComponentBase
 
     [Inject]
     private IToastService ToastService { get; set; } = null!;
+
+    [Inject]
+    public required ILogger<ScriptSchedules> Logger { get; set; }
 
     private bool CanModifySchedule
     {
@@ -102,21 +106,29 @@ public partial class ScriptSchedules : AuthComponentBase
 
     private async Task DeleteSelectedSchedule()
     {
-        if (User?.Id != _selectedSchedule.CreatorId)
+        try
         {
-            ToastService.ShowToast("You can't delete other people's script schedules.", classString: "bg-warning");
-            return;
-        }
+            if (User?.Id != _selectedSchedule.CreatorId)
+            {
+                ToastService.ShowToast("You can't delete other people's script schedules.", classString: "bg-warning");
+                return;
+            }
 
-        var result = await JsInterop.Confirm($"Are you sure you want to delete the schedule {_selectedSchedule.Name}?");
-        if (result)
+            var result = await JsInterop.Confirm($"Are you sure you want to delete the schedule {_selectedSchedule.Name}?");
+            if (result)
+            {
+                await DataService.DeleteScriptSchedule(_selectedSchedule.Id);
+                ToastService.ShowToast("Schedule deleted.");
+                _alertMessage = "Schedule deleted.";
+                CreateNew();
+                await ParentPage.RefreshScripts();
+                await RefreshSchedules();
+            }
+        }
+        catch (Exception ex)
         {
-            await DataService.DeleteScriptSchedule(_selectedSchedule.Id);
-            ToastService.ShowToast("Schedule deleted.");
-            _alertMessage = "Schedule deleted.";
-            CreateNew();
-            await ParentPage.RefreshScripts();
-            await RefreshSchedules();
+            Logger.LogError(ex, "Error while deleting script schedule.");
+            ToastService.ShowToast2("Failed to delete schedule", ToastType.Error);
         }
     }
 
@@ -213,7 +225,7 @@ public partial class ScriptSchedules : AuthComponentBase
     {
         if (schedule?.Id == _selectedSchedule?.Id)
         {
-            return "bg-primary text-white";
+            return "table-primary";
         }
         return string.Empty;
     }

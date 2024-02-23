@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.CodeAnalysis.Scripting;
 using Remotely.Server.Components.Pages;
+using Remotely.Server.Enums;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using System;
@@ -35,6 +36,9 @@ public partial class SavedScripts : AuthComponentBase
 
     [Inject]
     public IModalService ModalService { get; set; } = null!;
+
+    [Inject]
+    public required ILogger<SavedScripts> Logger { get; set; }
 
     private bool CanModifyScript
     {
@@ -106,24 +110,33 @@ public partial class SavedScripts : AuthComponentBase
 
     private async Task DeleteSelectedScript()
     {
-        if (!CanDeleteScript)
+        try
         {
-            ToastService.ShowToast("You can't delete other people's scripts.", classString: "bg-warning");
-            return;
+            if (!CanDeleteScript)
+            {
+                ToastService.ShowToast("You can't delete other people's scripts.", classString: "bg-warning");
+                return;
+            }
+
+            var result = await JsInterop.Confirm($"Are you sure you want to delete the script {_selectedScript.Name}?");
+            if (result)
+            {
+                await DataService.DeleteSavedScript(_selectedScript.Id);
+                ToastService.ShowToast("Script deleted.");
+                _alertMessage = "Script deleted.";
+                await ParentPage.RefreshScripts();
+                _selectedScript = new()
+                {
+                    Name = string.Empty
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while deleting script.");
+            ToastService.ShowToast2("Failed to delete script", ToastType.Error);
         }
 
-        var result = await JsInterop.Confirm($"Are you sure you want to delete the script {_selectedScript.Name}?");
-        if (result)
-        {
-            await DataService.DeleteSavedScript(_selectedScript.Id);
-            ToastService.ShowToast("Script deleted.");
-            _alertMessage = "Script deleted.";
-            await ParentPage.RefreshScripts();
-            _selectedScript = new()
-            {
-                Name = string.Empty
-            };
-        }
     }
 
     private async Task ScriptSelected(ScriptTreeNode viewModel)

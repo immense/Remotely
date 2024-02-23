@@ -19,17 +19,14 @@ public class DataCleanupService : BackgroundService, IDisposable
     private readonly ILogger<DataCleanupService> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ISystemTime _systemTime;
-    private readonly IDataService _dataService;
 
     public DataCleanupService(
         IServiceScopeFactory scopeFactory,
         ISystemTime systemTime,
-        IDataService dataService,
         ILogger<DataCleanupService> logger)
     {
         _scopeFactory = scopeFactory;
         _systemTime = systemTime;
-        _dataService = dataService;
         _logger = logger;
     }
 
