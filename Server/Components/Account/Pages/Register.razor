@@ -67,7 +67,6 @@ else
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
-    private int _organizationCount;
     private bool _registrationEnabled;
 
     [SupplyParameterFromForm]
@@ -81,12 +80,16 @@ else
     protected override async Task OnInitializedAsync()
     {
         _registrationEnabled = await IsRegistrationEnabled();
-        _organizationCount = DataService.GetOrganizationCount();
         await base.OnInitializedAsync();
     }
-    
+
     public async Task RegisterUser(EditContext editContext)
     {
+        if (!await IsRegistrationEnabled())
+        {
+            return;
+        }
+
         var user = CreateUser();
 
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
@@ -124,22 +127,23 @@ else
 
     private RemotelyUser CreateUser()
     {
+        var organizationCount = DataService.GetOrganizationCount();
         var user = new RemotelyUser
             {
                 UserName = Input.Email,
                 Email = Input.Email,
-                IsServerAdmin = _organizationCount == 0,
+                IsServerAdmin = organizationCount == 0,
                 Organization = new Organization()
                 {
                     OrganizationName = string.Empty,
-                    IsDefaultOrganization = _organizationCount == 0
+                    IsDefaultOrganization = organizationCount == 0
                 },
                 UserOptions = new RemotelyUserOptions(),
                 IsAdministrator = true,
                 LockoutEnabled = true
             };
 
-        if (_organizationCount == 0 && HostEnv.IsDevelopment())
+        if (organizationCount == 0 && HostEnv.IsDevelopment())
         {
             user.Organization.ID = AppConstants.DebugOrgId;
             user.OrganizationID = AppConstants.DebugOrgId;
@@ -158,8 +162,9 @@ else
 
     private async Task<bool> IsRegistrationEnabled()
     {
+        var organizationCount = DataService.GetOrganizationCount();
         var settings = await DataService.GetSettings();
-        return settings.MaxOrganizationCount < 0 || _organizationCount < settings.MaxOrganizationCount;
+        return settings.MaxOrganizationCount < 0 || organizationCount < settings.MaxOrganizationCount;
     }
 
     private sealed class InputModel
