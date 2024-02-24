@@ -1,31 +1,31 @@
+using Immense.RemoteControl.Server.Extensions;
+using Immense.SimpleMessenger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Remotely.Server.Auth;
+using Remotely.Server.Components;
+using Remotely.Server.Components.Account;
 using Remotely.Server.Data;
+using Remotely.Server.Extensions;
 using Remotely.Server.Hubs;
+using Remotely.Server.Models;
+using Remotely.Server.Options;
 using Remotely.Server.Services;
-using System.Net;
-using Immense.RemoteControl.Server.Extensions;
 using Remotely.Server.Services.RcImplementations;
+using Remotely.Server.Services.Stores;
+using Remotely.Shared.Entities;
 using Remotely.Shared.Services;
 using Serilog;
-using Microsoft.AspNetCore.RateLimiting;
+using System.Net;
 using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
-using Remotely.Shared.Entities;
-using Immense.SimpleMessenger;
-using Remotely.Server.Services.Stores;
-using Remotely.Server.Components.Account;
-using Remotely.Server.Components;
-using Remotely.Server.Options;
-using Remotely.Server.Extensions;
-using Remotely.Server.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -57,19 +57,22 @@ switch (dbProvider)
 {
     case "sqlite":
         services.AddDbContext<AppDb, SqliteDbContext>(
-            contextLifetime: ServiceLifetime.Transient, 
+            contextLifetime: ServiceLifetime.Transient,
             optionsLifetime: ServiceLifetime.Transient);
         break;
+
     case "sqlserver":
         services.AddDbContext<AppDb, SqlServerDbContext>(
             contextLifetime: ServiceLifetime.Transient,
             optionsLifetime: ServiceLifetime.Transient);
         break;
+
     case "postgresql":
         services.AddDbContext<AppDb, PostgreSqlDbContext>(
             contextLifetime: ServiceLifetime.Transient,
             optionsLifetime: ServiceLifetime.Transient);
         break;
+
     default:
         throw new InvalidOperationException(
             $"Invalid DBProvider: {dbProvider}.  Ensure a valid value " +
@@ -112,7 +115,6 @@ services.AddIdentityCore<RemotelyUser>(options =>
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-
 services.AddScoped<IAuthorizationHandler, TwoFactorRequiredHandler>();
 services.AddScoped<IAuthorizationHandler, OrganizationAdminRequirementHandler>();
 services.AddScoped<IAuthorizationHandler, ServerAdminRequirementHandler>();
@@ -154,7 +156,7 @@ if (settings.UseHttpLogging)
 
 services.AddCors(options =>
 {
-    if (settings.TrustedCorsOrigins is { Count: > 0} trustedOrigins)
+    if (settings.TrustedCorsOrigins is { Count: > 0 } trustedOrigins)
     {
         options.AddPolicy("TrustedOriginPolicy", builder => builder
             .WithOrigins(trustedOrigins.ToArray())
@@ -164,7 +166,6 @@ services.AddCors(options =>
         );
     }
 });
-
 
 services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -177,7 +178,7 @@ services.Configure<ForwardedHeadersOptions>(options =>
         options.KnownProxies.Add(dockerGatewayIp);
     }
 
-    if (settings.KnownProxies is { Count: >0 } knownProxies)
+    if (settings.KnownProxies is { Count: > 0 } knownProxies)
     {
         foreach (var proxy in knownProxies)
         {
@@ -207,7 +208,7 @@ services.AddRateLimiter(options =>
     {
         clOptions.QueueLimit = int.MaxValue;
 
-        clOptions.PermitLimit = 
+        clOptions.PermitLimit =
             settings.MaxConcurrentUpdates <= 0 ?
                 10 :
                 settings.MaxConcurrentUpdates;
@@ -222,6 +223,7 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
+    services.AddScoped<IEmailSender<RemotelyUser>, EmailSenderEx>();
     services.AddScoped<IEmailSenderEx, EmailSenderEx>();
 }
 services.AddSingleton<IAppDbFactory, AppDbFactory>();
@@ -367,13 +369,12 @@ void ConfigureSerilog(WebApplicationBuilder webAppBuilder, SettingsModel setting
 {
     try
     {
-
         var dataRetentionDays = settings.DataRetentionInDays;
         if (dataRetentionDays <= 0)
         {
             dataRetentionDays = 7;
         }
-       
+
         var logPath = LogsManager.DefaultLogsDirectory;
 
         void ApplySharedLoggerConfig(LoggerConfiguration loggerConfiguration)

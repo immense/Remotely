@@ -1,21 +1,16 @@
 using MailKit.Net.Smtp;
-using MailKit.Security;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Build.Framework;
-using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client;
 using MimeKit;
 using MimeKit.Text;
-using NuGet.Configuration;
-using System;
-using System.Net;
-using System.Threading.Tasks;
+using Remotely.Shared.Entities;
 
 namespace Remotely.Server.Services;
 
 public interface IEmailSenderEx
 {
     Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string? organizationID = null);
+
     Task<bool> SendEmailAsync(string email, string subject, string htmlMessage, string? organizationID = null);
 }
 
@@ -34,7 +29,7 @@ public class EmailSender : IEmailSender
     }
 }
 
-public class EmailSenderEx : IEmailSenderEx
+public class EmailSenderEx : IEmailSenderEx, IEmailSender<RemotelyUser>
 {
     private readonly IDataService _dataService;
     private readonly ILogger<EmailSenderEx> _logger;
@@ -46,11 +41,22 @@ public class EmailSenderEx : IEmailSenderEx
         _dataService = dataService;
         _logger = logger;
     }
+
+    public async Task SendConfirmationLinkAsync(RemotelyUser user, string email, string confirmationLink)
+    {
+        await SendEmailAsync(
+            email,
+            "Remotely Account Confirmation",
+            "Please confirm your Remotely account by clicking the following link: " +
+            $"<a href=\"{confirmationLink}\">{confirmationLink}</a>",
+            user.OrganizationID);
+    }
+
     public async Task<bool> SendEmailAsync(
-        string toEmail, 
-        string replyTo, 
-        string subject, 
-        string htmlMessage, 
+        string toEmail,
+        string replyTo,
+        string subject,
+        string htmlMessage,
         string? organizationID = null)
     {
         try
@@ -68,7 +74,7 @@ public class EmailSenderEx : IEmailSenderEx
             };
 
             using var client = new SmtpClient();
-            
+
             if (!string.IsNullOrWhiteSpace(settings.SmtpLocalDomain))
             {
                 client.LocalDomain = settings.SmtpLocalDomain;
@@ -103,7 +109,28 @@ public class EmailSenderEx : IEmailSenderEx
         var settings = await _dataService.GetSettings();
         return await SendEmailAsync(email, settings.SmtpEmail, subject, htmlMessage, organizationID);
     }
+
+    public async Task SendPasswordResetCodeAsync(RemotelyUser user, string email, string resetCode)
+    {
+        await SendEmailAsync(
+            email,
+            "Remotely Password Reset",
+            $"A password reset code has been requested for your account.  Reset Code: {resetCode}",
+            user.OrganizationID);
+    }
+
+    public async Task SendPasswordResetLinkAsync(RemotelyUser user, string email, string resetLink)
+    {
+        await SendEmailAsync(
+            email,
+            "Remotely Password Reset",
+            "A password reset has been requested for your account.  If this was not requested by you, you can ignore this email.<br/><br/>" +
+            "Otherwise, please follow this link to reset your password: " +
+            $"<a href=\"{resetLink}\">{resetLink}</a>",
+            user.OrganizationID);
+    }
 }
+
 public class EmailSenderFake(ILogger<EmailSenderFake> _logger) : IEmailSenderEx
 {
     public Task<bool> SendEmailAsync(string email, string replyTo, string subject, string htmlMessage, string? organizationID = null)
@@ -112,8 +139,8 @@ public class EmailSenderFake(ILogger<EmailSenderFake> _logger) : IEmailSenderEx
             "Fake EmailSender registered in dev mode. " +
             "Email would have been sent to {email}." +
             "\n\nSubject: {EmailSubject}. " +
-            "\n\nMessage: {EmailMessage}", 
-            email, 
+            "\n\nMessage: {EmailMessage}",
+            email,
             subject,
             htmlMessage);
         return Task.FromResult(true);
