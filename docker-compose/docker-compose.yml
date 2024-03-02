@@ -33,7 +33,7 @@ services:
       # the network config, you must update this value as well.
       - Remotely_ApplicationOptions__DockerGateway=172.28.0.1
       # This path shouldn't be changed.  It points to the Docker volume.
-      - Remotely_ConnectionStrings__SQLite=Data Source=/app/AppData/Remotely.db
+      - Remotely_ConnectionStrings__SQLite=Data Source=/app/Remotely.db
       # If using SQL Server, change the connection string to point to your SQL Server instance.
       - Remotely_ConnectionStrings__SQLServer=Server=(localdb)\\mssqllocaldb;Database=Remotely-Server-53bc9b9d-9d6a-45d4-8429-2a2761773502;Trusted_Connection=True;MultipleActiveResultSets=true
       # If using PostgreSQL, change the connection string to point to your PostgreSQL instance.
