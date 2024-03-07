@@ -1,12 +1,13 @@
 ﻿@inject IModalService ModalService
 @inject IJsInterop JsInterop
+@inject IJSRuntime JsRuntime
 
-<div class="modal fade @_showClass" style="display: @_displayStyle; background-color: rgba(0,0,0,0.35)" @onclick="CloseModal">
+<div @ref="_modalRef" id="defaultModal" class="modal fade" style="background-color: rgba(0,0,0,0.35)">
     <div class="modal-dialog modal-dialog-scrollable" role="document" @onclick:stopPropagation>
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">@ModalService.Title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" @onclick="CloseModal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" >
                 @if (ModalService.RenderBody is not null)
@@ -27,9 +28,9 @@
             <div class="modal-footer">
                 @foreach (var button in ModalService.Buttons)
                 {
-                    <button @key="button" type="button" class="@button.Class" @onclick="() => ExecuteButtonAction(button.OnClick)">@button.Text</button>
+                    <button @key="button" type="button" data-bs-dismiss="modal" class="@button.Class" @onclick="() => ExecuteButtonAction(button.OnClick)">@button.Text</button>
                 }
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="CloseModal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -39,36 +40,26 @@
     private string? _showClass;
     private string? _displayStyle;
 
-    protected override Task OnAfterRenderAsync(bool firstRender)
+    private IJSObjectReference? _module;
+    private ElementReference _modalRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            _module = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "./Components/ModalHarness.razor.js");
             ModalService.ModalShown += async (sender, args) =>
             {
-                _displayStyle = "block";
-                await InvokeAsync(StateHasChanged);
-                // The fade animation won't work without a delay here.
-                await Task.Delay(100);
-                _showClass = "show";
+                await _module.InvokeVoidAsync("showModal", _modalRef);
                 await InvokeAsync(StateHasChanged);
             };
         }
-        return base.OnAfterRenderAsync(firstRender);
+        await base.OnAfterRenderAsync(firstRender);
     }
 
-
-    private async Task CloseModal()
-    {
-        _showClass = null;
-        await InvokeAsync(StateHasChanged);
-        await Task.Delay(100);
-        _displayStyle = null;
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task ExecuteButtonAction(Action onclick)
+    private Task ExecuteButtonAction(Action onclick)
     {
         onclick.Invoke();
-        await CloseModal();
+        return Task.CompletedTask;
     }
 }
