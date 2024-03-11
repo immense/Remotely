@@ -25,6 +25,8 @@ services:
       - ASPNETCORE_HTTP_PORTS=5000
       # Other ASP.NET Core configurations can be overridden here, such as Logging.
       # See https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-8.0
+      - Serilog__MinimumLevel__Override__Microsoft.AspNetCore=Warning
+      - Serilog__MinimumLevel__Override__System=Warning
 
       # Values for DbProvider are SQLite, SQLServer, and PostgreSQL.
       - Remotely_ApplicationOptions__DbProvider=SQLite
