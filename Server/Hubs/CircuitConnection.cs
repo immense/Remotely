@@ -261,7 +261,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                 "There are already the maximum amount of active remote control sessions for your organization.",
                 "Max number of concurrent sessions reached.",
                 "bg-warning");
-
+            
             await _messenger.Send(message, ConnectionId);
 
             return Result.Fail<RemoteControlSessionEx>("Max number of concurrent sessions reached.");
