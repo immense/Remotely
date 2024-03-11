@@ -14,7 +14,8 @@ param (
 	[string]$Path,
 	[string]$OrganizationId,
 	[string]$ServerUrl,
-	[switch]$Uninstall
+	[switch]$Uninstall,
+	[switch]$Quiet
 )
 
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
@@ -32,7 +33,7 @@ if ($OrganizationId) {
 
 $ConnectionInfo = $null
 
-if ([System.Environment]::Is64BitOperatingSystem){
+if ([System.Environment]::Is64BitOperatingSystem) {
 	$Platform = "x64"
 }
 else {
@@ -41,20 +42,22 @@ else {
 
 $InstallPath = "$env:ProgramFiles\Remotely"
 
-function Write-Log($Message){
-	Write-Host $Message
+function Write-Log($Message) {
+	if (!$Quiet) {
+		Write-Host $Message
+	}
 	"$((Get-Date).ToString()) - $Message" | Out-File -FilePath $LogPath -Append
 }
-function Do-Exit(){
-	Write-Host "Exiting..."
+function Do-Exit() {
+	Write-Log "Exiting..."
 	Start-Sleep -Seconds 3
 	exit
 }
 function Is-Administrator() {
-    $Identity = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $Principal = New-Object System.Security.Principal.WindowsPrincipal -ArgumentList $Identity
-    return $Principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-} 
+	$Identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+	$Principal = New-Object System.Security.Principal.WindowsPrincipal -ArgumentList $Identity
+	return $Principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
 
 function Run-StartupChecks {
 
@@ -86,6 +89,9 @@ function Run-StartupChecks {
 		if ($Uninstall) {
 			$Params += " -Uninstall"
 		}
+		if ($Quiet) {
+			$Params += " -Quiet"
+		}
 		Start-Process -FilePath powershell.exe -ArgumentList $Params -Verb RunAs
 		exit
 	}
@@ -107,7 +113,7 @@ function Install-Remotely {
 	$HeadResponse = Invoke-WebRequest -Uri "$HostName/Content/Remotely-Win-$Platform.zip" -Method Head -UseBasicParsing
 	$ETag = $HeadResponse.Headers["ETag"]
 	if (!$Etag) {
-		Write-Host "Failed to get ETag from server.  Aborting install."
+		Write-Log "Failed to get ETag from server.  Aborting install."
 	}
 
 	if ((Test-Path -Path "$InstallPath") -and (Test-Path -Path "$InstallPath\ConnectionInfo.json")) {
@@ -124,9 +130,9 @@ function Install-Remotely {
 
 	if (!$ConnectionInfo) {
 		$ConnectionInfo = @{
-			DeviceID = (New-Guid).ToString();
-			Host = $HostName;
-			OrganizationID = $Organization;
+			DeviceID                = (New-Guid).ToString();
+			Host                    = $HostName;
+			OrganizationID          = $Organization;
 			ServerVerificationToken = "";
 		}
 	}
@@ -153,9 +159,9 @@ function Install-Remotely {
 	}
 
 	Stop-Remotely
-	Get-ChildItem -Path $InstallPath | Where-Object {$_.Name -notlike "ConnectionInfo.json"} | Remove-Item -Recurse -Force
+	Get-ChildItem -Path $InstallPath | Where-Object { $_.Name -notlike "ConnectionInfo.json" } | Remove-Item -Recurse -Force
 
-	Expand-Archive -Path "$env:TEMP\Remotely-Win-$Platform.zip" -DestinationPath "$InstallPath"  -Force
+	Expand-Archive -Path "$env:TEMP\Remotely-Win-$Platform.zip" -DestinationPath "$InstallPath" -Force
 
 	New-Item -ItemType File -Path "$InstallPath\ConnectionInfo.json" -Value (ConvertTo-Json -InputObject $ConnectionInfo) -Force
 
@@ -163,17 +169,17 @@ function Install-Remotely {
 
 	if ($DeviceAlias -or $DeviceGroup) {
 		$DeviceSetupOptions = @{
-			DeviceAlias = $DeviceAlias;
+			DeviceAlias     = $DeviceAlias;
 			DeviceGroupName = $DeviceGroup;
-			OrganizationID = $Organization;
-			DeviceID = $ConnectionInfo.DeviceID;
+			OrganizationID  = $Organization;
+			DeviceID        = $ConnectionInfo.DeviceID;
 		}
-		
+
 		$Body = $DeviceSetupOptions | ConvertTo-Json
 		Invoke-RestMethod -Method Post -ContentType "application/json" -Uri "$HostName/api/devices" -Body $Body
 	}
 
-	New-Service -Name "Remotely_Service" -BinaryPathName "$InstallPath\Remotely_Agent.exe" -DisplayName "Remotely Service" -StartupType Automatic -Description "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators."
+	New-Service -Name "Remotely_Service" -BinaryPathName "`"$InstallPath\Remotely_Agent.exe`"" -DisplayName "Remotely Service" -StartupType Automatic -Description "Background service that maintains a connection to the Remotely server.  The service is used for remote support and maintenance by this computer's administrators."
 	Start-Process -FilePath "cmd.exe" -ArgumentList "/c sc.exe failure `"Remotely_Service`" reset=5 actions=restart/5000" -Wait -WindowStyle Hidden
 	Start-Service -Name Remotely_Service
 }

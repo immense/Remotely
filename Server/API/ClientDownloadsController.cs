@@ -114,10 +114,10 @@ public class ClientDownloadsController : ControllerBase
         return await GetInstallFile(orgId, platformID);
     }
 
-    [HttpGet("{organizationID}/{platformID}")]
-    public async Task<IActionResult> GetInstaller(string organizationID, string platformID)
+    [HttpGet("{platformId}/{organizationId}")]
+    public async Task<IActionResult> GetInstaller(string platformId, string organizationId)
     {
-        return await GetInstallFile(organizationID, platformID);
+        return await GetInstallFile(organizationId, platformId);
     }
 
     private async Task<IActionResult> GetBashInstaller(string fileName, string organizationId)
@@ -172,16 +172,6 @@ public class ClientDownloadsController : ControllerBase
                 case "WindowsInstaller":
                     {
                         var effectiveScheme = settings.ForceClientHttps ? "https" : Request.Scheme;
-                        //var serverUrl = $"{effectiveScheme}://{Request.Host}";
-                        //var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Remotely_Installer.exe");
-                        //var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
-                        //var result = await _embeddedDataSearcher.GetAppendedStream(filePath, embeddedData);
-
-                        //if (!result.IsSuccess)
-                        //{
-                        //    throw result.Exception ?? new Exception(result.Reason);
-                        //}
-
 
                         var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Install-Remotely.ps1");
                         if (!FileIO.Exists(filePath))
