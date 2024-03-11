@@ -1,23 +1,17 @@
 ﻿@inject IJsInterop JsInterop
 
-<div class="@WrapperClass" @onmouseout="MouseLeft" @onmouseover="MouseEnter">
-    <button class="btn dropdown-toggle @ButtonClass @_showClass"
+<div class="@WrapperClass">
+    <button class="btn dropdown-toggle @ButtonClass"
             type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="@_isExpanded"
-            @onclick="ToggleShown">
+            data-bs-toggle="dropdown">
         @ButtonContent
     </button>
-    <ul class="dropdown-menu @DropDownMenuClass @_showClass" @onclick="ToggleShown" >
+    <ul class="dropdown-menu @DropDownMenuClass" >
         @ChildListItems
     </ul>
 </div>
 
 @code {
-    private System.Timers.Timer? _collapseTimer;
-    private string? _showClass;
-    private bool _isExpanded;
-
     [Parameter]
     public string? ButtonClass { get; set; }
 
@@ -33,29 +27,4 @@
 
     [Parameter]
     public RenderFragment? ChildListItems { get; set; }
-
-    private void ToggleShown()
-    {
-        _isExpanded = !_isExpanded;
-        _showClass = _isExpanded ? "show" : "";
-    }
-
-    private void MouseEnter()
-    {
-        _collapseTimer?.Dispose();
-    }
-
-    private void MouseLeft()
-    {
-        _collapseTimer?.Dispose();
-        _collapseTimer = new System.Timers.Timer(1500);
-        _collapseTimer.Elapsed += (sender, args) =>
-        {
-            _isExpanded = false;
-            _showClass = "";
-            InvokeAsync(StateHasChanged);
-        };
-        _collapseTimer.Start();
-    }
-
 }
