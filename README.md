@@ -34,7 +34,7 @@ With that said, Remotely requires the following headers to be set: `X-Forwarded-
 
 The Remotely code does not parse or handle these values.  It is done internally by ASP.NET Core's built-in middleware.  If the values are not appearing as expected, it is because the headers were missing, didn't contain the correct values, were not the correct format, or didn't come through a chain of known proxies (see below).
 
-To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded headers from loopback addresses.  Remotely will also add the default Docker host IP (172.17.0.1).  If you are using a non-default configuration, you must add all fireawll and reverse proxy addresses to the `KnownProxies` array in appsettings.json.
+To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded headers from loopback addresses.  Remotely will also add the default Docker host IP (172.17.0.1).  If you are using a non-default configuration, you must add all firewall and reverse proxy addresses to the `KnownProxies` array in the Server Config.
 
 ## After Installation
 - Data for Remotely will be saved in the container under `/app/AppData`, which will be mounted to `/var/www/remotely/` on your Docker host.
@@ -53,9 +53,7 @@ To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded he
 
 
 ## HTTP Logging
-You can enable HTTP logging to see all requests and responses in the server logs, including headers.  This can be helpful for debugging reverse proxy, API, or SignalR issues.  The option can be enabled it `appsettings.json` or the Server Config page.
-
-You must explicitly set a log level for `Microsoft.AspNetCore.HttpLogging.HttpLoggingMiddleware` for this to work.  See the [appsettings.json](https://github.com/immense/Remotely/blob/master/Server/appsettings.json) file for an example.
+You can enable HTTP logging to see all requests and responses in the server logs, including headers.  This can be helpful for debugging reverse proxy, API, or SignalR issues.  The option can be enabled on the Server Config page.
 
 After changing the above, you must restart the container for the changes to take effect.
 
@@ -133,7 +131,7 @@ You can change database by changing `DBProvider` in `ApplicationOptions` to `SQL
 - Built-in ASP.NET Core logs are written to the console (stdout).  You can redirect this to a file if desired.
 	- In IIS, this can be done in the web.config file by setting stdoutLogEnabled to true.
 - On Windows Servers, the above logs can also be written to the Windows Event Log.
-	- This is enabled in appsettings.json by setting EnableWindowsEventLog to true.
+	- This is enabled in Server Config by setting EnableWindowsEventLog to true.
 - You can configure logging levels and other settings in appsetttings.json.
 	- More information: https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/
 
@@ -174,26 +172,12 @@ There are a few shortcut keys available when using the console.
 - Ctrl + Q: Clear the output window.
 
 ## Port Configuration
-You can change the local port that the Remotely .NET server listens on by adding the below to `appsettings.Production.json`:
-
-```
-"Kestrel": {
-    "Endpoints": {
-      "Http": {
-        "Url": "http://localhost:{port-number}"
-      }
-    }
-  }
-```
-
-Alternatively, you can use a command-line argument for the `Remotely_Server` process or set an environment variable.
-  - `--urls http://localhost:{port-number}`
-  - `ASPNETCORE_URLS=http://localhost:{port-number}`
+Ports are configured in the `docker-compose.yml` file.  If you change the internal port for the container, make sure you update `ASPNETCORE_HTTP_PORTS` variable to match.
 
 ## API and Integrations
-Remotely has a basic API, which can be browsed at https://remotely.lucency.co/swagger (or your own server instance).  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
+Remotely has a basic API, which can be browsed at `https://{your_server_url}/swagger`.  Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
 
-When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.  For example, if I wanted to create a login form on https://lucency.co that logged into the Remotely API, I'd need to add "https://lucency.co" to the TrustedCorsOrigins.
+When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array.  If you're not familiar with how CORS works, I recommend reading up on it before proceeding.  For example, if I wanted to create a login form on https://exmaple.com that logged into the Remotely API, I'd need to add "https://example.com" to the TrustedCorsOrigins.
 
 Each request to the API must have a header named "X-Api-Key".  The value should be the API key's ID and secret, separated by a colon (i.e. [ApiKey]:[ApiSecret]).
 
