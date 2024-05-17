@@ -34,9 +34,9 @@ internal class EmbeddedServerDataReader
                 return EmbeddedServerData.Empty;
             }
 
-            var buffer = new byte[dataSize];
-            await fs.ReadAsync(buffer, 0, dataSize);
-            var json = Encoding.UTF8.GetString(buffer);
+            var cBuffer = new char[dataSize];
+            sr.ReadBlock(cBuffer, 0, dataSize);
+            var json = new string(cBuffer);
 
             Logger.Write($"Extracted embedded data from EXE: {json}");
 
