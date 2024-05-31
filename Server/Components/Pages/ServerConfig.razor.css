@@ -7,3 +7,9 @@
     white-space: nowrap;
     border-radius: 5px;
 }
+
+#saveButton {
+    position: fixed;
+    right: 40px;
+    bottom: 20px;
+}
