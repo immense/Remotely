@@ -19,17 +19,6 @@
 @code {
     private SettingsModel? _settings;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (User is not null &&
-            _settings?.Require2FA == true &&
-            !User.TwoFactorEnabled)
-        {
-            NavManager.NavigateTo("/TwoFactorRequired");
-        }
-        await base.OnAfterRenderAsync(firstRender);
-    }
-
     protected override async Task OnInitializedAsync()
     {
         _settings = await DataService.GetSettings();
