@@ -1,0 +1,126 @@
+﻿@page "/deploy"
+@attribute [Authorize]
+@inject NavigationManager NavMan
+@inject IAuthService Auth
+@inject IDataService DataService
+@inject IJsInterop JsInterop
+@inject IToastService Toasts
+@inject ILogger<Deploy> Logger
+
+<h3>Deploy Scripts</h3>
+<p class="text-info col-sm-12 mb-4">
+    Copy and paste on a remote computer to install the agent.
+</p>
+
+<div class="row">
+    <div class="col-sm-12 mb-3">
+        <div class="mb-1">
+            <strong>Windows 10/11 (32-Bit and 64-Bit)</strong>
+        </div>
+
+        <div class="input-group">
+            <input type="text" class="form-control" readonly value="@_windowsScript" />
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyToClipboard(_windowsScript)">
+                <i class="oi oi-clipboard"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="col-sm-12 mb-3">
+        <div class="mb-1">
+            <strong>Ubuntu (64-Bit)</strong>
+        </div>
+
+        <div class="input-group">
+            <input type="text" class="form-control" readonly value="@_ubuntuScript" />
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyToClipboard(_ubuntuScript)">
+                <i class="oi oi-clipboard"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="col-sm-12 mb-3">
+        <div class="mb-1">
+            <strong>Manjaro (64-Bit)</strong>
+        </div>
+
+        <div class="input-group">
+            <input type="text" class="form-control" readonly value="@_manjaroScript" />
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyToClipboard(_manjaroScript)">
+                <i class="oi oi-clipboard"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? _organizationId;
+    private bool _isAuthenticated;
+    private string _windowsScript = string.Empty;
+    private string _ubuntuScript = string.Empty;
+    private string _manjaroScript = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _isAuthenticated = await Auth.IsAuthenticated();
+
+        if (_isAuthenticated)
+        {
+            var userResult = await Auth.GetUser();
+            if (userResult.IsSuccess)
+            {
+                _organizationId = userResult.Value.OrganizationID;
+            }
+        }
+        else
+        {
+            var orgResult = await DataService.GetDefaultOrganization();
+            if (orgResult.IsSuccess)
+            {
+                _organizationId = orgResult.Value.ID;
+            }
+        }
+
+        SetScriptContent();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task CopyToClipboard(string text)
+    {
+        try
+        {
+            var result = await JsInterop.SetClipboardText(text);
+            if (result)
+            {
+                Toasts.ShowToast2("Script copied to clipboard", ToastType.Success);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while copying script to clipboard.");
+        }
+        Toasts.ShowToast2("Failed to set clipboard content", ToastType.Error);
+    }
+
+    private void SetScriptContent()
+    {
+        _windowsScript = 
+            $"Invoke-WebRequest -Uri '{NavMan.BaseUri}api/ClientDownloads/WindowsInstaller/{_organizationId}' -OutFile \"${{env:TEMP}}\\Install-Remotely.ps1\" -UseBasicParsing;"+
+            "Start-Process -FilePath 'powershell.exe' -ArgumentList (\"-executionpolicy\", \"bypass\", \"-f\", \"${env:TEMP}\\Install-Remotely.ps1\") -Verb RunAs;";
+
+        _ubuntuScript = GetLinuxScript("UbuntuInstaller-x64");
+
+        _manjaroScript = GetLinuxScript("ManjaroInstaller-x64");
+    }
+
+    private string GetLinuxScript(string platformId)
+    {
+        return 
+            $"sudo rm -f /tmp/Install-Remotely.sh && " +
+            $"sudo wget -q -O /tmp/Install-Remotely.sh {NavMan.BaseUri}api/ClientDownloads/{platformId}/{_organizationId} && " +
+            $"sudo chmod +x /tmp/Install-Remotely.sh && " +
+            $"sudo /tmp/Install-Remotely.sh";
+    }
+}

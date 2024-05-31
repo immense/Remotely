@@ -6,6 +6,8 @@ namespace Remotely.Server.Services;
 
 public interface IJsInterop
 {
+    void AddBeforeUnloadHandler();
+
     void AddClassName(ElementReference element, string className);
     ValueTask Alert(string message);
 
@@ -13,20 +15,25 @@ public interface IJsInterop
 
     ValueTask<bool> Confirm(string message);
 
+    ValueTask<int> GetCursorIndex(ElementReference terminalInput);
+
     void InvokeClick(string elementId);
 
+    void OpenWindow(string url, string target);
+
+    void PreventTabOut(ElementReference terminalInput);
+
     ValueTask<string> Prompt(string message);
-    void SetStyleProperty(ElementReference element, string propertyName, string value);
-    void StartDraggingY(ElementReference element, double clientY);
+    void ScrollToElement(ElementReference element);
 
     void ScrollToEnd(ElementReference element);
 
-    void AddBeforeUnloadHandler();
-    void OpenWindow(string url, string target);
-    void ScrollToElement(ElementReference element);
-    ValueTask<int> GetCursorIndex(ElementReference terminalInput);
-    void PreventTabOut(ElementReference terminalInput);
+    ValueTask<bool> SetClipboardText(string text);
+
+    void SetStyleProperty(ElementReference element, string propertyName, string value);
+    void StartDraggingY(ElementReference element, double clientY);
 }
+
 public class JsInterop : IJsInterop
 {
     private readonly IJSRuntime _jsRuntime;
@@ -95,6 +102,12 @@ public class JsInterop : IJsInterop
     {
         _jsRuntime.InvokeVoidAsync("scrollToEnd", element);
     }
+
+    public async ValueTask<bool> SetClipboardText(string text)
+    {
+        return await _jsRuntime.InvokeAsync<bool>("setClipboardText", text);
+    }
+
     public void SetStyleProperty(ElementReference element, string propertyName, string value)
     {
         _jsRuntime.InvokeVoidAsync("setStyleProperty", element, propertyName, value);
