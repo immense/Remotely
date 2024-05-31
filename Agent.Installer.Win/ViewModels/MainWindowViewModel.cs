@@ -317,7 +317,7 @@ public class MainWindowViewModel : ViewModelBase
             (serverUri.Scheme != Uri.UriSchemeHttp && serverUri.Scheme != Uri.UriSchemeHttps))
         {
             Logger.Write("ServerUrl is not valid.");
-            MessageBoxEx.Show("Server URL must be a valid Uri (e.g. https://app.remotely.one).", "Invalid Server URL", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBoxEx.Show("Server URL must be a valid Uri (e.g. https://app.example.com).", "Invalid Server URL", MessageBoxButton.OK, MessageBoxImage.Error);
             return false;
         }
 

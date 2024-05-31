@@ -30,7 +30,6 @@
     <Product>Remotely Desktop</Product>
     <Description>Desktop client for allowing your IT admin to provide remote support.</Description>
     <Copyright>Copyright © 2023 Immense Networks</Copyright>
-    <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
