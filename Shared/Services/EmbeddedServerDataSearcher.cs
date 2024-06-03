@@ -19,64 +19,45 @@ namespace Remotely.Shared.Services;
 
 public interface IEmbeddedServerDataSearcher
 {
-    Task<Result<AppendableStream>> GetAppendedStream(string filePath, EmbeddedServerData serverData);
-    Task<Result<EmbeddedServerData>> TryGetEmbeddedData(string filePath);
+    string GetEncodedFileName(string filePath, EmbeddedServerData serverData);
+    Result<EmbeddedServerData> TryGetEmbeddedData(string filePath);
 }
 
 public class EmbeddedServerDataSearcher() : IEmbeddedServerDataSearcher
 {
     public static EmbeddedServerDataSearcher Instance { get; } = new();
 
-    public async Task<Result<EmbeddedServerData>> TryGetEmbeddedData(string filePath)
+    public string GetEncodedFileName(string filePath, EmbeddedServerData serverData)
+    {
+        var fileName = Path.GetFileNameWithoutExtension(filePath);
+        var ext = Path.GetExtension(filePath);
+
+        // Make the base64 string safe file paths and URIs.
+        var encodedData = Convert
+            .ToBase64String(MessagePackSerializer.Serialize(serverData))
+            .Replace("/", "_")
+            .Replace("+", "-");
+
+        return $"{fileName}[{encodedData}]{ext}";
+    }
+
+    public Result<EmbeddedServerData> TryGetEmbeddedData(string filePath)
     {
         try
         {
-            if (!File.Exists(filePath))
-            {
-                return Result.Fail<EmbeddedServerData>($"File path does not exist: {filePath}");
-            }
+            var fileName = Path.GetFileNameWithoutExtension(filePath);
+            var start = fileName.LastIndexOf('[') + 1;
+            var end = fileName.LastIndexOf(']');
+            var base64 = fileName[start..end]
+                .Replace("_", "/")
+                .Replace("-", "+");
 
-            using var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            using var br = new BinaryReader(fs);
-            using var sr = new StreamReader(fs);
-
-            fs.Seek(-4, SeekOrigin.End);
-            var dataSize = br.ReadInt32();
-            fs.Seek(-dataSize - 4, SeekOrigin.End);
-
-            var buffer = new byte[dataSize];
-            await fs.ReadExactlyAsync(buffer);
-            var json = Encoding.UTF8.GetString(buffer);
-
-            var embeddedData = JsonSerializer.Deserialize<EmbeddedServerData>(json);
-
-            if (embeddedData is null)
-            {
-                return Result.Fail<EmbeddedServerData>("Embedded data is empty.");
-            }
-
+            var embeddedData = MessagePackSerializer.Deserialize<EmbeddedServerData>(Convert.FromBase64String(base64));
             return Result.Ok(embeddedData);
         }
         catch (Exception ex)
         {
             return Result.Fail<EmbeddedServerData>(ex);
-        }
-    }
-
-    public Task<Result<AppendableStream>> GetAppendedStream(string filePath, EmbeddedServerData serverData)
-    {
-        try
-        {
-            var json = JsonSerializer.Serialize(serverData);
-            var jsonBytes = Encoding.UTF8.GetBytes(json);
-            byte[] appendPayload = [.. jsonBytes, .. BitConverter.GetBytes(jsonBytes.Length)];
-            var fs = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-            var appendableStream = new AppendableStream(fs, appendPayload);
-            return Task.FromResult(Result.Ok(appendableStream));
-        }
-        catch (Exception ex)
-        {
-            return Task.FromResult(Result.Fail<AppendableStream>(ex));
         }
     }
 }

@@ -85,7 +85,7 @@ public class BrandingProvider : IBrandingProvider
                     return Result.Fail<BrandingInfo>("Failed to retrieve executing file name.");
                 }
 
-                var result = await _embeddedDataSearcher.TryGetEmbeddedData(filePath);
+                var result = _embeddedDataSearcher.TryGetEmbeddedData(filePath);
 
                 if (!result.IsSuccess)
                 {

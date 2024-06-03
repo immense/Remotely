@@ -32,6 +32,20 @@
             </NavLink>
         </li>
 
+
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="downloads">
+                <span class="oi oi-cloud-download" aria-hidden="true"></span> Downloads
+            </NavLink>
+        </li>
+
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="/RemoteControl/Viewer" target="_blank">
+                <span class="oi oi-monitor" aria-hidden="true"></span> Remote Control
+            </NavLink>
+
+        </li>
+
         <AuthorizeView>
             <Authorized>
                 <li class="nav-item px-3">
@@ -58,17 +72,6 @@
             </Authorized>
         </AuthorizeView>
 
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="/RemoteControl/Viewer" target="_blank">
-                <span class="oi oi-monitor" aria-hidden="true"></span> Remote Control
-            </NavLink>
-
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="downloads">
-                <span class="oi oi-cloud-download" aria-hidden="true"></span> Downloads
-            </NavLink>
-        </li>
 
         @if (_user?.IsAdministrator == true)
         {

@@ -9,9 +9,13 @@
 @inject NavigationManager NavManager
 @inject ILogger<Downloads> Logger 
 
-<div class="alert alert-info">
-    Looking for background agents?  Head to the <a href="/deploy">Deploy</a> page!
-</div>
+@if (_isAuthenticated)
+{
+    <div class="alert alert-info">
+        Check out the <a href="/deploy">Deploy</a> page for a copy-and-paste deploy script!
+    </div>
+}
+
 
 <div class="row mb-3">
     <h4>Portable Instant Support Clients</h4>
@@ -37,57 +41,163 @@
         </p>
     </div>
     @*<div class="col-sm-6 mb-3">
-        <strong>macOS x64 (10.12 - 10.15)</strong>
-        <p>
-            <a target="_blank" href="/api/ClientDownloads/Desktop/MacOS-x64/@_organizationId">macOS x64 Executable</a>
-        </p>
-        <strong>macOS arm64 (11.01)</strong>
-        <p>
-            <a target="_blank" href="/api/ClientDownloads/Desktop/MacOS-arm64/@_organizationId">macOS arm64 Executable</a>
-        </p>
+    <strong>macOS x64 (10.12 - 10.15)</strong>
+    <p>
+    <a target="_blank" href="/api/ClientDownloads/Desktop/MacOS-x64/@_organizationId">macOS x64 Executable</a>
+    </p>
+    <strong>macOS arm64 (11.01)</strong>
+    <p>
+    <a target="_blank" href="/api/ClientDownloads/Desktop/MacOS-arm64/@_organizationId">macOS arm64 Executable</a>
+    </p>
     </div>*@
 </div>
 
 
-
 <div class="row">
-    <h4>Binaries Only</h4>
+    <h4>Resident Agents</h4>
+
     <p class="text-info col-sm-12 mb-2">
-        Archives containing the agent binaries only.
+        Installable background agents that provide unattended access and remote scripting.
     </p>
-    <div class="col-sm-6 mb-3">
-        <strong>Windows 10 / 11 (64-Bit and 32-Bit)</strong>
-        <p>
-            <a target="_blank" href="/Content/Remotely-Win-x64.zip">Windows x64 Files Only</a>
-            <br />
-            <a target="_blank" href="/Content/Remotely-Win-x86.zip">Windows x86 Files Only</a>
-        </p>
 
-    </div>
+    @if (!_isAuthenticated)
+    {
+        <div class="col-sm-6 mb-3">
+            <h6>Must be logged in to download.</h6>
+        </div>
 
-    <div class="col-sm-6 mb-3">
-        <strong>Linux 64-Bit</strong>
-        <p>
-            <a target="_blank" href="/API/ClientDownloads/ManjaroInstaller-x64/@_organizationId">Manjaro x64 Bash Installer</a>
-            <br />
-            <a target="_blank" href="/Content/Remotely-Linux.zip">Linux x64 Files Only</a>
-        </p>
-    </div>
+    }
+    else
+    {
+        <div class="col-sm-6 mb-3">
+            <strong>Windows 10 / 11 (64-Bit and 32-Bit)</strong>
+            <p>
+                <a target="_blank" href="/API/ClientDownloads/WindowsInstaller/@_organizationId">Windows PowerShell Installer</a>
+                <br />
+                <a target="_blank" href="/Content/Remotely-Win-x64.zip">Windows x64 Files Only</a>
+                <br />
+                <a target="_blank" href="/Content/Remotely-Win-x86.zip">Windows x86 Files Only</a>
+            </p>
 
-    @* There is currently no bandwidth for Mac development.  The community will need to pick it up. *@
-    @*<div class="col-sm-6 mb-3">
-        <strong>macOS x64 (10.12 - 10.15)</strong>
-        <p>
-            <a target="_blank" href="/Content/Remotely-MacOS-x64.zip">macOS x64 Files Only</a>
-        </p>
-    </div>
+            <p>
+                <div class="small">Example Quiet Install:</div>
 
-     <div class="col-sm-6 mb-3">
-        <strong>macOS arm64</strong>
-        <p>
-            <a target="_blank" href="/Content/Remotely-MacOS-arm64.zip">macOS arm64 Files Only</a>
-        </p>
-    </div> *@
+                <code class="label label-default small">
+                    powershell.exe -ExecutionPolicy Bypass -F {path}\Install-Remotely.ps1
+                    -install
+                    -quiet
+                    -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
+                    -serverurl "https://remotely.mytechshop.com"
+                </code>
+            </p>
+            <p>
+                <div class="small">Example Quiet Uninstall:</div>
+
+                <code class="label label-default small">powershell.exe -ExecutionPolicy Bypass -F Install-Remotely.ps1 -uninstall -quiet</code>
+            </p>
+            <p>
+                <div class="small">Example Local Install:</div>
+
+                <code class="label label-default small">
+                    powershell.exe -ExecutionPolicy Bypass -F {path}\Install-Remotely.ps1
+                    -install
+                    -quiet
+                    -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
+                    -serverurl "https://remotely.mytechshop.com"
+                    -path "[path]\Remotely-Win-x64.zip"
+                </code>
+            </p>
+            <p>
+                <div class="small">All Override Options:</div>
+
+                <code class="label label-default small">
+                    powershell.exe -ExecutionPolicy Bypass -F {path}\Install-Remotely.ps1
+                    -install -quiet -supportshortcut
+                    -organizationid "0b3d706b-9c5d-41e6-8ae9-5720d16324e6"
+                    -serverurl "https://remotely.mytechshop.com"
+                    -devicegroup "Customer Group 1"
+                    -devicealias "Front Desk"
+                    -deviceuuid "eebb4d87-5459-4976-989e-a7876dffc69c"
+                </code>
+            </p>
+        </div>
+
+        <div class="col-sm-6 mb-3">
+            <strong>Linux 64-Bit</strong>
+            <p>
+                <a target="_blank" href="/API/ClientDownloads/UbuntuInstaller-x64/@_organizationId">Ubuntu x64 Bash Installer</a>
+                <br />
+                <a target="_blank" href="/API/ClientDownloads/ManjaroInstaller-x64/@_organizationId">Manjaro x64 Bash Installer</a>
+                <br />
+                <a target="_blank" href="/Content/Remotely-Linux.zip">Linux x64 Files Only</a>
+            </p>
+            <p>
+                <div class="small">Example Install:</div>
+
+                <code class="label label-default small">sudo [path]/Install-Ubuntu-x64.sh</code>
+            </p>
+            <p>
+                <div class="small">Example Local Install:</div>
+
+                <code class="label label-default small">sudo [path]/Install-Ubuntu-x64.sh --path [path]/Remotely-Linux.zip</code>
+            </p>
+            <p>
+                <div class="small">Uninstall:</div>
+
+                <code class="label label-default small">sudo [path]/Install-Ubuntu-x64.sh --uninstall</code>
+            </p>
+        </div>
+
+        <div class="col-sm-6 mb-3">
+            <strong>macOS x64 (10.12 - 10.15)</strong>
+            <p>
+                <a target="_blank" href="/API/ClientDownloads/MacOSInstaller-x64/@_organizationId">macOS x64 Bash Installer</a>
+                <br />
+                <a target="_blank" href="/Content/Remotely-MacOS-x64.zip">macOS x64 Files Only</a>
+            </p>
+
+            <p>
+                <div class="small">Example Install:</div>
+
+                <code class="label label-default small">sudo [path]/Install-MacOS-x64.sh</code>
+            </p>
+            <p>
+                <div class="small">Example Local Install:</div>
+
+                <code class="label label-default small">sudo [path]/Install-MacOS-x64.sh --path [path]/Remotely-MacOS-x64.zip</code>
+            </p>
+            <p>
+                <div class="small">Example Uninstall:</div>
+
+                <code class="label label-default small">sudo [path]/Install-MacOS-x64.sh --uninstall</code>
+            </p>
+        </div>
+
+        <div class="col-sm-6 mb-3">
+            <strong>macOS arm64</strong>
+            <p>
+                <a target="_blank" href="/API/ClientDownloads/MacOSInstaller-arm64/@_organizationId">macOS arm64 Bash Installer</a>
+                <br />
+                <a target="_blank" href="/Content/Remotely-MacOS-arm64.zip">macOS arm64 Files Only</a>
+            </p>
+
+            <p>
+                <div class="small">Example Install:</div>
+
+                <code class="label label-default small">sudo [path]/Install-MacOS-arm64.sh</code>
+            </p>
+            <p>
+                <div class="small">Example Local Install:</div>
+
+                <code class="label label-default small">sudo [path]/Install-MacOS-arm64.sh --path [path]/Remotely-MacOS-arm64.zip</code>
+            </p>
+            <p>
+                <div class="small">Example Uninstall:</div>
+
+                <code class="label label-default small">sudo [path]/Install-MacOS-arm64.sh --uninstall</code>
+            </p>
+        </div>
+    }
 
 </div>
 

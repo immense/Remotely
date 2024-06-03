@@ -144,15 +144,20 @@ public class ClientDownloadsController : ControllerBase
 
         var effectiveScheme = settings.ForceClientHttps ? "https" : Request.Scheme;
         var serverUrl = $"{effectiveScheme}://{Request.Host}";
-        var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
-        var result = await _embeddedDataSearcher.GetAppendedStream(filePath, embeddedData);
 
-        if (!result.IsSuccess)
+        var defaultOrg = await _dataService.GetDefaultOrganization();
+
+        // The default org will be used if unspecified, so might as well save the
+        // space in the file name.
+        if (defaultOrg.IsSuccess && 
+            defaultOrg.Value.ID.Equals(organizationId, StringComparison.OrdinalIgnoreCase))
         {
-            throw result.Exception ?? new Exception(result.Reason);
+            organizationId = null;
         }
-
-        return File(result.Value, "application/octet-stream", Path.GetFileName(filePath));
+        var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
+        var fileName = _embeddedDataSearcher.GetEncodedFileName(filePath, embeddedData);
+        var fileInfo = _hostEnv.WebRootFileProvider.GetFileInfo(filePath.Replace(_hostEnv.WebRootPath, string.Empty));
+        return File(fileInfo.CreateReadStream(), "application/octet-stream", fileName);
     }
 
     private async Task<IActionResult> GetInstallFile(string organizationId, string platformID)

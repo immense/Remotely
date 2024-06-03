@@ -33,7 +33,7 @@ public class Program
         var logger = new FileLogger("Remotely_Desktop", version, "Program.cs");
         var filePath = Environment.ProcessPath ?? Environment.GetCommandLineArgs().First();
         var serverUrl = Debugger.IsAttached ? "http://localhost:5000" : string.Empty;
-        var getEmbeddedResult = await EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
+        var getEmbeddedResult = EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
         if (getEmbeddedResult.IsSuccess)
         {
             serverUrl = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
