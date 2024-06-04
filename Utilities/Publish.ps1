@@ -102,8 +102,8 @@ if ((Test-Path -Path "$Root\Agent\bin\publish\linux-x64") -eq $true) {
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win-x64 --self-contained --configuration Release --output "$Root\Agent\bin\publish\win-x64" "$Root\Agent"
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime linux-x64 --self-contained --configuration Release --output "$Root\Agent\bin\publish\linux-x64" "$Root\Agent"
 dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime win-x86 --self-contained --configuration Release --output "$Root\Agent\bin\publish\win-x86" "$Root\Agent"
-#dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime osx-x64 --self-contained --configuration Release --output "$Root\Agent\bin\publish\osx-x64" "$Root\Agent"
-#dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime osx-arm64 --self-contained --configuration Release --output "$Root\Agent\bin\publish\osx-arm64" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime osx-x64 --self-contained --configuration Release --output "$Root\Agent\bin\publish\osx-x64" "$Root\Agent"
+dotnet publish /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion --runtime osx-arm64 --self-contained --configuration Release --output "$Root\Agent\bin\publish\osx-arm64" "$Root\Agent"
 
 New-Item -Path "$Root\Agent\bin\publish\win-x64\Desktop\" -ItemType Directory -Force
 New-Item -Path "$Root\Agent\bin\publish\win-x86\Desktop\" -ItemType Directory -Force
