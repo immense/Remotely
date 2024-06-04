@@ -59,7 +59,9 @@
         {
             foreach (var kvp in _fileUploadProgressLookup)
             {
-                <AlertBanner Message="@GetProgressMessage(kvp.Key)" />
+                <div class="alert alert-info">
+                    @(GetProgressMessage(kvp.Key))
+                </div>
             }
         } 
         <div>

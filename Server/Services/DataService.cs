@@ -15,6 +15,7 @@ using Remotely.Shared;
 using Remotely.Shared.Dtos;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
+using Remotely.Shared.Extensions;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.ViewModels;
@@ -552,18 +553,26 @@ public class DataService : IDataService
 
     public async Task<string> AddSharedFile(IBrowserFile file, string organizationId, Action<double, string> progressCallback)
     {
-        var fileContents = new byte[file.Size];
-        using var stream = file.OpenReadStream(AppConstants.MaxUploadFileSize);
+        var fileSize = file.Size;
+        var fileName = file.Name;
 
-        for (var i = 0; i < file.Size; i += 5_000)
+        var fileContents = new byte[fileSize];
+        var stream = file.OpenReadStream(AppConstants.MaxUploadFileSize);
+
+        var bytesRead = 0;
+        while (bytesRead < fileSize)
         {
-            var readSize = (int)Math.Min(5_000, file.Size - i);
-            await stream.ReadAsync(fileContents.AsMemory(i, readSize));
-
-            progressCallback.Invoke((double)stream.Position / stream.Length, file.Name);
+            var segmentEnd = Math.Min(50_000, fileSize - bytesRead);
+            var read = await stream.ReadAsync(fileContents.AsMemory(bytesRead, (int)segmentEnd));
+            if (read == 0)
+            {
+                break;
+            }
+            bytesRead += read;
+            progressCallback.Invoke((double)bytesRead / fileSize, fileName);
         }
 
-        progressCallback.Invoke(1, file.Name);
+        progressCallback.Invoke(1, fileName);
 
         return await AddSharedFileImpl(file.Name, fileContents, file.ContentType, organizationId);
     }

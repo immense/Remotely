@@ -13,7 +13,7 @@ namespace Desktop.Shared.Services;
 public class BrandingProvider : IBrandingProvider
 {
     private readonly IAppState _appState;
-    private readonly IEmbeddedServerDataSearcher _embeddedDataSearcher;
+    private readonly IEmbeddedServerDataProvider _embeddedDataSearcher;
     private readonly ILogger<BrandingProvider> _logger;
     private readonly IOrganizationIdProvider _orgIdProvider;
     private BrandingInfoBase? _brandingInfo;
@@ -22,7 +22,7 @@ public class BrandingProvider : IBrandingProvider
     public BrandingProvider(
         IAppState appState,
         IOrganizationIdProvider orgIdProvider,
-        IEmbeddedServerDataSearcher embeddedServerDataSearcher,
+        IEmbeddedServerDataProvider embeddedServerDataSearcher,
         ILogger<BrandingProvider> logger)
     {
         _appState = appState;

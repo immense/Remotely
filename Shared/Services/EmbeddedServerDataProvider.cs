@@ -2,30 +2,21 @@
 
 using Immense.RemoteControl.Shared;
 using MessagePack;
-using Microsoft.Extensions.Logging;
-using Remotely.Shared.Entities;
 using Remotely.Shared.Models;
-using Remotely.Shared.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Remotely.Shared.Services;
 
-public interface IEmbeddedServerDataSearcher
+public interface IEmbeddedServerDataProvider
 {
     string GetEncodedFileName(string filePath, EmbeddedServerData serverData);
     Result<EmbeddedServerData> TryGetEmbeddedData(string filePath);
 }
 
-public class EmbeddedServerDataSearcher() : IEmbeddedServerDataSearcher
+public class EmbeddedServerDataProvider : IEmbeddedServerDataProvider
 {
-    public static EmbeddedServerDataSearcher Instance { get; } = new();
+    public static EmbeddedServerDataProvider Instance { get; } = new();
 
     public string GetEncodedFileName(string filePath, EmbeddedServerData serverData)
     {

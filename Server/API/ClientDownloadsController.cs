@@ -15,14 +15,14 @@ namespace Remotely.Server.API;
 public class ClientDownloadsController : ControllerBase
 {
     private readonly IDataService _dataService;
-    private readonly IEmbeddedServerDataSearcher _embeddedDataSearcher;
+    private readonly IEmbeddedServerDataProvider _embeddedDataSearcher;
     private readonly SemaphoreSlim _fileLock = new(1, 1);
     private readonly IWebHostEnvironment _hostEnv;
     private readonly ILogger<ClientDownloadsController> _logger;
 
     public ClientDownloadsController(
         IWebHostEnvironment hostEnv,
-        IEmbeddedServerDataSearcher embeddedDataSearcher,
+        IEmbeddedServerDataProvider embeddedDataSearcher,
         IDataService dataService,
         ILogger<ClientDownloadsController> logger)
     {
@@ -39,27 +39,27 @@ public class ClientDownloadsController : ControllerBase
         {
             case "WindowsDesktop-x64":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Win-x64", "Remotely_Desktop.exe");
+                    var filePath = Path.Combine("Content", "Win-x64", "Remotely_Desktop.exe");
                     return await GetDesktopFile(filePath);
                 }
             case "WindowsDesktop-x86":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Win-x86", "Remotely_Desktop.exe");
+                    var filePath = Path.Combine("Content", "Win-x86", "Remotely_Desktop.exe");
                     return await GetDesktopFile(filePath);
                 }
             case "UbuntuDesktop":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Linux-x64", "Remotely_Desktop");
+                    var filePath = Path.Combine("Content", "Linux-x64", "Remotely_Desktop");
                     return await GetDesktopFile(filePath);
                 }
             case "MacOS-x64":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "MacOS-x64", "Remotely_Desktop");
+                    var filePath = Path.Combine("Content", "MacOS-x64", "Remotely_Desktop");
                     return await GetDesktopFile(filePath);
                 }
             case "MacOS-arm64":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "MacOS-arm64", "Remotely_Desktop");
+                    var filePath = Path.Combine("Content", "MacOS-arm64", "Remotely_Desktop");
                     return await GetDesktopFile(filePath);
                 }
             default:
@@ -75,27 +75,27 @@ public class ClientDownloadsController : ControllerBase
         {
             case "WindowsDesktop-x64":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Win-x64", "Remotely_Desktop.exe");
+                    var filePath = Path.Combine("Content", "Win-x64", "Remotely_Desktop.exe");
                     return await GetDesktopFile(filePath, organizationId);
                 }
             case "WindowsDesktop-x86":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Win-x86", "Remotely_Desktop.exe");
+                    var filePath = Path.Combine("Content", "Win-x86", "Remotely_Desktop.exe");
                     return await GetDesktopFile(filePath, organizationId);
                 }
             case "UbuntuDesktop":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "Linux-x64", "Remotely_Desktop");
+                    var filePath = Path.Combine("Content", "Linux-x64", "Remotely_Desktop");
                     return await GetDesktopFile(filePath, organizationId);
                 }
             case "MacOS-x64":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "MacOS-x64", "Remotely_Desktop");
+                    var filePath = Path.Combine("Content", "MacOS-x64", "Remotely_Desktop");
                     return await GetDesktopFile(filePath);
                 }
             case "MacOS-arm64":
                 {
-                    var filePath = Path.Combine(_hostEnv.WebRootPath, "Content", "MacOS-arm64", "Remotely_Desktop");
+                    var filePath = Path.Combine("Content", "MacOS-arm64", "Remotely_Desktop");
                     return await GetDesktopFile(filePath);
                 }
             default:
@@ -137,14 +137,9 @@ public class ClientDownloadsController : ControllerBase
         return File(fileBytes, "application/octet-stream", fileName);
     }
 
-    private async Task<IActionResult> GetDesktopFile(string filePath, string? organizationId = null)
+    private async Task<IActionResult> GetDesktopFile(string relativeFilePath, string? organizationId = null)
     {
-        var settings = await _dataService.GetSettings();
         await LogRequest(nameof(GetDesktopFile));
-
-        var effectiveScheme = settings.ForceClientHttps ? "https" : Request.Scheme;
-        var serverUrl = $"{effectiveScheme}://{Request.Host}";
-
         var defaultOrg = await _dataService.GetDefaultOrganization();
 
         // The default org will be used if unspecified, so might as well save the
@@ -154,10 +149,14 @@ public class ClientDownloadsController : ControllerBase
         {
             organizationId = null;
         }
+
+        var settings = await _dataService.GetSettings();
+        var effectiveScheme = settings.ForceClientHttps ? "https" : Request.Scheme;
+        var serverUrl = $"{effectiveScheme}://{Request.Host}";
+
         var embeddedData = new EmbeddedServerData(new Uri(serverUrl), organizationId);
-        var fileName = _embeddedDataSearcher.GetEncodedFileName(filePath, embeddedData);
-        var fileInfo = _hostEnv.WebRootFileProvider.GetFileInfo(filePath.Replace(_hostEnv.WebRootPath, string.Empty));
-        return File(fileInfo.CreateReadStream(), "application/octet-stream", fileName);
+        var fileName = _embeddedDataSearcher.GetEncodedFileName(relativeFilePath, embeddedData);
+        return File(relativeFilePath, "application/octet-stream", fileName);
     }
 
     private async Task<IActionResult> GetInstallFile(string organizationId, string platformID)

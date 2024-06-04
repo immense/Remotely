@@ -193,7 +193,6 @@ services.Configure<ForwardedHeadersOptions>(options =>
 services.AddSignalR(options =>
 {
     options.EnableDetailedErrors = builder.Environment.IsDevelopment();
-    options.MaximumParallelInvocationsPerClient = 5;
     options.MaximumReceiveMessageSize = 100_000;
 })
     .AddJsonProtocol(options =>
@@ -246,7 +245,7 @@ services.AddScoped<ISelectedCardsStore, SelectedCardsStore>();
 services.AddScoped<IExpiringTokenService, ExpiringTokenService>();
 services.AddScoped<IScriptScheduleDispatcher, ScriptScheduleDispatcher>();
 services.AddSingleton<IOtpProvider, OtpProvider>();
-services.AddSingleton<IEmbeddedServerDataSearcher, EmbeddedServerDataSearcher>();
+services.AddSingleton<IEmbeddedServerDataProvider, EmbeddedServerDataProvider>();
 services.AddSingleton<ILogsManager, LogsManager>();
 services.AddScoped<IThemeProvider, ThemeProvider>();
 services.AddScoped<IChatSessionStore, ChatSessionStore>();

@@ -7,6 +7,7 @@ using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
 using Remotely.Server.Services;
 using Remotely.Server.Services.Stores;
+using Remotely.Shared;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Utilities;
@@ -36,19 +37,22 @@ public partial class DeviceCard : AuthComponentBase
 
 
     [Inject]
-    private ISelectedCardsStore SelectedCards { get; init; } = null!;
+    public required ISelectedCardsStore SelectedCards { get; init; }
 
     [Inject]
-    private IThemeProvider ThemeProvider { get; init; } = null!;
+    public required IThemeProvider ThemeProvider { get; init; }
 
     [Inject]
-    private ICircuitConnection CircuitConnection { get; init; } = null!;
+    public required ICircuitConnection CircuitConnection { get; init; }
 
     [Inject]
-    private IDataService DataService { get; init; } = null!;
+    public required IDataService DataService { get; init; }
 
     [Inject]
-    private IChatSessionStore ChatCache { get; init; } = null!;
+    public required IChatSessionStore ChatCache { get; init; }
+
+    [Inject]
+    public required ILogger<DeviceCard> Logger { get; init; }
 
     private bool IsExpanded => _state == DeviceCardState.Expanded;
 
@@ -220,23 +224,44 @@ public partial class DeviceCard : AuthComponentBase
 
     private async Task OnFileInputChanged(InputFileChangeEventArgs args)
     {
-        EnsureUserSet();
-
-        ToastService.ShowToast("File upload started.");
-
-        var fileId = await DataService.AddSharedFile(args.File, User.OrganizationID, OnFileInputProgress);
-
-        var transferId = Guid.NewGuid().ToString();
-
-        var result = await CircuitConnection.TransferFileFromBrowserToAgent(Device.ID, transferId, new[] { fileId });
-
-        if (!result)
+        try
         {
-            ToastService.ShowToast("Device not found.", classString: "bg-warning");
+            EnsureUserSet();
+
+            ToastService.ShowToast("File upload started.");
+
+            if (args.File.Size > AppConstants.MaxUploadFileSize)
+            {
+                var maxFileSize = AppConstants.MaxUploadFileSize / 1000 / 1000;
+                ToastService.ShowToast2($"File size exceeds the maximum allowed size of {maxFileSize}MB.", ToastType.Warning);
+                return;
+            }
+            
+            var fileId = await DataService.AddSharedFile(args.File, User.OrganizationID, OnFileInputProgress);
+            var transferId = Guid.NewGuid().ToString();
+            var result = await CircuitConnection.TransferFileFromBrowserToAgent(Device.ID, transferId, [fileId]);
+
+            if (!result)
+            {
+                ToastService.ShowToast("Device not found.", classString: "bg-warning");
+            }
+            else
+            {
+                ToastService.ShowToast("File upload completed.");
+            }
         }
-        else
+        catch (Exception ex)
         {
-            ToastService.ShowToast("File upload completed.");
+            Logger.LogError(ex, "Error while uploading file to device.");
+            ToastService.ShowToast2("Failed to upload file", ToastType.Error);
+        }
+        finally
+        {
+            if (args.File.Name is not null)
+            {
+                _ = _fileUploadProgressLookup.TryRemove(args.File.Name, out _);
+                await InvokeAsync(StateHasChanged);
+            }
         }
     }
 
@@ -252,6 +277,7 @@ public partial class DeviceCard : AuthComponentBase
         _fileUploadProgressLookup.AddOrUpdate(fileName, percentComplete, (k, v) => percentComplete);
         InvokeAsync(StateHasChanged);
     }
+
     private void OpenDeviceDetails()
     {
         JsInterop.OpenWindow($"/device-details/{Device.ID}", "_blank");
