@@ -8,7 +8,6 @@ jobs:
 - job: Windows_Build
   displayName: Windows Build
   timeoutInMinutes: 360
-  dependsOn: Mac_Build
   pool:
     vmImage: windows-latest
 
