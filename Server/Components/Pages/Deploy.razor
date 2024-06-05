@@ -1,0 +1,337 @@
+﻿@page "/deploy"
+@using Microsoft.Extensions.FileProviders
+@using System.Diagnostics
+@attribute [Authorize]
+@inject NavigationManager NavMan
+@inject IAuthService Auth
+@inject IDataService DataService
+@inject IJsInterop JsInterop
+@inject IToastService Toasts
+@inject IWebHostEnvironment HostEnv
+@inject ILogger<Deploy> Logger
+
+@if (_isLoading)
+{
+    <LoadingSignal StatusMessage="@_loadingMessage" />
+}
+
+<h4 class="text-success mt-3">
+    Persistent Agents
+</h4>
+<p class="text-info mb-3">
+    Copy and paste on a remote computer to install the agent.
+</p>
+
+<div class="row">
+
+    <div class="col-sm-12 mb-3">
+        <div class="mb-1">
+            <strong>Windows 10/11 (32-Bit and 64-Bit)</strong>
+        </div>
+
+        <div class="input-group">
+            <input type="text" class="form-control" readonly value="@_windowsScript" />
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyScriptToClipboard(_windowsScript)">
+                <i class="oi oi-clipboard"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="col-sm-12 mb-3">
+        <div class="mb-1">
+            <strong>Ubuntu (64-Bit)</strong>
+        </div>
+
+        <div class="input-group">
+            <input type="text" class="form-control" readonly value="@_ubuntuScript" />
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyScriptToClipboard(_ubuntuScript)">
+                <i class="oi oi-clipboard"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="col-sm-12 mb-3">
+        <div class="mb-1">
+            <strong>Manjaro (64-Bit)</strong>
+        </div>
+
+        <div class="input-group">
+            <input type="text" class="form-control" readonly value="@_manjaroScript" />
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyScriptToClipboard(_manjaroScript)">
+                <i class="oi oi-clipboard"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<h4 class="text-success mt-3">
+    Attended Support
+</h4>
+<p class="text-info">
+    You can upload custom versions of the attended support client (i.e. "Remotely_Desktop.exe")
+    and send the download link to end-users when they need support. For example, you could sign
+    the EXE with a commercial certificate so the end-user (hopefully) doesn't see a SmartScreen
+    warning about the file.
+</p>
+<p class="mb-3 text-warning">
+    NOTE: These binaries must be manually updated each time a new Docker image is pulled.
+</p>
+
+<div class="row">
+    <div class="col-sm-12 mb-4">
+        <div class="mb-1">
+            <strong>Windows 10/11 (64-Bit)</strong>
+        </div>
+
+        @if (_winX64File?.Exists != true)
+        {
+            <div class="text-danger mb-2">
+                Note: A custom binary for this file hasn't been uploaded yet.
+            </div>
+        }
+        else if (_winX64File?.PhysicalPath is not null)
+        {
+            <div class="text-info mb-2">
+                Created Date: @(_winX64CreatedDate) UTC
+            </div>
+        }
+
+        @if (_isServerAdmin)
+        {
+            <div class="mb-2">
+                <FileInputButton ClassNames="btn btn-primary"
+                                 OnChanged="HandleWin64FileChanged">
+                    <ButtonContent>
+                        <i class="oi oi-data-transfer-upload" title="Upload File"></i>
+                        <span class="ms-2">Upload File</span>
+                    </ButtonContent>
+                </FileInputButton>
+                <div class="mt-1">
+                    <span class="text-primary">
+                        Note: Only server admins will have this button.
+                    </span>
+                </div>
+            </div>
+        }
+
+        <div class="input-group">
+            <input type="text" class="form-control" readonly value="@_winX64Uri" />
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyUriToClipboard(_winX64Uri)">
+                <i class="oi oi-clipboard"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <div class="col-sm-12 mb-4">
+        <div class="mb-1">
+            <strong>Windows 10/11 (32-Bit)</strong>
+        </div>
+
+        @if (_winX86File?.Exists != true)
+        {
+            <div class="text-danger mb-2">
+                Note: A custom binary for this file hasn't been uploaded yet.
+            </div>
+        }
+        else if (_winX86File?.PhysicalPath is not null)
+        {
+            <div class="text-info mb-2">
+                Created Date: @(_winX86CreatedDate) UTC
+            </div>
+        }
+
+        @if (_isServerAdmin)
+        {
+            <div class="mb-2">
+                <FileInputButton ClassNames="btn btn-primary"
+                                 OnChanged="HandleWin86FileChanged">
+                    <ButtonContent>
+                        <i class="oi oi-data-transfer-upload" title="Upload File"></i>
+                        <span class="ms-2">Upload File</span>
+                    </ButtonContent>
+                </FileInputButton>
+                <div class="mt-1">
+                    <span class="text-primary">
+                        Note: Only server admins will have this button.
+                    </span>
+                </div>
+            </div>
+        }
+
+        <div class="input-group">
+            <input type="text" class="form-control" readonly value="@_winX86Uri" />
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyUriToClipboard(_winX86Uri)">
+                <i class="oi oi-clipboard"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private static readonly SemaphoreSlim _writeLock = new(1, 1);
+    private string _organizationId = string.Empty;
+    private string _windowsScript = string.Empty;
+    private string _ubuntuScript = string.Empty;
+    private string _manjaroScript = string.Empty;
+    private string _appDataDir = string.Empty;
+    private IFileInfo? _winX64File;
+    private IFileInfo? _winX86File;
+    private string _winX64Uri = string.Empty;
+    private string _winX86Uri = string.Empty;
+    private bool _isLoading = false;
+    private string _loadingMessage = string.Empty;
+    private bool _isServerAdmin;
+    private DateTime _winX64CreatedDate;
+    private DateTime _winX86CreatedDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userResult = await Auth.GetUser();
+        if (!userResult.IsSuccess)
+        {
+            NavMan.NavigateTo("/", false);
+            return;
+        }
+
+        _isServerAdmin = userResult.Value.IsServerAdmin;
+        _organizationId = userResult.Value.OrganizationID;
+        _appDataDir = Path.Combine(HostEnv.ContentRootPath, "AppData");
+        _winX64Uri = $"{NavMan.BaseUri}api/custom-binaries/win-x64/desktop/{_organizationId}";
+        _winX86Uri = $"{NavMan.BaseUri}api/custom-binaries/win-x86/desktop/{_organizationId}";
+
+        SetFileInfos();
+
+        SetScriptContent();
+
+        await base.OnInitializedAsync();
+    }
+
+    private async Task CopyScriptToClipboard(string script)
+    {
+        try
+        {
+            var result = await JsInterop.SetClipboardText(script);
+            if (result)
+            {
+                Toasts.ShowToast2("Script copied to clipboard", ToastType.Success);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while copying script to clipboard.");
+        }
+        Toasts.ShowToast2("Failed to set clipboard content", ToastType.Error);
+    }
+
+    private async Task CopyUriToClipboard(string uri)
+    {
+        try
+        {
+            var result = await JsInterop.SetClipboardText(uri);
+            if (result)
+            {
+                Toasts.ShowToast2("URI copied to clipboard", ToastType.Success);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while copying URI to clipboard.");
+        }
+        Toasts.ShowToast2("Failed to set clipboard content", ToastType.Error);
+    }
+
+    private string GetLinuxScript(string platformId)
+    {
+        return
+            $"sudo rm -f /tmp/Install-Remotely.sh && " +
+            $"sudo wget -q -O /tmp/Install-Remotely.sh {NavMan.BaseUri}api/ClientDownloads/{platformId}/{_organizationId} && " +
+            $"sudo chmod +x /tmp/Install-Remotely.sh && " +
+            $"sudo /tmp/Install-Remotely.sh";
+    }
+
+
+    private async Task HandleWin64FileChanged(InputFileChangeEventArgs ev)
+    {
+        await TrySaveFile(_winX64File, ev);
+    }
+
+    private async Task HandleWin86FileChanged(InputFileChangeEventArgs ev)
+    {
+        await TrySaveFile(_winX86File, ev);
+    }
+
+    private void SetFileInfos()
+    {
+        _winX64File = HostEnv.ContentRootFileProvider.GetFileInfo("AppData/Win-x64/Remotely_Desktop.exe");
+        if (_winX64File?.Exists == true && _winX64File?.PhysicalPath is not null)
+        {
+            var fileInfo = new FileInfo(_winX64File.PhysicalPath);
+            _winX64CreatedDate = fileInfo.CreationTimeUtc;
+        }
+
+        _winX86File = HostEnv.ContentRootFileProvider.GetFileInfo("AppData/Win-x86/Remotely_Desktop.exe");
+        if (_winX86File?.Exists == true && _winX86File?.PhysicalPath is not null)
+        {
+            var fileInfo = new FileInfo(_winX86File.PhysicalPath);
+            _winX86CreatedDate = fileInfo.CreationTimeUtc;
+        }
+    }
+
+    private void SetScriptContent()
+    {
+        _windowsScript =
+            $"Invoke-WebRequest -Uri '{NavMan.BaseUri}api/ClientDownloads/WindowsInstaller/{_organizationId}' -OutFile \"${{env:TEMP}}\\Install-Remotely.ps1\" -UseBasicParsing;" +
+            "Start-Process -FilePath 'powershell.exe' -ArgumentList (\"-executionpolicy\", \"bypass\", \"-f\", \"${env:TEMP}\\Install-Remotely.ps1\") -Verb RunAs;";
+
+        _ubuntuScript = GetLinuxScript("UbuntuInstaller-x64");
+
+        _manjaroScript = GetLinuxScript("ManjaroInstaller-x64");
+    }
+
+    private async Task TrySaveFile(IFileInfo? fileInfo, InputFileChangeEventArgs ev)
+    {
+        // Since this is server-side Blazor, it would be impossible to
+        // get to this point without being a server admin.  But we'll add
+        // it here to prevent any issues caused by future changes.
+        if (!_isServerAdmin)
+        {
+            return;
+        }
+
+        await _writeLock.WaitAsync();
+        try
+        {
+            if (fileInfo?.PhysicalPath is null)
+            {
+                Toasts.ShowToast2("Unable to find save path", ToastType.Error);
+                return;
+            }
+
+            _loadingMessage = "Uploading file";
+            _isLoading = true;
+            await InvokeAsync(StateHasChanged);
+
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(fileInfo.PhysicalPath)!);
+            await using var rs = ev.File.OpenReadStream(500_000_000);
+            await using var fs = File.Open(fileInfo.PhysicalPath, FileMode.Create);
+            await rs.CopyToAsync(fs);
+            Toasts.ShowToast2("Custom binary uploaded successfully", ToastType.Success);
+            SetFileInfos();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while uploading custom binary.");
+            Toasts.ShowToast2("Failed to upload custom binary", ToastType.Error);
+        }
+        finally
+        {
+            _writeLock.Release();
+            _isLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+}

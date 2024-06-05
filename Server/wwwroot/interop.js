@@ -42,6 +42,22 @@ window.scrollToElement = (element) => {
     }, 200);
 
 }
+
+/**
+ * @param {string} text
+ * @returns {Promise<boolean>}
+ */
+window.setClipboardText = async (text) => {
+    try {
+        await navigator.clipboard.writeText(text);
+        return true;
+    }
+    catch (ex) {
+        console.error(ex);
+        return false;
+    }
+}
+
 window.setStyleProperty = (element, propertyName, value) => {
     element.style[propertyName] = value;
 }

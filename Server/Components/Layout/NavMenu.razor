@@ -25,9 +25,17 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
+
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </li>
+
+
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="downloads">
+                <span class="oi oi-cloud-download" aria-hidden="true"></span> Downloads
             </NavLink>
         </li>
 
@@ -37,14 +45,14 @@
             </NavLink>
 
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="downloads">
-                <span class="oi oi-cloud-download" aria-hidden="true"></span> Downloads
-            </NavLink>
-        </li>
 
         <AuthorizeView>
             <Authorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="deploy">
+                        <span class="oi oi-data-transfer-upload" aria-hidden="true"></span> Deploy
+                    </NavLink>
+                </li>
                 <li class="nav-item px-3">
                     <NavLink class="nav-link" href="scripts">
                         <span class="oi oi-script" aria-hidden="true"></span> Scripts
@@ -63,6 +71,7 @@
 
             </Authorized>
         </AuthorizeView>
+
 
         @if (_user?.IsAdministrator == true)
         {

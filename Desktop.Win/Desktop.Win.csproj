@@ -12,7 +12,6 @@
     <Authors>Jared Goodwin</Authors>
     <Company>Immense Networks</Company>
     <Product>Remotely Desktop</Product>
-    <PackageProjectUrl>https://remotely.one</PackageProjectUrl>
     <Platforms>AnyCPU;x86;x64</Platforms>
     <StartupObject></StartupObject>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

@@ -1,0 +1,37 @@
+[
+  {
+    "Name": "Agent \u002B Server \u002B Desktop",
+    "Projects": [
+      {
+        "Path": "Agent\\Agent.csproj",
+        "Action": "Start",
+        "DebugTarget": "Agent"
+      },
+      {
+        "Path": "Desktop.Win\\Desktop.Win.csproj",
+        "Action": "Start",
+        "DebugTarget": "Desktop.Win"
+      },
+      {
+        "Path": "Server\\Server.csproj",
+        "Action": "Start",
+        "DebugTarget": "Server"
+      }
+    ]
+  },
+  {
+    "Name": "Agent \u002B Server",
+    "Projects": [
+      {
+        "Path": "Agent\\Agent.csproj",
+        "Action": "Start",
+        "DebugTarget": "Agent"
+      },
+      {
+        "Path": "Server\\Server.csproj",
+        "Action": "Start",
+        "DebugTarget": "Server"
+      }
+    ]
+  }
+]

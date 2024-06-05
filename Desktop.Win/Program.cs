@@ -35,7 +35,7 @@ public class Program
         var logger = new FileLogger("Remotely_Desktop", version, "Program.cs");
         var filePath = Environment.ProcessPath ?? Environment.GetCommandLineArgs().First();
         var serverUrl = Debugger.IsAttached ? "https://localhost:5001" : string.Empty;
-        var getEmbeddedResult = await EmbeddedServerDataSearcher.Instance.TryGetEmbeddedData(filePath);
+        var getEmbeddedResult =  EmbeddedServerDataProvider.Instance.TryGetEmbeddedData(filePath);
         if (getEmbeddedResult.IsSuccess)
         {
             serverUrl = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
@@ -47,7 +47,7 @@ public class Program
         var services = new ServiceCollection();
 
         services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
-        services.AddSingleton<IEmbeddedServerDataSearcher>(EmbeddedServerDataSearcher.Instance);
+        services.AddSingleton<IEmbeddedServerDataProvider>(EmbeddedServerDataProvider.Instance);
 
         services.AddRemoteControlWindows(
             config =>

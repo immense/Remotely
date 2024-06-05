@@ -9,5 +9,5 @@ WORKDIR /app
 
 ENTRYPOINT ["dotnet", "Remotely_Server.dll"]
 
-HEALTHCHECK --interval=5m --timeout=3s \
+HEALTHCHECK \
   CMD curl -f http://localhost:${ASPNETCORE_HTTP_PORTS}/api/healthcheck || exit 1

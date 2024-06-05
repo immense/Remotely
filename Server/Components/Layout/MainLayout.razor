@@ -1,6 +1,7 @@
 ﻿@using Remotely.Server.Components 
 @using Remotely.Server.Auth 
 @inherits LayoutComponentBase
+@inject NavigationManager NavMan
 
 <AuthorizeView Policy="@PolicyNames.TwoFactorRequired">
     <Authorized>
@@ -25,7 +26,7 @@
                 <div class="col-sm-12">
                     <p>Two-factor authentication is required.  Click the button below to set up your authenticator app.</p>
                     <p>
-                        <a href="Account/Manage/TwoFactorAuthentication" class="btn btn-primary">Enable 2FA</a>
+                        <button class="btn btn-primary" @onclick="NavigateToTwoFactor">Enable 2FA</button>
                     </p>
                 </div>
             </div>
@@ -43,3 +44,10 @@
 <ToastHarness />
 <LoaderHarness />
 <ModalHarness />
+
+@code {
+    private void NavigateToTwoFactor()
+    {
+        NavMan.NavigateTo("/Account/Manage/TwoFactorAuthentication", true);
+    }
+}

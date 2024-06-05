@@ -2,13 +2,10 @@
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Agent.Services;
-using Remotely.Shared.Enums;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Services;
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.ServiceProcess;
 using System.Threading.Tasks;
 using System.Runtime.Versioning;
 using Remotely.Agent.Services.Linux;
