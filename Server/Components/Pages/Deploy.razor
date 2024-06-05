@@ -31,7 +31,7 @@
 
         <div class="input-group">
             <input type="text" class="form-control" readonly value="@_windowsScript" />
-            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyToClipboard(_windowsScript)">
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyScriptToClipboard(_windowsScript)">
                 <i class="oi oi-clipboard"></i>
             </button>
         </div>
@@ -44,7 +44,7 @@
 
         <div class="input-group">
             <input type="text" class="form-control" readonly value="@_ubuntuScript" />
-            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyToClipboard(_ubuntuScript)">
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyScriptToClipboard(_ubuntuScript)">
                 <i class="oi oi-clipboard"></i>
             </button>
         </div>
@@ -57,7 +57,7 @@
 
         <div class="input-group">
             <input type="text" class="form-control" readonly value="@_manjaroScript" />
-            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyToClipboard(_manjaroScript)">
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyScriptToClipboard(_manjaroScript)">
                 <i class="oi oi-clipboard"></i>
             </button>
         </div>
@@ -116,7 +116,7 @@
 
         <div class="input-group">
             <input type="text" class="form-control" readonly value="@_winX64Uri" />
-            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyToClipboard(_winX64Uri)">
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyUriToClipboard(_winX64Uri)">
                 <i class="oi oi-clipboard"></i>
             </button>
         </div>
@@ -161,7 +161,7 @@
 
         <div class="input-group">
             <input type="text" class="form-control" readonly value="@_winX86Uri" />
-            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyToClipboard(_winX86Uri)">
+            <button class="btn btn-primary" type="button" id="button-addon2" @onclick="() => CopyUriToClipboard(_winX86Uri)">
                 <i class="oi oi-clipboard"></i>
             </button>
         </div>
@@ -207,11 +207,11 @@
         await base.OnInitializedAsync();
     }
 
-    private async Task CopyToClipboard(string text)
+    private async Task CopyScriptToClipboard(string script)
     {
         try
         {
-            var result = await JsInterop.SetClipboardText(text);
+            var result = await JsInterop.SetClipboardText(script);
             if (result)
             {
                 Toasts.ShowToast2("Script copied to clipboard", ToastType.Success);
@@ -225,6 +225,23 @@
         Toasts.ShowToast2("Failed to set clipboard content", ToastType.Error);
     }
 
+    private async Task CopyUriToClipboard(string uri)
+    {
+        try
+        {
+            var result = await JsInterop.SetClipboardText(uri);
+            if (result)
+            {
+                Toasts.ShowToast2("URI copied to clipboard", ToastType.Success);
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while copying URI to clipboard.");
+        }
+        Toasts.ShowToast2("Failed to set clipboard content", ToastType.Error);
+    }
 
     private string GetLinuxScript(string platformId)
     {
