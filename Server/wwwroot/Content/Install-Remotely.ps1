@@ -204,5 +204,6 @@ try {
 }
 catch {
 	Write-Log -Message "Error occurred: $($Error[0].InvocationInfo.PositionMessage)"
+        throw $Error[0]
 	Do-Exit
 }
