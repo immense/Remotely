@@ -129,8 +129,9 @@ function Install-Remotely {
 	}
 
 	if (!$ConnectionInfo) {
+		$NewDeviceId = [System.Guid]::NewGuid().ToString();
 		$ConnectionInfo = @{
-			DeviceID                = (New-Guid).ToString();
+			DeviceID                = $NewDeviceId;
 			Host                    = $HostName;
 			OrganizationID          = $Organization;
 			ServerVerificationToken = "";
