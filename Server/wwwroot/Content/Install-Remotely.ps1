@@ -18,7 +18,18 @@ param (
 	[switch]$Quiet
 )
 
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+#region Set SecurityProtocol
+# This will include all security protocols greater than or equal to TLS 1.2.
+[System.Net.SecurityProtocolType]$SecurityProtocols = 0;
+[System.Enum]::GetValues([System.Net.SecurityProtocolType]) | Where-Object {
+	$_ -ge [System.Net.SecurityProtocolType]::Tls12
+} | ForEach-Object {
+	$SecurityProtocols = $SecurityProtocols -bor $_
+}
+[System.Net.ServicePointManager]::SecurityProtocol = $SecurityProtocols
+#endregion
+
+#region Set Variables
 $LogPath = "$env:TEMP\Remotely_Install.txt"
 
 [string]$HostName = $null
@@ -41,7 +52,9 @@ else {
 }
 
 $InstallPath = "$env:ProgramFiles\Remotely"
+#endregion
 
+#region Functions
 function Write-Log($Message) {
 	if (!$Quiet) {
 		Write-Host $Message
@@ -185,6 +198,10 @@ function Install-Remotely {
 	Start-Service -Name Remotely_Service
 }
 
+#endregion
+
+#region Main
+
 try {
 	Run-StartupChecks
 
@@ -205,6 +222,7 @@ try {
 }
 catch {
 	Write-Log -Message "Error occurred: $($Error[0].InvocationInfo.PositionMessage)"
-        throw $Error[0]
+	throw $Error[0]
 	Do-Exit
 }
+#endregion
