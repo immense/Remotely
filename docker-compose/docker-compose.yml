@@ -39,5 +39,4 @@ services:
       # If using SQL Server, change the connection string to point to your SQL Server instance.
       - Remotely_ConnectionStrings__SQLServer=Server=(localdb)\\mssqllocaldb;Database=Remotely-Server-53bc9b9d-9d6a-45d4-8429-2a2761773502;Trusted_Connection=True;MultipleActiveResultSets=true
       # If using PostgreSQL, change the connection string to point to your PostgreSQL instance.
-      - Remotely_ConnectionStrings__PostgreSQL=Server=Host=localhost;Database=Remotely;Username=postgres;
-    
+      - Remotely_ConnectionStrings__PostgreSQL=Host=localhost;Database=Remotely;Username=postgres;Password=changeme;
