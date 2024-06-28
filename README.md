@@ -4,13 +4,10 @@ A remote control and remote scripting solution, built with .NET, Blazor, and Sig
 [![Build Status](https://dev.azure.com/immybot/Remotely/_apis/build/status%2Fimmense.Remotely?branchName=master)](https://dev.azure.com/immybot/Remotely/_build/latest?definitionId=2&branchName=master)
 [![Tests](https://github.com/immense/Remotely/actions/workflows/run_tests.yml/badge.svg?branch=master)](https://github.com/immense/Remotely/actions/workflows/run_tests.yml)
 
-# Status 
+## Looking for Maintainers
 
-This project is alive! Jared has joined the ImmyBot Team and we have implemented Remotely's Remote Control functionality into ImmyBot.
+I'm looking for maintainers to help me out!  If you are a .NET dev and are interested in helping to keep Remotely moving forward, send me a DM on Discord at `jaredatimmy`.
 
-The shared functionality has been abstracted into the [Immense Remote Control Library](https://github.com/immense/remotecontrol) repository.
-
-This allows both projects to benefit from improvements we make.
 ## Project Links
 Subreddit: https://www.reddit.com/r/remotely_app/  
 Docker: https://hub.docker.com/r/immybot/remotely  
