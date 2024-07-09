@@ -1,19 +1,18 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 <!--
 
-Your bug must meet the following requirements, or else it will be closed.  For issues that don't meet these requirements, please reach out to the community on the official subreddit (https://www.reddit.com/r/remotely_app/) or in the Discussion areas on GitHub.
+Your bug must meet the following requirements, or else it will be closed.  For issues that don't meet these requirements, please reach out to the community in the Discussion areas on GitHub.
 
 Requirements:
+    - ⚠️ Please read the following section in the readme before continuing: https://github.com/immense/Remotely?tab=readme-ov-file#important-https-and-reverse-proxies⚠️
     - You are running Remotely in Docker using our official image
-    - 
     - The bug must be related specifically to application code (e.g. not related to hosting, reverse proxy configuration, etc.).
     - It must be immediately reproducible, either in a debug environment or on https://app.remotely.one.  (This doesn't apply to bugs that are clearly code-related.)
 
@@ -25,6 +24,7 @@ A clear and concise description of what the bug is. Ideally with a screenshot if
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
@@ -41,17 +41,17 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+
+- OS: [e.g. iOS]
+- Browser [e.g. chrome, safari]
+- Version [e.g. 22]
 
 **Smartphone (please complete the following information):**
- - Device: [e.g. iPhone13]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+
+- Device: [e.g. iPhone13]
+- OS: [e.g. iOS8.1]
+- Browser [e.g. stock browser, safari]
+- Version [e.g. 22]
 
 **Additional Context**
 Add any other context about the problem here.
-
-- [ ] I am running Remotely in Docker and not on my QNAP, Synology, or Internet Connected Toaster
