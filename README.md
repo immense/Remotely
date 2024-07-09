@@ -27,11 +27,14 @@ The only supported reverse proxy is Caddy, and only when it is directly facing t
 
 If you are having networking issues with any other setup, such as with an additional firewall or with Nginx, please seek out community support in the Discussions tab, on Reddit, or another social site.  The Remotely maintainers simply can't provide guidance and support for all the possible environment setups.
 
-With that said, Remotely requires the following headers to be set: `X-Forwarded-Proto`, `X-Forwarded-Host`, and `X-Forwarded-For`.  These correlate to the scheme (http/https), the URL of the original request, and the client's IP address, respectively.  The resulting scheme and host are injected into the installers and desktop clients, so they know where to send requests.  The client IP address is used in the device info.
+With that said, ASP.NET Core requires the following headers to be set when behind a reverse proxy: `X-Forwarded-Proto`, `X-Forwarded-Host`, and `X-Forwarded-For`.  These correlate to the scheme (http/https), the URL of the original request, and the client's IP address, respectively.  The resulting scheme and host are injected into the installers and desktop clients, so they know where to send requests.  The client IP address is used in the device info.
 
-The Remotely code does not parse or handle these values.  It is done internally by ASP.NET Core's built-in middleware.  If the values are not appearing as expected, it is because the headers were missing, didn't contain the correct values, were not the correct format, or didn't come through a chain of known proxies (see below).
+The Remotely code does not parse or handle these values.  It is done internally by ASP.NET Core's built-in middleware.  If the values are not appearing as expected, it is because the headers were missing, didn't contain the correct values, were not in the correct format, or didn't come through a chain of known proxies (see below).
 
-To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded headers from loopback addresses.  Remotely will also add the default Docker host IP (172.17.0.1).  If you are using a non-default configuration, you must add all firewall and reverse proxy addresses to the `KnownProxies` array in the Server Config.
+To avoid injection attacks, ASP.NET Core defaults to only accepting forwarded headers from loopback addresses.  Remotely will also add the Docker gateway IP (172.28.0.1) defined in the docker-compose file.  If you are using a non-default configuration, you must add all firewall and reverse proxy addresses to the `KnownProxies` array in the Server Config.
+
+If you are unable to get your reverse proxies configured correctly, you can at least force the use of HTTPS scheme by setting `Force Client HTTPS` in the Server Config page.
+
 
 ## After Installation
 - Data for Remotely will be saved in the container under `/app/AppData`, which will be mounted to `/var/www/remotely/` on your Docker host.
@@ -101,6 +104,7 @@ All other configuration is done in the Server Config page once you're logged in.
 - EnableRemoteControlRecording: Whether to save recordings of remote control sessions on the server.
   - They will be saved in `/app/AppData/recordings`.
   - Their retention is governed by `DataRetentionInDays`.
+- ForceClientHTTPS: Force installers and desktop clients to use HTTPS scheme, even if forwarded headers is misconfigured.
 - KnownProxies: If your reverse proxy is on a different machine and is forwarding requests to the Remotely server, you will need to add the IP of the reverse proxy server to this array.
 - MaxOrganizationCount: By default, one organization can exist on the server, which is created automatically when the first account is registered.  Afterward, self-registration will be disabled.
     - Set this to -1 or increase it to a specific number to allow multi-tenancy.
