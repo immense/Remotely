@@ -12,20 +12,26 @@ ETag=$(curl --head $HostName/Content/Remotely-Linux.zip | grep -i "etag" | cut -
 LogPath="/var/log/remotely/Agent_Install.log"
 
 mkdir -p /var/log/remotely
-Args=( "$@" )
-ArgLength=${#Args[@]}
-
-for (( i=0; i<${ArgLength}; i+=2 ));
-do
-    if [ "${Args[$i]}" = "--uninstall" ]; then
-        systemctl stop remotely-agent
-        rm -r -f $InstallDir
-        rm -f /etc/systemd/system/remotely-agent.service
-        systemctl daemon-reload
-        exit
-    elif [ "${Args[$i]}" = "--path" ]; then
-        UpdatePackagePath="${Args[$i+1]}"
-    fi
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --uninstall)
+            echo "Uninstalling..."
+            systemctl stop remotely-agent
+            rm -r -f $InstallDir
+            rm -f /etc/systemd/system/remotely-agent.service
+            systemctl daemon-reload
+            echo "Uninstall completed successfully!"
+            exit
+            ;;
+        --path)
+            UpdatePackagePath="$2"
+            shift
+            ;;
+        *)
+            echo "Unknown argument: $1"
+            ;;
+    esac
+    shift
 done
 
 if [ -z "$ETag" ]; then
