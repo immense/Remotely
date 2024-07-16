@@ -1,4 +1,4 @@
-﻿using Immense.SimpleMessenger;
+﻿using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Concurrent;

@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Shared.Services;
+﻿using Remotely.Shared.Services;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Extensions;
 using Serilog;

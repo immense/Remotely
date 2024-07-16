@@ -1,37 +1,41 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Shared;
-using Immense.RemoteControl.Shared.Models;
+﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Entities;
+using Remotely.Shared.Primitives;
 using Remotely.Shared.Services;
 using System.Diagnostics;
 using System.Net.Http.Json;
 
 namespace Desktop.Shared.Services;
 
+public interface IBrandingProvider
+{
+    BrandingInfo CurrentBranding { get; }
+    Task Initialize();
+    void SetBrandingInfo(BrandingInfo brandingInfo);
+}
+
 public class BrandingProvider : IBrandingProvider
 {
     private readonly IAppState _appState;
     private readonly IEmbeddedServerDataProvider _embeddedDataSearcher;
     private readonly ILogger<BrandingProvider> _logger;
-    private readonly IOrganizationIdProvider _orgIdProvider;
-    private BrandingInfoBase? _brandingInfo;
+    private BrandingInfo? _brandingInfo;
 
 
     public BrandingProvider(
         IAppState appState,
-        IOrganizationIdProvider orgIdProvider,
         IEmbeddedServerDataProvider embeddedServerDataSearcher,
         ILogger<BrandingProvider> logger)
     {
         _appState = appState;
-        _orgIdProvider = orgIdProvider;
         _embeddedDataSearcher = embeddedServerDataSearcher;
         _logger = logger;
     }
 
-    public BrandingInfoBase CurrentBranding => _brandingInfo ??
+    public BrandingInfo CurrentBranding => _brandingInfo ??
         throw new InvalidOperationException("Branding info has not been set or initialized.");
 
     public async Task Initialize()
@@ -56,9 +60,9 @@ public class BrandingProvider : IBrandingProvider
             };
         }
 
-        if (_brandingInfo.Icon?.Any() != true)
+        if (_brandingInfo.Icon is not { Length: > 0 })
         {
-            using var mrs = typeof(BrandingProvider).Assembly.GetManifestResourceStream("Desktop.Shared.Assets.Remotely_Icon.png");
+            using var mrs = typeof(BrandingProvider).Assembly.GetManifestResourceStream("Remotely.Desktop.Shared.Assets.Remotely_Icon.png");
             using var ms = new MemoryStream();
             mrs!.CopyTo(ms);
 
@@ -66,7 +70,7 @@ public class BrandingProvider : IBrandingProvider
         }
     }
 
-    public void SetBrandingInfo(BrandingInfoBase brandingInfo)
+    public void SetBrandingInfo(BrandingInfo brandingInfo)
     {
         _brandingInfo = brandingInfo;
     }
@@ -75,7 +79,7 @@ public class BrandingProvider : IBrandingProvider
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(_orgIdProvider.OrganizationId) ||
+            if (string.IsNullOrWhiteSpace(_appState.OrganizationId) ||
                 string.IsNullOrWhiteSpace(_appState.Host))
             {
                 var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
@@ -87,21 +91,24 @@ public class BrandingProvider : IBrandingProvider
 
                 var result = _embeddedDataSearcher.TryGetEmbeddedData(filePath);
 
-                if (!result.IsSuccess)
+                if (result.IsSuccess)
+                {
+                    if (!string.IsNullOrWhiteSpace(result.Value.OrganizationId))
+                    {
+                        _appState.OrganizationId = result.Value.OrganizationId;
+                    }
+
+                    if (result.Value.ServerUrl is not null)
+                    {
+                        _appState.Host = result.Value.ServerUrl.AbsoluteUri;
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(_appState.Host))
                 {
                     return result.HadException ?
                         Result.Fail<BrandingInfo>(result.Exception) :
                         Result.Fail<BrandingInfo>(result.Reason);
-                }
-
-                if (!string.IsNullOrWhiteSpace(result.Value.OrganizationId))
-                {
-                    _orgIdProvider.OrganizationId = result.Value.OrganizationId;
-                }
-
-                if (result.Value.ServerUrl is not null)
-                {
-                    _appState.Host = result.Value.ServerUrl.AbsoluteUri;
                 }
             }
 
@@ -112,7 +119,7 @@ public class BrandingProvider : IBrandingProvider
 
             using var httpClient = new HttpClient();
 
-            var brandingUrl = $"{_appState.Host.TrimEnd('/')}/api/branding/{_orgIdProvider.OrganizationId}";
+            var brandingUrl = $"{_appState.Host.TrimEnd('/')}/api/branding/{_appState.OrganizationId}";
             var httpResult = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
             if (httpResult is null)
             {

@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<!--Avalonia doesen't support TrimMode=link currently,but we are working on that https://github.com/AvaloniaUI/Avalonia/issues/6892 -->
+		<TrimMode>copyused</TrimMode>
+		<BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+		<RootNamespace>Remotely.Desktop.UI</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Assets\avalonia-logo.ico" />
+	  <None Remove="Assets\DefaultIcon.ico" />
+	  <None Remove="Assets\DefaultIcon.png" />
+	  <None Remove="Assets\Gear.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AvaloniaResource Include="Assets\avalonia-logo.ico" />
+	  <AvaloniaResource Include="Assets\DefaultIcon.ico" />
+	  <AvaloniaResource Include="Assets\DefaultIcon.png" />
+	  <AvaloniaResource Include="Assets\Gear.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--This helps with theme dll-s trimming.
+			If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
+			https://github.com/AvaloniaUI/Avalonia/issues/5593 -->
+		<TrimmableAssembly Include="Avalonia.Themes.Fluent" />
+		<TrimmableAssembly Include="Avalonia.Themes.Default" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="11.0.11" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.11" />
+		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.11" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.11" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.11" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Desktop.Shared\Desktop.Shared.csproj" />
+	  <ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+</Project>

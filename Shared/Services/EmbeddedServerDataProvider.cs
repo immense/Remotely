@@ -1,8 +1,9 @@
 ﻿#nullable enable
 
-using Immense.RemoteControl.Shared;
+using Remotely.Shared;
 using MessagePack;
 using Remotely.Shared.Models;
+using Remotely.Shared.Primitives;
 using System;
 using System.IO;
 

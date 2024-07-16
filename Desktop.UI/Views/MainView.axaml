@@ -1,0 +1,80 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Remotely.Desktop.UI.ViewModels"
+			 xmlns:fakes="clr-namespace:Remotely.Desktop.UI.ViewModels.Fakes"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="350"
+             x:Class="Remotely.Desktop.UI.Views.MainView"
+             x:DataType="vm:IMainViewViewModel">
+
+	<Design.DataContext>
+		<fakes:FakeMainViewViewModel />
+	</Design.DataContext>
+
+	<Grid ColumnDefinitions="200, *" Margin="10">
+		<StackPanel Grid.Column="0" Margin="0,0,10,0">
+			<TextBlock Classes="SectionHeader">Share Screen</TextBlock>
+			<TextBlock FontSize="16" Margin="0,10,0,5">Your Session ID:</TextBlock>
+			<TextBox Name="SessionIDTextBox" FontSize="16" Text="{Binding StatusMessage}" IsReadOnly="True"/>
+			<Grid Margin="0,10,0,0">
+				<TextBlock VerticalAlignment="Center">
+					Invite Link:
+				</TextBlock>
+				<Button HorizontalAlignment="Right" Classes="NormalButton" Command="{Binding CopyLinkCommand}">
+					Copy
+				</Button>
+			</Grid>
+			<TextBlock Margin="0,10,0,0" Foreground="DodgerBlue" IsVisible="{Binding IsCopyMessageVisible}" Opacity="{Binding CopyMessageOpacity}" HorizontalAlignment="Right">Copied to clipboard!</TextBlock>
+		</StackPanel>
+
+		<Grid Grid.Column="1" Margin="10,0,0,0" RowDefinitions="Auto, Auto, *, Auto">
+			<TextBlock Grid.Row="0" Classes="SectionHeader" Margin="0,0,0,10">Viewers</TextBlock>
+			<Grid Grid.Row="1" Margin="0,5,0,0">
+				<TextBlock FontSize="8" Margin="5,0,0,0">Name</TextBlock>
+				<TextBlock FontSize="8" Margin="0,0,5,0" HorizontalAlignment="Right">Has Control</TextBlock>
+			</Grid>
+			<ListBox Grid.Row="2" Name="ViewerListBox" VerticalAlignment="Stretch" ItemsSource="{Binding Viewers}" SelectionMode="Multiple" SelectedItems="{Binding SelectedViewers}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Grid VerticalAlignment="Center" ColumnDefinitions="*, Auto">
+							<TextBlock Grid.Column="0" Text="{Binding Name}" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextTrimming="CharacterEllipsis"  />
+							<CheckBox Grid.Column="1" IsChecked="{Binding HasControl}" VerticalAlignment="Center" />
+						</Grid>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+			<Button Grid.Row="3" Classes="NormalButton" HorizontalAlignment="Right"  Margin="0,5,0,0"
+					Command="{Binding RemoveViewersCommand}">
+				Remove
+			</Button>
+		</Grid>
+		
+		<Button x:Name="OptionsButton"
+				BorderThickness="0"
+				Background="Transparent"
+				VerticalAlignment="Bottom"
+				HorizontalAlignment="Left"
+				Cursor="Hand"
+				Height="25"
+				Width="25"
+				Padding="2"
+				VerticalContentAlignment="Stretch"
+				HorizontalContentAlignment="Stretch"
+				Margin="10,5"
+				Command="{Binding OpenOptionsMenu}"
+				CommandParameter="{Binding #OptionsButton}"
+              >
+			<Button.ContextMenu>
+				<ContextMenu>
+					<MenuItem Header="Change Server" Command="{Binding ChangeServerCommand}"></MenuItem>
+				</ContextMenu>
+			</Button.ContextMenu>
+			<Image 
+				Source="avares://Desktop.UI/Assets/Gear.png"
+				VerticalAlignment="Stretch"
+				HorizontalAlignment="Stretch"
+				Stretch="Fill"/>
+		</Button>
+	</Grid>
+</UserControl>

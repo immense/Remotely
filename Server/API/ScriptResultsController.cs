@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Shared.Extensions;
+﻿using Remotely.Shared.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿using Immense.SimpleMessenger;
+﻿using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
@@ -334,7 +334,7 @@ public partial class DeviceCard : AuthComponentBase
         }
 
         JsInterop.OpenWindow(
-            $"/RemoteControl/Viewer" +
+            $"/Viewer" +
                 $"?mode=Unattended&sessionId={session.UnattendedSessionId}" +
                 $"&accessKey={session.AccessKey}" +
                 $"&viewonly={viewOnly}", 

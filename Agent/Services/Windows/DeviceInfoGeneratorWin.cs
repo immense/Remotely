@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Native.Windows;
+﻿using Remotely.Desktop.Shared.Native.Windows;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Dtos;

@@ -1,0 +1,95 @@
+﻿body {
+    background-color: rgb(225,225,225);
+    color: rgb(25,25,25);
+}
+
+button {
+    background-color: #017ea7;
+    color: white;
+}
+
+
+button:hover {
+    background-color: #7dc7e0;
+}
+
+button:active {
+    background-color: #95d5ea;
+}
+
+button.toggled {
+    background-color: #afecff;
+    color: black;
+}
+
+button[disabled] {
+    background-color: rgb(90,90,90);
+    color: gray;
+}
+
+.menu-options-header {
+    color: lightgray;
+}
+
+#menuButton {
+    color: gray;
+    background-color: rgb(50,50,50);
+}
+#menuButton:hover {
+    color: white;
+}
+
+
+#menuFrame {
+    color: white;
+    background-color: rgb(50,50,50);
+}
+
+
+.horizontal-button-bar {
+    background-color: rgb(90, 90, 90);
+}
+
+
+.center-connection-box {
+    background-color: rgb(60, 60, 60);
+    color: white;
+}
+
+
+.logo-subtitle {
+    color: steelblue;
+}
+
+.logo-title {
+    color: rgb(20,20,20);
+}
+
+
+footer a {
+    color: deepskyblue;
+}
+
+
+.status-message {
+    color: deepskyblue;
+}
+
+.toast-message {
+    background-color: rgb(25,25,25);
+    color: white;
+}
+
+
+.modal-prompt {
+    background-color: rgb(60, 60, 60);
+    color: white;
+}
+
+#connectionRelayedIcon {
+    background-color: orange;
+}
+
+#connectionP2PIcon {
+    background-color: green;
+}

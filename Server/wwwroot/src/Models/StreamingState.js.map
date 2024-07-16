@@ -1,0 +1,1 @@
+{"version":3,"file":"StreamingState.js","sourceRoot":"","sources":["StreamingState.ts"],"names":[],"mappings":"AAAA,MAAM,OAAO,cAAc;IACvB;QACI,IAAI,CAAC,MAAM,GAAG,IAAI,IAAI,EAAE,CAAC;QACzB,IAAI,CAAC,cAAc,GAAG,EAAE,CAAC;QACzB,IAAI,CAAC,WAAW,GAAG,KAAK,CAAC;IAC7B,CAAC;CAKJ"}

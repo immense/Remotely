@@ -1,5 +1,5 @@
-using Immense.RemoteControl.Server.Extensions;
-using Immense.SimpleMessenger;
+using Remotely.Server.Extensions;
+using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;
@@ -11,21 +11,20 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Remotely.Server.Auth;
-using Remotely.Server.Components;
 using Remotely.Server.Components.Account;
 using Remotely.Server.Data;
-using Remotely.Server.Extensions;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Options;
 using Remotely.Server.Services;
-using Remotely.Server.Services.RcImplementations;
 using Remotely.Server.Services.Stores;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Services;
 using Serilog;
 using System.Net;
 using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
+using Remotely.Server.Filters;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -118,7 +117,7 @@ services.AddIdentityCore<RemotelyUser>(options =>
 services.AddScoped<IAuthorizationHandler, TwoFactorRequiredHandler>();
 services.AddScoped<IAuthorizationHandler, OrganizationAdminRequirementHandler>();
 services.AddScoped<IAuthorizationHandler, ServerAdminRequirementHandler>();
-builder.Services.AddSingleton<IEmailSender<RemotelyUser>, IdentityNoOpEmailSender>();
+services.AddSingleton<IEmailSender<RemotelyUser>, IdentityNoOpEmailSender>();
 
 services.AddAuthorization(options =>
 {
@@ -250,18 +249,15 @@ services.AddSingleton<ILogsManager, LogsManager>();
 services.AddScoped<IThemeProvider, ThemeProvider>();
 services.AddScoped<IChatSessionStore, ChatSessionStore>();
 services.AddScoped<ITerminalStore, TerminalStore>();
+services.AddScoped<ViewerAuthorizationFilter>();
 services.AddSingleton(WeakReferenceMessenger.Default);
-
-services.AddRemoteControlServer(config =>
-{
-    config.AddHubEventHandler<HubEventHandler>();
-    config.AddViewerAuthorizer<ViewerAuthorizer>();
-    config.AddViewerPageDataProvider<ViewerPageDataProvider>();
-    config.AddViewerOptionsProvider<ViewerOptionsProvider>();
-    config.AddSessionRecordingSink<SessionRecordingSink>();
-});
-
+services.AddSingleton<ISessionRecordingSink, SessionRecordingSink>();
+services.AddSingleton<IDesktopStreamCache, DesktopStreamCache>();
+services.AddSingleton<IRemoteControlSessionCache, RemoteControlSessionCache>();
+services.AddSingleton<ISystemTime, SystemTime>();
 services.AddSingleton<IAgentHubSessionCache, AgentHubSessionCache>();
+services.AddHostedService<RemoteControlSessionCleaner>();
+services.AddHostedService<RemoteControlSessionReconnector>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -308,8 +304,10 @@ app.UseCors("TrustedOriginPolicy");
 
 app.UseAntiforgery();
 
-app.UseRemoteControlServer();
 
+app.MapRazorPages();
+app.MapHub<DesktopHub>("/hubs/desktop");
+app.MapHub<ViewerHub>("/hubs/viewer");
 app.MapHub<AgentHub>("/hubs/service");
 app.MapControllers();
 

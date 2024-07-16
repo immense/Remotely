@@ -216,13 +216,6 @@
                 <ValidationMessage For="() => Input.RemoteControlRequiresAuthentication" />
             </div>
             <div class="form-group">
-                <label class="control-label">Remote Control Session Limit</label>
-                <br />
-                <InputNumber @bind-Value="Input.RemoteControlSessionLimit" class="form-control" autocomplete="off" />
-                <br />
-                <ValidationMessage For="() => Input.RemoteControlSessionLimit" />
-            </div>
-            <div class="form-group">
                 <label>Require 2FA</label>
                 <br />
                 <InputCheckbox @bind-Value="Input.Require2FA" autocomplete="off" />

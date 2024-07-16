@@ -1,19 +1,16 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using System.Threading.Tasks;
+﻿using Remotely.Desktop.Shared.Abstractions;
 using System.Threading;
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Services;
-using Immense.RemoteControl.Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Services;
 using System.Diagnostics;
 using Remotely.Shared.Utilities;
-using Immense.RemoteControl.Desktop.Shared.Startup;
-using System.Linq;
-using Immense.RemoteControl.Desktop.Linux.Startup;
-using Immense.RemoteControl.Desktop.UI.Services;
+using Remotely.Desktop.Shared.Startup;
+using Remotely.Desktop.Linux.Startup;
+using Remotely.Desktop.UI.Services;
 using Avalonia;
-using Immense.RemoteControl.Desktop.UI;
+using Remotely.Desktop.UI;
 using Desktop.Shared.Services;
 
 namespace Remotely.Desktop.XPlat;
@@ -45,14 +42,8 @@ public class Program
 
         var services = new ServiceCollection();
 
-        services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
         services.AddSingleton<IEmbeddedServerDataProvider, EmbeddedServerDataProvider>();
-
-        services.AddRemoteControlLinux(
-            config =>
-            {
-                config.AddBrandingProvider<BrandingProvider>();
-            });
+        services.AddRemoteControlLinux();
 
         services.AddLogging(builder =>
         {
@@ -66,17 +57,16 @@ public class Program
         var provider = services.BuildServiceProvider();
 
         var appState = provider.GetRequiredService<IAppState>();
-        var orgIdProvider = provider.GetRequiredService<IOrganizationIdProvider>();
 
         if (getEmbeddedResult.IsSuccess)
         {
-            orgIdProvider.OrganizationId = getEmbeddedResult.Value.OrganizationId;
+            appState.OrganizationId = getEmbeddedResult.Value.OrganizationId;
             appState.Host = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
         }
 
         if (appState.ArgDict.TryGetValue("org-id", out var orgId))
         {
-            orgIdProvider.OrganizationId = orgId;
+            appState.OrganizationId = orgId;
         }
 
         var result = await provider.UseRemoteControlClient(

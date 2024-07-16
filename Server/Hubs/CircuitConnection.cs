@@ -1,25 +1,17 @@
-﻿using Immense.RemoteControl.Server.Services;
-using Immense.RemoteControl.Shared;
-using Immense.RemoteControl.Shared.Helpers;
-using Immense.SimpleMessenger;
+﻿using Remotely.Server.Services;
+using Remotely.Shared.Helpers;
+using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 using Remotely.Server.Models;
 using Remotely.Server.Models.Messages;
-using Remotely.Server.Services;
 using Remotely.Server.Services.Stores;
 using Remotely.Shared;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Interfaces;
 using Remotely.Shared.Utilities;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Hubs;
 
@@ -39,7 +31,7 @@ public interface ICircuitConnection
 
     Task ReinstallAgents(string[] deviceIDs);
 
-    Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceID, bool viewOnly);
+    Task<Result<RemoteControlSession>> RemoteControl(string deviceID, bool viewOnly);
 
     Task RemoveDevices(string[] deviceIDs);
 
@@ -223,7 +215,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         _dataService.RemoveDevices(deviceIDs);
     }
 
-    public async Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceId, bool viewOnly)
+    public async Task<Result<RemoteControlSession>> RemoteControl(string deviceId, bool viewOnly)
     {
         var settings = await _dataService.GetSettings();
 
@@ -236,7 +228,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
             await _messenger.Send(message, ConnectionId);
 
-            return Result.Fail<RemoteControlSessionEx>("Device is not online.");
+            return Result.Fail<RemoteControlSession>("Device is not online.");
         }
 
 
@@ -247,24 +239,8 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                 "Remote control attempted by unauthorized user.  Device ID: {deviceId}.  User Name: {userName}.",
                 deviceId,
                 User.UserName);
-            return Result.Fail<RemoteControlSessionEx>("Unauthorized.");
+            return Result.Fail<RemoteControlSession>("Unauthorized.");
 
-        }
-
-        var sessionCount = _remoteControlSessionCache.Sessions
-               .OfType<RemoteControlSessionEx>()
-               .Count(x => x.OrganizationId == User.OrganizationID);
-
-        if (sessionCount >= settings.RemoteControlSessionLimit)
-        {
-            var message = new DisplayNotificationMessage(
-                "There are already the maximum amount of active remote control sessions for your organization.",
-                "Max number of concurrent sessions reached.",
-                "bg-warning");
-            
-            await _messenger.Send(message, ConnectionId);
-
-            return Result.Fail<RemoteControlSessionEx>("Max number of concurrent sessions reached.");
         }
 
         if (!_agentSessionCache.TryGetConnectionId(targetDevice.ID, out var serviceConnectionId))
@@ -275,13 +251,13 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                 "bg-warning");
             
             await _messenger.Send(message, ConnectionId);
-            return Result.Fail<RemoteControlSessionEx>("Service connection not found.");
+            return Result.Fail<RemoteControlSession>("Service connection not found.");
         }
 
         var sessionId = Guid.NewGuid();
         var accessKey = RandomGenerator.GenerateAccessKey();
 
-        var session = new RemoteControlSessionEx()
+        var session = new RemoteControlSession()
         {
             UnattendedSessionId = sessionId,
             UserConnectionId = ConnectionId,
@@ -300,7 +276,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         if (!orgResult.IsSuccess)
         {
             _toastService.ShowToast2(orgResult.Reason, Enums.ToastType.Warning);
-            return Result.Fail<RemoteControlSessionEx>(orgResult.Reason);
+            return Result.Fail<RemoteControlSession>(orgResult.Reason);
         }
 
         await _agentHubContext.Clients.Client(serviceConnectionId).RemoteControl(

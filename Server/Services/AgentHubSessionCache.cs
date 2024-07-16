@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Server.Models;
+﻿using Remotely.Server.Models;
 using Remotely.Shared.Entities;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

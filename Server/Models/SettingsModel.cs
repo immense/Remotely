@@ -21,7 +21,6 @@ public class SettingsModel
     public bool RedirectToHttps { get; set; } = true;
     public bool RemoteControlNotifyUser { get; set; } = true;
     public bool RemoteControlRequiresAuthentication { get; set; } = true;
-    public int RemoteControlSessionLimit { get; set; } = 5;
     public bool Require2FA { get; set; }
     public string ServerUrl { get; set; } = string.Empty;
     public bool SmtpCheckCertificateRevocation { get; set; } = true;

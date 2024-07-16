@@ -12,10 +12,10 @@
 #>
 
 param (
-	[string]$OutDir = "",
+    [string]$OutDir = "",
     # RIDs are described here: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
-	[string]$RID = "",
-	[string]$CertificatePath = "",
+    [string]$RID = "",
+    [string]$CertificatePath = "",
     [string]$CertificatePassword = "",
     [string]$CurrentVersion = ""
 )
@@ -42,8 +42,7 @@ if (!$CurrentVersion) {
 
 if ($CertificatePath.Length -gt 0 -and 
     (Test-Path -Path $CertificatePath) -eq $true -and 
-    $CertificatePassword.Length -gt 0) 
-{
+    $CertificatePassword.Length -gt 0) {
     $SignAssemblies = $true
 }
 
@@ -53,11 +52,10 @@ Set-Location -Path $Root
 
 #region Functions
 
-function Replace-LineInFile($FilePath, $MatchPattern, $ReplaceLineWith, $MaxCount = -1){
+function Replace-LineInFile($FilePath, $MatchPattern, $ReplaceLineWith, $MaxCount = -1) {
     [string[]]$Content = Get-Content -Path $FilePath
     $Count = 0
-    for ($i = 0; $i -lt $Content.Length; $i++)
-    {
+    for ($i = 0; $i -lt $Content.Length; $i++) {
         if ($Content[$i] -ne $null -and $Content[$i].Contains($MatchPattern)) {
             $Content[$i] = $ReplaceLineWith
             $Count++
@@ -70,7 +68,7 @@ function Replace-LineInFile($FilePath, $MatchPattern, $ReplaceLineWith, $MaxCoun
 }
 
 function Wait-ForExists($FilePath) {
-    while ((Test-Path -Path $FilePath) -eq $false){
+    while ((Test-Path -Path $FilePath) -eq $false) {
         Write-Host "Waiting for file: $FilePath"
         Start-Sleep -Seconds 3
     }
@@ -88,13 +86,13 @@ if ([string]::IsNullOrWhiteSpace($MSBuildPath) -or !(Test-Path -Path $MSBuildPat
     
 # Clear publish folders.
 if ((Test-Path -Path "$Root\Agent\bin\publish\win-x64") -eq $true) {
-	Get-ChildItem -Path "$Root\Agent\bin\publish\win-x64" | Remove-Item -Force -Recurse
+    Get-ChildItem -Path "$Root\Agent\bin\publish\win-x64" | Remove-Item -Force -Recurse
 }
 if ((Test-Path -Path  "$Root\Agent\bin\publish\win-x86" ) -eq $true) {
-	Get-ChildItem -Path  "$Root\Agent\bin\publish\win-x86" | Remove-Item -Force -Recurse
+    Get-ChildItem -Path  "$Root\Agent\bin\publish\win-x86" | Remove-Item -Force -Recurse
 }
 if ((Test-Path -Path "$Root\Agent\bin\publish\linux-x64") -eq $true) {
-	Get-ChildItem -Path "$Root\Agent\bin\publish\linux-x64" | Remove-Item -Force -Recurse
+    Get-ChildItem -Path "$Root\Agent\bin\publish\linux-x64" | Remove-Item -Force -Recurse
 }
 
 
@@ -138,44 +136,35 @@ if ($SignAssemblies) {
     &"$Root\Utilities\signtool.exe" sign /fd SHA256 /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Win-x86\Remotely_Desktop.exe"
 }
 
-# Build installer.
-&"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Restore 
-&"$MSBuildPath" "$Root\Agent.Installer.Win" /t:Build /p:Configuration=Release /p:Platform=AnyCPU /p:Version=$CurrentVersion /p:FileVersion=$CurrentVersion
-Copy-Item -Path "$Root\Agent.Installer.Win\bin\Release\Remotely_Installer.exe" -Destination "$Root\Server\wwwroot\Content\Remotely_Installer.exe" -Force
-
-if ($SignAssemblies) {
-    &"$Root\Utilities\signtool.exe" sign /fd SHA256 /f "$CertificatePath" /p $CertificatePassword /t http://timestamp.digicert.com "$Root\Server\wwwroot\Content\Remotely_Installer.exe"
-}
-
 # Compress Agents.
-$PublishDir =  "$Root\Agent\bin\publish\win-x64"
+$PublishDir = "$Root\Agent\bin\publish\win-x64"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win-x64.zip" -Force
 Wait-ForExists -FilePath "$PublishDir\Remotely-Win-x64.zip"
 Move-Item -Path "$PublishDir\Remotely-Win-x64.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Win-x64.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\publish\win-x86"
+$PublishDir = "$Root\Agent\bin\publish\win-x86"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Win-x86.zip" -Force
 Wait-ForExists -FilePath "$PublishDir\Remotely-Win-x86.zip"
 Move-Item -Path "$PublishDir\Remotely-Win-x86.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Win-x86.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\publish\linux-x64"
+$PublishDir = "$Root\Agent\bin\publish\linux-x64"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-Linux.zip" -Force
 Wait-ForExists -FilePath "$PublishDir\Remotely-Linux.zip"
 Move-Item -Path "$PublishDir\Remotely-Linux.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-Linux.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\publish\osx-x64"
+$PublishDir = "$Root\Agent\bin\publish\osx-x64"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-MacOS-x64.zip" -Force
 Wait-ForExists -FilePath "$PublishDir\Remotely-MacOS-x64.zip"
 Move-Item -Path "$PublishDir\Remotely-MacOS-x64.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-MacOS-x64.zip" -Force
 
-$PublishDir =  "$Root\Agent\bin\publish\osx-arm64"
+$PublishDir = "$Root\Agent\bin\publish\osx-arm64"
 Compress-Archive -Path "$PublishDir\*" -DestinationPath "$PublishDir\Remotely-MacOS-arm64.zip" -Force
 Wait-ForExists -FilePath "$PublishDir\Remotely-MacOS-arm64.zip"
 Move-Item -Path "$PublishDir\Remotely-MacOS-arm64.zip" -Destination "$Root\Server\wwwroot\Content\Remotely-MacOS-arm64.zip" -Force
 
 
 if ($RID.Length -gt 0 -and $OutDir.Length -gt 0) {
-    if ((Test-Path -Path $OutDir) -eq $false){
+    if ((Test-Path -Path $OutDir) -eq $false) {
         New-Item -Path $OutDir -ItemType Directory
     }
 

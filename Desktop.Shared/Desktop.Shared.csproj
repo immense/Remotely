@@ -4,24 +4,40 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <RootNamespace>Remotely.Desktop.Shared</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Assets\favicon.ico" />
-    <None Remove="Assets\Remotely_Icon.png" />
-  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Assets\Remotely_Icon.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bitbound.SimpleMessenger" Version="2.2.1" />
+    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.2" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.7" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
+    <PackageReference Include="SkiaSharp" Version="2.88.8" />
+    <PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="2.88.8" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+    <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-beta4.22272.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Desktop.Native\Desktop.Native.csproj" />
     <ProjectReference Include="..\Shared\Shared.csproj" />
-    <ProjectReference Include="..\submodules\Immense.RemoteControl\Immense.RemoteControl.Desktop.Shared\Immense.RemoteControl.Desktop.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Assets\favicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Native\" />
   </ItemGroup>
 
 </Project>

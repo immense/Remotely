@@ -1,10 +1,9 @@
-﻿using Immense.RemoteControl.Shared.Services;
+﻿using Remotely.Shared.Services;
 using Microsoft.Build.Framework;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
-using Remotely.Server.Services.RcImplementations;
 using System;
 using System.IO;
 using System.Linq;

@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Shared.Extensions;
+﻿using Remotely.Shared.Extensions;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

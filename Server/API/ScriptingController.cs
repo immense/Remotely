@@ -9,7 +9,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Remotely.Shared.Enums;
 using Remotely.Server.Auth;
-using Immense.RemoteControl.Shared.Helpers;
+using Remotely.Shared.Helpers;
 using Remotely.Shared;
 using Remotely.Server.Extensions;
 using Remotely.Shared.Entities;

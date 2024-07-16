@@ -1,0 +1,84 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Remotely.Desktop.UI.ViewModels"
+		xmlns:fakes="clr-namespace:Remotely.Desktop.UI.ViewModels.Fakes"
+        xmlns:Models="clr-namespace:Remotely.Shared.Models;assembly=Shared"
+        mc:Ignorable="d" 
+		d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Remotely.Desktop.UI.Views.ChatWindow"
+        Icon="{Binding WindowIcon}"
+        BorderBrush="DimGray"
+        BorderThickness="1"
+        MinHeight="250"
+		x:CompileBindings="True"
+        MinWidth="200"
+        Topmost="True"
+		ShowActivated="True"
+		x:DataType="vm:IChatWindowViewModel"
+		x:Name="ChatWindowRef"
+        Title="Chat Session" Height="450" Width="450">
+
+	<Design.DataContext>
+		<fakes:FakeChatWindowViewModel />
+	</Design.DataContext>
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+
+		<TextBlock Grid.Row="0"
+                   Text="{Binding ChatSessionHeader}"
+                   FontWeight="Bold"
+                   Foreground="DimGray"
+                   Margin="10,10,10,0"
+                   TextWrapping="Wrap">
+		</TextBlock>
+
+		<Grid Grid.Row="1">
+			<Grid.RowDefinitions>
+				<RowDefinition />
+				<RowDefinition Height="5" />
+				<RowDefinition Height="50" />
+			</Grid.RowDefinitions>
+
+			<Border BorderBrush="Gray" BorderThickness="1" Margin="5">
+				<ScrollViewer x:Name="MessagesScrollViewer">
+					<ItemsControl x:Name="MessagesListBox" ItemsSource="{Binding ChatMessages}">
+						<ItemsControl.ItemTemplate>
+							<DataTemplate DataType="{x:Type Models:ChatMessage}">
+								<!-- TODO: Replace with Run when implemented. -->
+								<DockPanel Margin="5">
+									<TextBlock Text="{Binding SenderName}" FontWeight="Bold" TextWrapping="Wrap" FontSize="14">
+										<TextBlock.Styles>
+											<Style Selector="TextBlock[Text=You]">
+												<Style.Setters>
+													<Setter Property="Foreground" Value="SteelBlue"></Setter>
+												</Style.Setters>
+											</Style>
+										</TextBlock.Styles>
+									</TextBlock>
+
+									<TextBlock TextWrapping="Wrap" FontSize="14" Margin="0,0,5,0">: </TextBlock>
+									<TextBlock Text="{Binding Message}" TextWrapping="Wrap" FontSize="14"></TextBlock>
+								</DockPanel>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
+			</Border>
+
+			<GridSplitter Grid.Row="1" Height="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+
+			<TextBox Grid.Row="2"
+                x:Name="InputTextBox"
+                FontSize="14"
+                Margin="5"
+                Text="{Binding InputText, Mode=TwoWay}"
+                TextWrapping="Wrap"  />
+		</Grid>
+	</Grid>
+</Window>

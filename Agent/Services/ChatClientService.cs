@@ -1,5 +1,4 @@
-﻿using Immense.RemoteControl.Shared.Models;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Agent.Models;
