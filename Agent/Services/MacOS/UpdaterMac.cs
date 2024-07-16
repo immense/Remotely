@@ -137,7 +137,7 @@ public class UpdaterMac : IUpdater
             var installerPath = Path.Combine(Path.GetTempPath(), "RemotelyUpdate.sh");
 
             await _updateDownloader.DownloadFile(
-                   $"{serverUrl}/API/ClientDownloads/{connectionInfo.OrganizationID}/MacOSInstaller-{_achitecture}",
+                   $"{serverUrl}/API/ClientDownloads/MacOSInstaller-{_achitecture}/{connectionInfo.OrganizationID}",
                    installerPath);
 
             await _updateDownloader.DownloadFile(

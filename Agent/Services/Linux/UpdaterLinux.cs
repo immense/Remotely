@@ -151,7 +151,7 @@ public class UpdaterLinux : IUpdater
             }
 
             await _updateDownloader.DownloadFile(
-                   $"{serverUrl}/API/ClientDownloads/{connectionInfo.OrganizationID}/{platform}",
+                   $"{serverUrl}/API/ClientDownloads/{platform}/{connectionInfo.OrganizationID}",
                    installerPath);
 
             await _updateDownloader.DownloadFile(
