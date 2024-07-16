@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc.Filters;
-using Immense.RemoteControl.Server.Extensions;
+using Remotely.Server.Extensions;
 
-namespace Immense.RemoteControl.Server.Abstractions;
+namespace Remotely.Server.Abstractions;
 
 /// <summary>
 /// This service is used to determine if the current user is authorized 

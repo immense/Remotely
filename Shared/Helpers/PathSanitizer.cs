@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Immense.RemoteControl.Shared.Helpers;
+namespace Remotely.Shared.Helpers;
 
 public static class PathSanitizer
 {

@@ -1,5 +1,5 @@
 @page
-@model Immense.RemoteControl.Server.Areas.RemoteControl.Pages.ViewerModel
+@model Remotely.Server.Areas.RemoteControl.Pages.ViewerModel
 
 @{
     Layout = null;
@@ -15,27 +15,27 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="description" content="@(Model.PageDescription)" />
-    <link href="/_content/Immense.RemoteControl.Server/manifest.json" rel="manifest" />
+    <link href="/_content/Remotely.Server/manifest.json" rel="manifest" />
     <link rel="icon" href="@(Model.FaviconUrl)" />
-    <link href="/_content/Immense.RemoteControl.Server/css/remote-control.css" rel="stylesheet" asp-append-version="true" />
+    <link href="/_content/Remotely.Server/css/remote-control.css" rel="stylesheet" asp-append-version="true" />
 
     @if (!string.IsNullOrWhiteSpace(Model.ThemeUrl))
     {
         <link href="@(Model.ThemeUrl)" rel="stylesheet" asp-append-version="true" />
     }
 
-    <link href="/_content/Immense.RemoteControl.Server/lib/fontawesome/css/all.min.css" rel="stylesheet" />
-    <link href="/_content/Immense.RemoteControl.Server/lib/fontawesome/css/brands.min.css" rel="stylesheet" />
+    <link href="/_content/Remotely.Server/lib/fontawesome/css/all.min.css" rel="stylesheet" />
+    <link href="/_content/Remotely.Server/lib/fontawesome/css/brands.min.css" rel="stylesheet" />
 
     <environment include="Development">
-        <script src="/_content/Immense.RemoteControl.Server/lib/microsoft-signalr/signalr.js"></script>
-        <script src="/_content/Immense.RemoteControl.Server/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.js"></script>
-        <script src="/_content/Immense.RemoteControl.Server/lib/msgpack/dist.es5+umd/msgpack.js"></script>
+        <script src="/_content/Remotely.Server/lib/microsoft-signalr/signalr.js"></script>
+        <script src="/_content/Remotely.Server/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.js"></script>
+        <script src="/_content/Remotely.Server/lib/msgpack/dist.es5+umd/msgpack.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="/_content/Immense.RemoteControl.Server/lib/microsoft-signalr/signalr.min.js"></script>
-        <script src="/_content/Immense.RemoteControl.Server/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.min.js"></script>
-        <script src="/_content/Immense.RemoteControl.Server/lib/msgpack/dist.es5+umd/msgpack.min.js"></script>
+        <script src="/_content/Remotely.Server/lib/microsoft-signalr/signalr.min.js"></script>
+        <script src="/_content/Remotely.Server/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.min.js"></script>
+        <script src="/_content/Remotely.Server/lib/msgpack/dist.es5+umd/msgpack.min.js"></script>
     </environment>
 </head>
 <body>
@@ -269,7 +269,7 @@
         </div>
     </footer>
 
-    <script src="/_content/Immense.RemoteControl.Server/src/App.js" type="module"></script>
+    <script src="/_content/Remotely.Server/src/App.js" type="module"></script>
     <script>
         window.addEventListener("load", () => {
             ViewerApp.Init();

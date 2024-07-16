@@ -2,11 +2,11 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using CommunityToolkit.Diagnostics;
-using Immense.RemoteControl.Desktop.Shared;
+using Remotely.Desktop.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading;
 
-namespace Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
+namespace Remotely.Desktop.UI.Controls.Dialogs;
 
 public partial class MessageBox : Window
 {

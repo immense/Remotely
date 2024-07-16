@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Shared.Models;
+﻿namespace Remotely.Shared.Models;
 
 public class ScreenCastRequest
 {

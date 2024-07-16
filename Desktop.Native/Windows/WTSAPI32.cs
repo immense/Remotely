@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Immense.RemoteControl.Desktop.Shared.Native.Windows;
+namespace Remotely.Desktop.Shared.Native.Windows;
 
 public static class WTSAPI32
 {

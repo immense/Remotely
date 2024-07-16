@@ -1,15 +1,15 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.Shared.ViewModels;
-using Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
-using Immense.RemoteControl.Desktop.UI.Services;
-using Immense.RemoteControl.Desktop.UI.Views;
+﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Desktop.Shared.ViewModels;
+using Remotely.Desktop.UI.Controls.Dialogs;
+using Remotely.Desktop.UI.Services;
+using Remotely.Desktop.UI.Views;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Runtime.Versioning;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using Immense.RemoteControl.Shared.Extensions;
+using Remotely.Shared.Extensions;
 using System.IO;
 
 namespace Remotely.Desktop.Win.Services;

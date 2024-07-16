@@ -1,8 +1,8 @@
-using Immense.RemoteControl.Server.Enums;
-using Immense.RemoteControl.Server.Services;
-using Immense.RemoteControl.Shared.Helpers;
+using Remotely.Server.Enums;
+using Remotely.Server.Services;
+using Remotely.Shared.Helpers;
 
-namespace Immense.RemoteControl.Server.Models;
+namespace Remotely.Server.Models;
 
 /// <summary>
 /// Contains data related to a remote control session.  Consuming projects

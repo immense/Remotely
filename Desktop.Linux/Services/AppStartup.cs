@@ -1,11 +1,11 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Enums;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.UI.Services;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Enums;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Desktop.UI.Services;
+using Remotely.Shared.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Immense.RemoteControl.Desktop.Linux.Services;
+namespace Remotely.Desktop.Linux.Services;
 
 internal class AppStartup : IAppStartup
 {

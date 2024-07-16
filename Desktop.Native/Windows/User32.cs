@@ -1,7 +1,7 @@
 using Microsoft.Win32.SafeHandles;
 using System.Runtime.InteropServices;
 
-namespace Immense.RemoteControl.Desktop.Shared.Native.Windows;
+namespace Remotely.Desktop.Shared.Native.Windows;
 
 public static class User32
 {

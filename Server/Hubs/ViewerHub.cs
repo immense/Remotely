@@ -1,16 +1,16 @@
-using Immense.RemoteControl.Server.Abstractions;
-using Immense.RemoteControl.Server.Enums;
-using Immense.RemoteControl.Server.Filters;
-using Immense.RemoteControl.Server.Models;
-using Immense.RemoteControl.Server.Services;
-using Immense.RemoteControl.Shared;
-using Immense.RemoteControl.Shared.Interfaces;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Server.Abstractions;
+using Remotely.Server.Enums;
+using Remotely.Server.Filters;
+using Remotely.Server.Models;
+using Remotely.Server.Services;
+using Remotely.Shared;
+using Remotely.Shared.Interfaces;
+using Remotely.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace Immense.RemoteControl.Server.Hubs;
+namespace Remotely.Server.Hubs;
 
 [ServiceFilter(typeof(ViewerAuthorizationFilter))]
 public class ViewerHub : Hub<IViewerHubClient>

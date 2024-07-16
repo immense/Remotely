@@ -1,6 +1,6 @@
-﻿using Immense.RemoteControl.Shared.Enums;
+﻿using Remotely.Shared.Enums;
 
-namespace Immense.RemoteControl.Desktop.Shared.Messages;
+namespace Remotely.Desktop.Shared.Messages;
 
 public class WindowsSessionEndingMessage
 {

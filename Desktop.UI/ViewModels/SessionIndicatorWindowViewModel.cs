@@ -1,9 +1,9 @@
-﻿using Immense.RemoteControl.Desktop.Shared;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
+﻿using Remotely.Desktop.Shared;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.UI.Controls.Dialogs;
 using Microsoft.Extensions.Logging;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels;
+namespace Remotely.Desktop.UI.ViewModels;
 
 public interface ISessionIndicatorWindowViewModel : IBrandedViewModelBase
 {

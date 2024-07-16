@@ -3,7 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 
-namespace Immense.RemoteControl.Desktop.UI;
+namespace Remotely.Desktop.UI;
 
 public partial class App : Application
 {

@@ -1,7 +1,7 @@
-﻿using Immense.RemoteControl.Shared.Models;
+﻿using Remotely.Shared.Models;
 using Remotely.Shared.Entities;
 
-namespace Immense.RemoteControl.Desktop.Shared.Abstractions;
+namespace Remotely.Desktop.Shared.Abstractions;
 
 public interface IBrandingProvider
 {

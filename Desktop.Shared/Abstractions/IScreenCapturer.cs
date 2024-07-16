@@ -2,7 +2,7 @@
 using SkiaSharp;
 using System.Drawing;
 
-namespace Immense.RemoteControl.Desktop.Shared.Abstractions;
+namespace Remotely.Desktop.Shared.Abstractions;
 
 public interface IScreenCapturer : IDisposable
 {

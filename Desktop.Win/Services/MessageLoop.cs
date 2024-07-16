@@ -1,6 +1,6 @@
-using Immense.RemoteControl.Desktop.Shared.Messages;
-using Immense.RemoteControl.Desktop.UI.Services;
-using Immense.RemoteControl.Shared.Enums;
+using Remotely.Desktop.Shared.Messages;
+using Remotely.Desktop.UI.Services;
+using Remotely.Shared.Enums;
 using Bitbound.SimpleMessenger;
 using Microsoft.Win32;
 using System.Diagnostics;

@@ -1,9 +1,9 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Reactive;
-using Immense.RemoteControl.Desktop.Shared.ViewModels;
+﻿using Remotely.Desktop.Shared.Reactive;
+using Remotely.Desktop.Shared.ViewModels;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels.Fakes;
+namespace Remotely.Desktop.UI.ViewModels.Fakes;
 
 public class FakeFileTransferViewModel : FakeBrandedViewModelBase, IFileTransferWindowViewModel
 {

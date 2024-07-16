@@ -1,12 +1,12 @@
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Shared.Services;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Shared.Services;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Bitbound.SimpleMessenger;
 using Desktop.Shared.Services;
 
-namespace Immense.RemoteControl.Desktop.Shared.Startup;
+namespace Remotely.Desktop.Shared.Startup;
 
 public static class IServiceCollectionExtensions
 {

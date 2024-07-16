@@ -1,7 +1,7 @@
-﻿using Immense.RemoteControl.Shared.Enums;
-using Immense.RemoteControl.Shared.Models;
+﻿using Remotely.Shared.Enums;
+using Remotely.Shared.Models;
 
-namespace Immense.RemoteControl.Shared.Interfaces;
+namespace Remotely.Shared.Interfaces;
 
 public interface IDesktopHubClient
 {

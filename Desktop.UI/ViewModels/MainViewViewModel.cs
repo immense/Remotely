@@ -1,19 +1,19 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Shared.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
-using Immense.RemoteControl.Desktop.Shared.Reactive;
+using Remotely.Desktop.Shared.Reactive;
 using Microsoft.Extensions.DependencyInjection;
-using Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
-using Immense.RemoteControl.Desktop.Shared.Native.Linux;
+using Remotely.Desktop.UI.Controls.Dialogs;
+using Remotely.Desktop.Shared.Native.Linux;
 using Desktop.Shared.Services;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels;
+namespace Remotely.Desktop.UI.ViewModels;
 
 public interface IMainViewViewModel : IBrandedViewModelBase
 {

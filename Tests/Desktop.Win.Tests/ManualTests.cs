@@ -1,8 +1,8 @@
 ﻿#nullable disable
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.Windows.Services;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Desktop.Windows.Services;
+using Remotely.Shared.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -129,7 +129,7 @@ namespace Remotely.Tests
                 previousFrame?.Dispose();
                 previousFrame = currentFrame.Copy();
                 currentFrame.Dispose();
-                
+
                 currentFrame = _capturer.GetNextFrame().Value;
                 var diffArea = _imageUtils.GetDiffArea(currentFrame, previousFrame);
                 using var cropped = _imageUtils.CropBitmap(currentFrame, diffArea);

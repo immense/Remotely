@@ -1,9 +1,9 @@
 ﻿using Avalonia;
 using Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.Shared.Startup;
-using Immense.RemoteControl.Desktop.UI;
-using Immense.RemoteControl.Desktop.UI.Services;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Startup;
+using Remotely.Desktop.UI;
+using Remotely.Desktop.UI.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Desktop.Win.Startup;
 using Remotely.Shared.Services;

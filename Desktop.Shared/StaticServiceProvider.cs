@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Desktop.Shared;
+﻿namespace Remotely.Desktop.Shared;
 
 public static class StaticServiceProvider
 {

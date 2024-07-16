@@ -1,5 +1,5 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Shared.Services;
+﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Immense.RemoteControl.Desktop.Shared.Services;
+namespace Remotely.Desktop.Shared.Services;
 
 internal interface IViewerFactory
 {

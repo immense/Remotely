@@ -1,6 +1,6 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Shared.Models;
+﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Primitives;

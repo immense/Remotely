@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Immense.RemoteControl.Shared.Models.Dtos;
+namespace Remotely.Shared.Models.Dtos;
 
 [DataContract]
 public class SessionMetricsDto

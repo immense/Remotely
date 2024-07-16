@@ -1,8 +1,8 @@
 using System.CommandLine;
 using CommunityToolkit.Diagnostics;
-using Immense.RemoteControl.Desktop.Shared.Enums;
+using Remotely.Desktop.Shared.Enums;
 
-namespace Immense.RemoteControl.Desktop.Shared.Startup;
+namespace Remotely.Desktop.Shared.Startup;
 public static class CommandProvider
 {
     /// <summary>

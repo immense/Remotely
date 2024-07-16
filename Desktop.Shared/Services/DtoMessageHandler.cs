@@ -1,12 +1,12 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Enums;
-using Immense.RemoteControl.Desktop.Shared.Native.Windows;
-using Immense.RemoteControl.Shared.Helpers;
-using Immense.RemoteControl.Shared.Models.Dtos;
+﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Enums;
+using Remotely.Desktop.Shared.Native.Windows;
+using Remotely.Shared.Helpers;
+using Remotely.Shared.Models.Dtos;
 using MessagePack;
 using Microsoft.Extensions.Logging;
 
-namespace Immense.RemoteControl.Desktop.Shared.Services;
+namespace Remotely.Desktop.Shared.Services;
 
 public interface IDtoMessageHandler
 {

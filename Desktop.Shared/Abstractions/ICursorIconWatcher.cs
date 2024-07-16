@@ -1,6 +1,6 @@
-﻿using Immense.RemoteControl.Shared.Models;
+﻿using Remotely.Shared.Models;
 
-namespace Immense.RemoteControl.Desktop.Shared.Abstractions;
+namespace Remotely.Desktop.Shared.Abstractions;
 
 public interface ICursorIconWatcher
 {

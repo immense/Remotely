@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
+﻿using Remotely.Desktop.UI.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Immense.RemoteControl.Desktop.UI.Services;
+namespace Remotely.Desktop.UI.Services;
 
 public interface IDialogProvider
 {

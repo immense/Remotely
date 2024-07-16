@@ -1,7 +1,7 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Enums;
-using Immense.RemoteControl.Desktop.Shared.Native.Windows;
-using Immense.RemoteControl.Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Enums;
+using Remotely.Desktop.Shared.Native.Windows;
+using Remotely.Desktop.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Primitives;
@@ -9,7 +9,7 @@ using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using System.Runtime.Versioning;
 
-namespace Immense.RemoteControl.Desktop.Shared.Startup;
+namespace Remotely.Desktop.Shared.Startup;
 
 public static class IServiceProviderExtensions
 {

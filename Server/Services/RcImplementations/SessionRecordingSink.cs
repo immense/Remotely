@@ -1,5 +1,5 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
-using Immense.RemoteControl.Server.Models;
+﻿using Remotely.Server.Abstractions;
+using Remotely.Server.Models;
 
 namespace Remotely.Server.Services.RcImplementations;
 

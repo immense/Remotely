@@ -1,10 +1,10 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Services;
+﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.IO;
 
-namespace Immense.RemoteControl.Desktop.UI.Services;
+namespace Remotely.Desktop.UI.Services;
 
 // Normally, I'd use a view model locator.  But enough view models require a factory pattern
 // that I thought it more consistent to put them all here.

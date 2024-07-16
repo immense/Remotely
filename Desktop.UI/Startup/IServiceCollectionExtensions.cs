@@ -1,7 +1,7 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Immense.RemoteControl.Desktop.UI.Startup;
+namespace Remotely.Desktop.UI.Startup;
 
 public static class IServiceCollectionExtensions
 {

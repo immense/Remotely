@@ -1,10 +1,10 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Enums;
-using Immense.RemoteControl.Desktop.Shared.Native.Linux;
-using Immense.RemoteControl.Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Enums;
+using Remotely.Desktop.Shared.Native.Linux;
+using Remotely.Desktop.Shared.Services;
 using Microsoft.Extensions.Logging;
 
-namespace Immense.RemoteControl.Desktop.Linux.Services;
+namespace Remotely.Desktop.Linux.Services;
 
 public class KeyboardMouseInputLinux : IKeyboardMouseInput
 {

@@ -1,7 +1,7 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.UI.Services;
-using Immense.RemoteControl.Shared.Extensions;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Desktop.UI.Services;
+using Remotely.Shared.Extensions;
 
 namespace Remotely.Desktop.Win.Services;
 

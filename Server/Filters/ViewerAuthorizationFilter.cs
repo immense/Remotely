@@ -1,8 +1,8 @@
-using Immense.RemoteControl.Server.Abstractions;
+using Remotely.Server.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Immense.RemoteControl.Server.Filters;
+namespace Remotely.Server.Filters;
 
 internal class ViewerAuthorizationFilter :  IAsyncAuthorizationFilter
 {

@@ -3,12 +3,12 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input.Platform;
 using Avalonia.Threading;
-using Immense.RemoteControl.Shared.Helpers;
+using Remotely.Shared.Helpers;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Primitives;
 using System.Threading;
 
-namespace Immense.RemoteControl.Desktop.UI.Services;
+namespace Remotely.Desktop.UI.Services;
 
 public interface IUiDispatcher
 {

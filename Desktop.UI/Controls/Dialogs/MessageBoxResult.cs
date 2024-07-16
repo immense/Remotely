@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
+﻿namespace Remotely.Desktop.UI.Controls.Dialogs;
 
 public enum MessageBoxResult
 {

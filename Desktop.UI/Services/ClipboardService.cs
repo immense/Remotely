@@ -1,8 +1,8 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 
-namespace Immense.RemoteControl.Desktop.UI.Services;
+namespace Remotely.Desktop.UI.Services;
 
 public class ClipboardService : IClipboardService
 {

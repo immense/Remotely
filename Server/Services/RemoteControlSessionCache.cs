@@ -1,12 +1,12 @@
-using Immense.RemoteControl.Server.Abstractions;
-using Immense.RemoteControl.Server.Models;
-using Immense.RemoteControl.Shared.Services;
+using Remotely.Server.Abstractions;
+using Remotely.Server.Models;
+using Remotely.Shared.Services;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 
-namespace Immense.RemoteControl.Server.Services;
+namespace Remotely.Server.Services;
 
 /// <summary>
 /// A cache containing all active remote control sessions.

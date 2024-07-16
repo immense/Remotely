@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
+﻿using Remotely.Server.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Memory;

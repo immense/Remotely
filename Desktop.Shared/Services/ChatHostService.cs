@@ -1,10 +1,10 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
+﻿using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Models;
 using System.IO.Pipes;
 using System.Text.Json;
 
-namespace Immense.RemoteControl.Desktop.Shared.Services;
+namespace Remotely.Desktop.Shared.Services;
 
 public interface IChatHostService
 {

@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
+﻿using Remotely.Server.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR;

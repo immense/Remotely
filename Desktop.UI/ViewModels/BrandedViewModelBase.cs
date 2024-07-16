@@ -1,15 +1,15 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Reactive;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Reactive;
+using Remotely.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Entities;
 using System.IO;
 using System.Reflection;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels;
+namespace Remotely.Desktop.UI.ViewModels;
 
 public interface IBrandedViewModelBase
 {
@@ -76,7 +76,7 @@ public class BrandedViewModelBase : ObservableObject, IBrandedViewModelBase
                     using var imageStream =
                         Assembly
                             .GetExecutingAssembly()
-                            .GetManifestResourceStream("Immense.RemoteControl.Desktop.Shared.Assets.DefaultIcon.png") ?? new MemoryStream();
+                            .GetManifestResourceStream("Remotely.Desktop.Shared.Assets.DefaultIcon.png") ?? new MemoryStream();
 
                     Icon = new Bitmap(imageStream);
                 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 
-namespace Immense.RemoteControl.Shared.Helpers;
+namespace Remotely.Shared.Helpers;
 
 public static class Debouncer
 {

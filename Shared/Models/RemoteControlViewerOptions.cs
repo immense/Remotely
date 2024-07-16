@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Immense.RemoteControl.Shared.Models;
+namespace Remotely.Shared.Models;
 
 [DataContract]
 public class RemoteControlViewerOptions

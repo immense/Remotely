@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <RootNamespace>Remotely.Desktop.Shared</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

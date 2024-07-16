@@ -1,5 +1,5 @@
 ﻿using Castle.Core.Logging;
-using Immense.RemoteControl.Server.Abstractions;
+using Remotely.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;

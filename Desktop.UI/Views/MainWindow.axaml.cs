@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Immense.RemoteControl.Desktop.Shared;
+using Remotely.Desktop.Shared;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Immense.RemoteControl.Desktop.UI.Views;
+namespace Remotely.Desktop.UI.Views;
 
 public partial class MainWindow : Window
 {

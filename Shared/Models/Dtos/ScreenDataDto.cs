@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
 
-namespace Immense.RemoteControl.Shared.Models.Dtos;
+namespace Remotely.Shared.Models.Dtos;
 
 [DataContract]
 public class ScreenDataDto

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Immense.RemoteControl.Desktop.Shared.Reactive;
+namespace Remotely.Desktop.Shared.Reactive;
 
 public class ObservableObject : INotifyPropertyChanged
 {

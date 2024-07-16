@@ -1,4 +1,4 @@
-using Immense.RemoteControl.Server.Extensions;
+using Remotely.Server.Extensions;
 using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -11,10 +11,8 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Remotely.Server.Auth;
-using Remotely.Server.Components;
 using Remotely.Server.Components.Account;
 using Remotely.Server.Data;
-using Remotely.Server.Extensions;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Options;

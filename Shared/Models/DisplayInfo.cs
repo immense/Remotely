@@ -2,7 +2,7 @@
 using System.Numerics;
 using System.Runtime.Serialization;
 
-namespace Immense.RemoteControl.Shared.Models;
+namespace Remotely.Shared.Models;
 
 [DataContract]
 public class DisplayInfo

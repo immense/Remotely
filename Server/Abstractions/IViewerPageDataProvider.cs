@@ -1,9 +1,9 @@
-using Immense.RemoteControl.Server.Areas.RemoteControl.Pages;
-using Immense.RemoteControl.Server.Models;
+using Remotely.Server.Areas.RemoteControl.Pages;
+using Remotely.Server.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Immense.RemoteControl.Server.Extensions;
+using Remotely.Server.Extensions;
 
-namespace Immense.RemoteControl.Server.Abstractions;
+namespace Remotely.Server.Abstractions;
 
 /// <summary>
 /// This service is used to provider UI data to the remote control page.

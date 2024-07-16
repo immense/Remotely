@@ -3,13 +3,13 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
 using System.Windows.Input;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
-using Immense.RemoteControl.Desktop.Shared.Reactive;
+using Remotely.Desktop.Shared.Reactive;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Shared.Models;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels;
+namespace Remotely.Desktop.UI.ViewModels;
 
 public interface IChatWindowViewModel : IBrandedViewModelBase
 {

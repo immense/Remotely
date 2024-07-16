@@ -1,7 +1,7 @@
-﻿using Immense.RemoteControl.Server.Hubs;
+﻿using Remotely.Server.Hubs;
 using Microsoft.AspNetCore.Builder;
 
-namespace Immense.RemoteControl.Server.Extensions;
+namespace Remotely.Server.Extensions;
 
 public static class IApplicationBuilderExtensions
 {

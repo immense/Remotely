@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
+﻿using Remotely.Desktop.Shared.Abstractions;
 using NAudio.Wave;
 using System.IO;
 

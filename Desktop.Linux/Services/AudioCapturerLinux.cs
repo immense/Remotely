@@ -1,6 +1,6 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Abstractions;
 
-namespace Immense.RemoteControl.Desktop.Linux.Services;
+namespace Remotely.Desktop.Linux.Services;
 
 public class AudioCapturerLinux : IAudioCapturer
 {

@@ -1,12 +1,12 @@
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Shared.Models;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Immense.RemoteControl.Desktop.Shared.Native.Windows.ADVAPI32;
-using static Immense.RemoteControl.Desktop.Shared.Native.Windows.User32;
+using static Remotely.Desktop.Shared.Native.Windows.ADVAPI32;
+using static Remotely.Desktop.Shared.Native.Windows.User32;
 
-namespace Immense.RemoteControl.Desktop.Shared.Native.Windows;
+namespace Remotely.Desktop.Shared.Native.Windows;
 
 // TODO: Use https://github.com/microsoft/CsWin32 for all p/invokes.
 public class Win32Interop

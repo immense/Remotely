@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Native.Linux;
+﻿using Remotely.Desktop.Shared.Native.Linux;
 using System.Security.Principal;
 
 namespace Desktop.Shared.Services;

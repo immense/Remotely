@@ -1,13 +1,13 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Desktop.UI.Controls.Dialogs;
+using Remotely.Shared.Models;
 using Remotely.Shared.Entities;
 using System.Diagnostics;
 using System.IO;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels.Fakes;
+namespace Remotely.Desktop.UI.ViewModels.Fakes;
 
 public class FakeBrandedViewModelBase : IBrandedViewModelBase
 {
@@ -38,7 +38,7 @@ public class FakeBrandedViewModelBase : IBrandedViewModelBase
         {
             using var imageStream = typeof(Shared.Services.AppState)
                 .Assembly
-                .GetManifestResourceStream("Immense.RemoteControl.Desktop.Shared.Assets.DefaultIcon.png") ?? new MemoryStream();
+                .GetManifestResourceStream("Remotely.Desktop.Shared.Assets.DefaultIcon.png") ?? new MemoryStream();
 
             return new Bitmap(imageStream);
         }

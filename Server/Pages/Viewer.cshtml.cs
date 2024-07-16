@@ -1,10 +1,10 @@
-using Immense.RemoteControl.Server.Abstractions;
-using Immense.RemoteControl.Server.Filters;
-using Immense.RemoteControl.Server.Models;
+using Remotely.Server.Abstractions;
+using Remotely.Server.Filters;
+using Remotely.Server.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Immense.RemoteControl.Server.Areas.RemoteControl.Pages;
+namespace Remotely.Server.Areas.RemoteControl.Pages;
 
 [ServiceFilter(typeof(ViewerAuthorizationFilter))]
 public class ViewerModel : PageModel
@@ -28,9 +28,9 @@ public class ViewerModel : PageModel
 
         ThemeUrl = theme switch
         {
-            ViewerPageTheme.Dark => "/_content/Immense.RemoteControl.Server/css/remote-control-dark.css",
-            ViewerPageTheme.Light => "/_content/Immense.RemoteControl.Server/css/remote-control-light.css",
-            _ => "/_content/Immense.RemoteControl.Server/css/remote-control-dark.css"
+            ViewerPageTheme.Dark => "/_content/Remotely.Server/css/remote-control-dark.css",
+            ViewerPageTheme.Light => "/_content/Remotely.Server/css/remote-control-light.css",
+            _ => "/_content/Remotely.Server/css/remote-control-dark.css"
         };
         UserDisplayName = await _viewerDataProvider.GetUserDisplayName(this);
         PageTitle = await _viewerDataProvider.GetPageTitle(this);

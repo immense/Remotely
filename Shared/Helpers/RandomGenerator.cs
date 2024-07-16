@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace Immense.RemoteControl.Shared.Helpers;
+namespace Remotely.Shared.Helpers;
 
 public class RandomGenerator
 {

@@ -1,7 +1,7 @@
-using Immense.RemoteControl.Server.Abstractions;
+using Remotely.Server.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Immense.RemoteControl.Server.Extensions;
+namespace Remotely.Server.Extensions;
 
 public interface IRemoteControlServerBuilder
 {

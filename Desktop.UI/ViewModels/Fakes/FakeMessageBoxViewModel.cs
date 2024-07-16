@@ -1,8 +1,8 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Reactive;
+﻿using Remotely.Desktop.Shared.Reactive;
 using System.Windows.Input;
-using Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
+using Remotely.Desktop.UI.Controls.Dialogs;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels.Fakes;
+namespace Remotely.Desktop.UI.ViewModels.Fakes;
 
 public class FakeMessageBoxViewModel : FakeBrandedViewModelBase, IMessageBoxViewModel
 {

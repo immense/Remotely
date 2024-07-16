@@ -1,9 +1,9 @@
-using Immense.RemoteControl.Server.Filters;
-using Immense.RemoteControl.Server.Services;
-using Immense.RemoteControl.Shared.Services;
+using Remotely.Server.Filters;
+using Remotely.Server.Services;
+using Remotely.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Immense.RemoteControl.Server.Extensions;
+namespace Remotely.Server.Extensions;
 
 public static class ServiceCollectionExtensions
 {

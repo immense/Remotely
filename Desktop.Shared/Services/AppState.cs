@@ -1,11 +1,11 @@
-using Immense.RemoteControl.Desktop.Shared.Enums;
-using Immense.RemoteControl.Desktop.Shared.Messages;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Desktop.Shared.Enums;
+using Remotely.Desktop.Shared.Messages;
+using Remotely.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Bitbound.SimpleMessenger;
 using System.Collections.Concurrent;
 
-namespace Immense.RemoteControl.Desktop.Shared.Services;
+namespace Remotely.Desktop.Shared.Services;
 
 public interface IAppState
 {

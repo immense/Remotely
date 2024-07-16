@@ -1,9 +1,9 @@
-﻿using Immense.RemoteControl.Shared.Models.Dtos;
+﻿using Remotely.Shared.Models.Dtos;
 using MessagePack;
 using Microsoft.Extensions.Caching.Memory;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Immense.RemoteControl.Shared.Helpers;
+namespace Remotely.Shared.Helpers;
 
 public static class DtoChunker
 {

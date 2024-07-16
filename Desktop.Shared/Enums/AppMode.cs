@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Desktop.Shared.Enums;
+﻿namespace Remotely.Desktop.Shared.Enums;
 
 public enum AppMode
 {

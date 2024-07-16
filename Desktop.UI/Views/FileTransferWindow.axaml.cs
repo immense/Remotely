@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 
-namespace Immense.RemoteControl.Desktop.UI.Views;
+namespace Remotely.Desktop.UI.Views;
 
 public partial class FileTransferWindow : Window
 {

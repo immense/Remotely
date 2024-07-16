@@ -1,9 +1,9 @@
-using Immense.RemoteControl.Server.Extensions;
-using Immense.RemoteControl.Server.Models;
-using Immense.RemoteControl.Server.Services;
-using Immense.RemoteControl.Shared.Enums;
+using Remotely.Server.Extensions;
+using Remotely.Server.Models;
+using Remotely.Server.Services;
+using Remotely.Shared.Enums;
 
-namespace Immense.RemoteControl.Server.Abstractions;
+namespace Remotely.Server.Abstractions;
 
 /// <summary>
 /// Contains functionality that needs to be implemented outside of the remote control process.

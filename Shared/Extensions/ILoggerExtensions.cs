@@ -1,14 +1,8 @@
-﻿using Immense.RemoteControl.Shared.Primitives;
+﻿using Remotely.Shared.Primitives;
 using Microsoft.Extensions.Logging;
-using Remotely.Shared.Primitives;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Immense.RemoteControl.Shared.Extensions;
+namespace Remotely.Shared.Extensions;
 
 public static class ILoggerExtensions
 {

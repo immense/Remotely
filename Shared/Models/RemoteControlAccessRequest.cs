@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Immense.RemoteControl.Shared.Models;
+namespace Remotely.Shared.Models;
 
 [DataContract]
 public class RemoteControlAccessRequest

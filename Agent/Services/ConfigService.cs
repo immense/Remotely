@@ -1,13 +1,10 @@
-﻿using Immense.RemoteControl.Shared;
+﻿using Remotely.Shared;
 using Microsoft.Extensions.Logging;
-using Remotely.Shared;
 using Remotely.Shared.Models;
-using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 
 namespace Remotely.Agent.Services;

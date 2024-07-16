@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Immense.RemoteControl.Desktop.Shared.Reactive;
+namespace Remotely.Desktop.Shared.Reactive;
 
 public class AsyncRelayCommand : ICommand
 {

@@ -2,7 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
-namespace Immense.RemoteControl.Desktop.UI.Views;
+namespace Remotely.Desktop.UI.Views;
 
 public partial class ChatWindow : Window
 {

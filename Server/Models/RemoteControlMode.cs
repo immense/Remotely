@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Server.Models;
+﻿namespace Remotely.Server.Models;
 
 public enum RemoteControlMode
 {

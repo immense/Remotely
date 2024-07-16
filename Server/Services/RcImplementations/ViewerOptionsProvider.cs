@@ -1,6 +1,6 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
-using Immense.RemoteControl.Server.Models;
-using Immense.RemoteControl.Shared.Models;
+﻿using Remotely.Server.Abstractions;
+using Remotely.Server.Models;
+using Remotely.Shared.Models;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 

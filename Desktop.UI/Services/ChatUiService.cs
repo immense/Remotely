@@ -1,11 +1,11 @@
 using Avalonia.Controls;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Abstractions;
 using System.ComponentModel;
-using Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
+using Remotely.Desktop.UI.Controls.Dialogs;
 using CommunityToolkit.Diagnostics;
 using Remotely.Shared.Models;
 
-namespace Immense.RemoteControl.Desktop.UI.Services;
+namespace Remotely.Desktop.UI.Services;
 
 public class ChatUiService : IChatUiService
 {

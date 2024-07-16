@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Shared.Helpers;
+﻿using Remotely.Shared.Helpers;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System.Drawing;

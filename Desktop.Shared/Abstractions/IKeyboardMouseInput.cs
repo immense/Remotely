@@ -1,7 +1,7 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Enums;
-using Immense.RemoteControl.Desktop.Shared.Services;
+﻿using Remotely.Desktop.Shared.Enums;
+using Remotely.Desktop.Shared.Services;
 
-namespace Immense.RemoteControl.Desktop.Shared.Abstractions;
+namespace Remotely.Desktop.Shared.Abstractions;
 
 public interface IKeyboardMouseInput
 {

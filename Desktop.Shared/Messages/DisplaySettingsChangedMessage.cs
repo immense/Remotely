@@ -1,2 +1,2 @@
-﻿namespace Immense.RemoteControl.Desktop.Shared.Messages;
+﻿namespace Remotely.Desktop.Shared.Messages;
 public record DisplaySettingsChangedMessage();

@@ -1,6 +1,6 @@
-﻿using Immense.RemoteControl.Shared.Enums;
+﻿using Remotely.Shared.Enums;
 
-namespace Immense.RemoteControl.Desktop.Shared.Abstractions;
+namespace Remotely.Desktop.Shared.Abstractions;
 
 public interface IRemoteControlAccessService
 {

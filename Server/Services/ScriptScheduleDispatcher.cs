@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
+﻿using Remotely.Server.Abstractions;
 using Microsoft.Extensions.Logging;
 using Remotely.Server.Hubs;
 using Remotely.Shared.Entities;

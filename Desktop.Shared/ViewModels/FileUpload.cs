@@ -1,6 +1,6 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Reactive;
+﻿using Remotely.Desktop.Shared.Reactive;
 
-namespace Immense.RemoteControl.Desktop.Shared.ViewModels;
+namespace Remotely.Desktop.Shared.ViewModels;
 
 public partial class FileUpload : ObservableObject
 {

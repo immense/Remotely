@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Shared.Primitives;
+﻿using Remotely.Shared.Primitives;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Generic;

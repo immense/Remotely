@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Shared.Extensions;
+﻿using Remotely.Shared.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;

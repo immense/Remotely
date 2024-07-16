@@ -1,4 +1,4 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Native.Windows;
+﻿using Remotely.Desktop.Shared.Native.Windows;
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.Runtime.InteropServices;

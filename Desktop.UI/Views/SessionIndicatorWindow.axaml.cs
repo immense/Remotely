@@ -2,11 +2,11 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
-using Immense.RemoteControl.Desktop.Shared;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.UI.Controls.Dialogs;
+using Remotely.Desktop.Shared;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.UI.Controls.Dialogs;
 
-namespace Immense.RemoteControl.Desktop.UI.Views;
+namespace Remotely.Desktop.UI.Views;
 
 public partial class SessionIndicatorWindow : Window
 {

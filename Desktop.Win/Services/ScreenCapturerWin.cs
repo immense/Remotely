@@ -21,10 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Native.Windows;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Native.Windows;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Shared.Models;
 using Bitbound.SimpleMessenger;
 using Remotely.Desktop.Win.Helpers;
 using Remotely.Desktop.Win.Models;
@@ -40,7 +40,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Result = Remotely.Shared.Primitives.Result;
-using Immense.RemoteControl.Desktop.Shared.Messages;
+using Remotely.Desktop.Shared.Messages;
 using Remotely.Shared.Primitives;
 
 namespace Remotely.Desktop.Win.Services;

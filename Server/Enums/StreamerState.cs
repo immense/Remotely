@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Server.Enums;
+﻿namespace Remotely.Server.Enums;
 
 [Flags]
 public enum StreamerState

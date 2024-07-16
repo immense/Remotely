@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Immense.RemoteControl.Shared.Models;
+namespace Remotely.Shared.Models;
 
 [DataContract]
 public enum WindowsSessionType

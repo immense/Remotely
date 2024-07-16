@@ -1,7 +1,7 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
+﻿using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels;
+namespace Remotely.Desktop.UI.ViewModels;
 
 public interface IMainWindowViewModel : IBrandedViewModelBase
 {

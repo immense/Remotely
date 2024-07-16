@@ -1,20 +1,13 @@
-﻿using Immense.RemoteControl.Server.Hubs;
-using Immense.RemoteControl.Server.Services;
+﻿using Remotely.Server.Hubs;
+using Remotely.Server.Services;
 using Bitbound.SimpleMessenger;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Remotely.Server.Hubs;
-using Remotely.Server.Models;
-using Remotely.Server.Services;
 using Remotely.Shared.Extensions;
 using Remotely.Shared.Interfaces;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Remotely.Server.Tests;

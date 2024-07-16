@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Shared.Extensions;
+﻿namespace Remotely.Shared.Extensions;
 
 public static class TaskExtensions
 {

@@ -1,14 +1,14 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Reactive;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.Shared.ViewModels;
-using Immense.RemoteControl.Shared.Models;
-using Immense.RemoteControl.Shared.Models.Dtos;
+﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Reactive;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Desktop.Shared.ViewModels;
+using Remotely.Shared.Models;
+using Remotely.Shared.Models.Dtos;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Windows.Input;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels.Fakes;
+namespace Remotely.Desktop.UI.ViewModels.Fakes;
 public class FakeMainViewViewModel : FakeBrandedViewModelBase, IMainViewViewModel
 {
 

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using System.Runtime.CompilerServices;
 
-namespace Immense.RemoteControl.Shared.Helpers;
+namespace Remotely.Shared.Helpers;
 
 public static class RateLimiter
 {

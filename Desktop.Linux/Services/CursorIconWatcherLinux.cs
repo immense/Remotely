@@ -1,8 +1,8 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Shared.Models;
 using System.Drawing;
 
-namespace Immense.RemoteControl.Desktop.Linux.Services;
+namespace Remotely.Desktop.Linux.Services;
 
 public class CursorIconWatcherLinux : ICursorIconWatcher
 {

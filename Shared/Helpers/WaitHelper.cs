@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Immense.RemoteControl.Shared.Helpers;
+namespace Remotely.Shared.Helpers;
 
 public static class WaitHelper
 {

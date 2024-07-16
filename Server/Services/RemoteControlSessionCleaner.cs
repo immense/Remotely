@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Immense.RemoteControl.Server.Services;
+namespace Remotely.Server.Services;
 
 public class RemoteControlSessionCleaner : BackgroundService
 {

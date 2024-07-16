@@ -1,10 +1,10 @@
-﻿using Immense.RemoteControl.Server.Models;
-using Immense.RemoteControl.Shared;
+﻿using Remotely.Server.Models;
+using Remotely.Shared;
 using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Immense.RemoteControl.Server.Services;
+namespace Remotely.Server.Services;
 
 public interface IDesktopStreamCache
 {

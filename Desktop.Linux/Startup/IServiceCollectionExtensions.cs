@@ -1,12 +1,12 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Startup;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Startup;
 using Microsoft.Extensions.DependencyInjection;
-using Immense.RemoteControl.Desktop.Linux.Services;
-using Immense.RemoteControl.Desktop.UI.ViewModels;
-using Immense.RemoteControl.Desktop.UI.Services;
-using Immense.RemoteControl.Desktop.UI.Startup;
+using Remotely.Desktop.Linux.Services;
+using Remotely.Desktop.UI.ViewModels;
+using Remotely.Desktop.UI.Services;
+using Remotely.Desktop.UI.Startup;
 
-namespace Immense.RemoteControl.Desktop.Linux.Startup;
+namespace Remotely.Desktop.Linux.Startup;
 
 public static class IServiceCollectionExtensions
 {

@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Shared.Interfaces;
+﻿namespace Remotely.Shared.Interfaces;
 
 public interface IViewerHubClient
 {

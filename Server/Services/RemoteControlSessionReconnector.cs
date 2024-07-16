@@ -1,13 +1,13 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
-using Immense.RemoteControl.Server.Enums;
-using Immense.RemoteControl.Server.Hubs;
-using Immense.RemoteControl.Shared.Helpers;
-using Immense.RemoteControl.Shared.Interfaces;
+﻿using Remotely.Server.Abstractions;
+using Remotely.Server.Enums;
+using Remotely.Server.Hubs;
+using Remotely.Shared.Helpers;
+using Remotely.Shared.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Immense.RemoteControl.Server.Services;
+namespace Remotely.Server.Services;
 
 internal class RemoteControlSessionReconnector : BackgroundService
 {

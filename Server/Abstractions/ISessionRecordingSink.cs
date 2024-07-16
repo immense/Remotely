@@ -1,4 +1,4 @@
-using Immense.RemoteControl.Server.Models;
+using Remotely.Server.Models;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Immense.RemoteControl.Server.Abstractions;
+namespace Remotely.Server.Abstractions;
 
 /// <summary>
 /// The service is responsible for storing session recordings.

@@ -1,7 +1,7 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
+﻿using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
-using Immense.RemoteControl.Desktop.Shared.Startup;
-using Immense.RemoteControl.Desktop.UI.Startup;
+using Remotely.Desktop.Shared.Startup;
+using Remotely.Desktop.UI.Startup;
 using System.Runtime.Versioning;
 using Remotely.Desktop.Win.Services;
 

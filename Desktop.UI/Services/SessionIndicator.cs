@@ -1,8 +1,8 @@
-﻿using Immense.RemoteControl.Desktop.Shared;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
+﻿using Remotely.Desktop.Shared;
+using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Immense.RemoteControl.Desktop.UI.Services;
+namespace Remotely.Desktop.UI.Services;
 
 public class SessionIndicator : ISessionIndicator
 {

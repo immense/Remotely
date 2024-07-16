@@ -1,11 +1,11 @@
 ﻿using Avalonia.Controls;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Reactive;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Reactive;
 using Microsoft.Extensions.Logging;
 using System.Windows.Input;
 
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels;
+namespace Remotely.Desktop.UI.ViewModels;
 
 public interface IPromptForAccessWindowViewModel : IBrandedViewModelBase
 {

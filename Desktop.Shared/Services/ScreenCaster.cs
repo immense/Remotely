@@ -1,19 +1,19 @@
 using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Enums;
-using Immense.RemoteControl.Shared.Models;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Enums;
+using Remotely.Shared.Models;
 using Microsoft.Extensions.Logging;
-using Immense.RemoteControl.Shared.Helpers;
-using Immense.RemoteControl.Shared.Models.Dtos;
+using Remotely.Shared.Helpers;
+using Remotely.Shared.Models.Dtos;
 using MessagePack;
-using Immense.RemoteControl.Shared.Services;
+using Remotely.Shared.Services;
 using Microsoft.IO;
 using System.Diagnostics;
 using Bitbound.SimpleMessenger;
-using Immense.RemoteControl.Desktop.Shared.Messages;
+using Remotely.Desktop.Shared.Messages;
 
-namespace Immense.RemoteControl.Desktop.Shared.Services;
+namespace Remotely.Desktop.Shared.Services;
 
 public interface IScreenCaster : IDisposable
 {

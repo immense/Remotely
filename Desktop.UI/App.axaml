@@ -1,6 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="Immense.RemoteControl.Desktop.UI.App"
+             x:Class="Remotely.Desktop.UI.App"
 			 RequestedThemeVariant="Light">
     <Application.Styles>
 		<FluentTheme />

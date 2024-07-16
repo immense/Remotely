@@ -1,19 +1,16 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using System.Threading.Tasks;
+﻿using Remotely.Desktop.Shared.Abstractions;
 using System.Threading;
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Services;
-using Immense.RemoteControl.Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Services;
 using System.Diagnostics;
 using Remotely.Shared.Utilities;
-using Immense.RemoteControl.Desktop.Shared.Startup;
-using System.Linq;
-using Immense.RemoteControl.Desktop.Linux.Startup;
-using Immense.RemoteControl.Desktop.UI.Services;
+using Remotely.Desktop.Shared.Startup;
+using Remotely.Desktop.Linux.Startup;
+using Remotely.Desktop.UI.Services;
 using Avalonia;
-using Immense.RemoteControl.Desktop.UI;
+using Remotely.Desktop.UI;
 using Desktop.Shared.Services;
 
 namespace Remotely.Desktop.XPlat;

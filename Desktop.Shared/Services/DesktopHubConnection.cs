@@ -1,9 +1,9 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Messages;
-using Immense.RemoteControl.Desktop.Shared.Native.Windows;
-using Immense.RemoteControl.Shared.Enums;
-using Immense.RemoteControl.Shared.Interfaces;
-using Immense.RemoteControl.Shared.Models;
+﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Messages;
+using Remotely.Desktop.Shared.Native.Windows;
+using Remotely.Shared.Enums;
+using Remotely.Shared.Interfaces;
+using Remotely.Shared.Models;
 using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Shared.Primitives;
 using System.Diagnostics;
 
-namespace Immense.RemoteControl.Desktop.Shared.Services;
+namespace Remotely.Desktop.Shared.Services;
 
 public interface IDesktopHubConnection
 {

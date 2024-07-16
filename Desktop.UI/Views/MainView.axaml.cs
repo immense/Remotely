@@ -1,9 +1,9 @@
 using Avalonia.Controls;
-using Immense.RemoteControl.Desktop.Shared;
-using Immense.RemoteControl.Desktop.Shared.Services;
+using Remotely.Desktop.Shared;
+using Remotely.Desktop.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Immense.RemoteControl.Desktop.UI.Views;
+namespace Remotely.Desktop.UI.Views;
 public partial class MainView : UserControl
 {
     public MainView()

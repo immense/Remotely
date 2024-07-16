@@ -1,6 +1,6 @@
-﻿using Immense.RemoteControl.Server.Abstractions;
-using Immense.RemoteControl.Server.Areas.RemoteControl.Pages;
-using Immense.RemoteControl.Server.Models;
+﻿using Remotely.Server.Abstractions;
+using Remotely.Server.Areas.RemoteControl.Pages;
+using Remotely.Server.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Org.BouncyCastle.Ocsp;
 using Remotely.Shared.Enums;
@@ -20,7 +20,7 @@ public class ViewerPageDataProvider : IViewerPageDataProvider
 
     public Task<string> GetFaviconUrl(PageModel viewerModel)
     {
-        return Task.FromResult("/_content/Immense.RemoteControl.Server/favicon.ico");
+        return Task.FromResult("/_content/Remotely.Server/favicon.ico");
     }
 
     public async Task<string> GetLogoUrl(PageModel viewerModel)

@@ -1,7 +1,7 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.Shared.ViewModels;
+﻿using Remotely.Desktop.Shared.Services;
+using Remotely.Desktop.Shared.ViewModels;
 
-namespace Immense.RemoteControl.Desktop.Shared.Abstractions;
+namespace Remotely.Desktop.Shared.Abstractions;
 
 public interface IFileTransferService
 {

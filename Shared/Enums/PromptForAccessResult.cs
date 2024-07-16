@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Shared.Enums;
+﻿namespace Remotely.Shared.Enums;
 
 public enum PromptForAccessResult
 {

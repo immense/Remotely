@@ -1,9 +1,9 @@
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Shared.Enums;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Shared.Enums;
 using Microsoft.Extensions.Logging;
 using System.Threading;
 
-namespace Immense.RemoteControl.Desktop.UI.Services;
+namespace Remotely.Desktop.UI.Services;
 
 public class RemoteControlAccessService : IRemoteControlAccessService
 {

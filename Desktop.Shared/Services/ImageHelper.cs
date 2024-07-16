@@ -1,10 +1,10 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Extensions;
+﻿using Remotely.Desktop.Shared.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IO;
 using Remotely.Shared.Primitives;
 using SkiaSharp;
 
-namespace Immense.RemoteControl.Desktop.Shared.Services;
+namespace Remotely.Desktop.Shared.Services;
 
 public interface IImageHelper
 {

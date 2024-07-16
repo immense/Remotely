@@ -10,6 +10,7 @@
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+		<RootNamespace>Remotely.Desktop.UI</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

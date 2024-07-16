@@ -1,4 +1,4 @@
-﻿namespace Immense.RemoteControl.Desktop.Shared.Abstractions;
+﻿namespace Remotely.Desktop.Shared.Abstractions;
 
 public interface IShutdownService
 {

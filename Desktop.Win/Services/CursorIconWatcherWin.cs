@@ -1,6 +1,6 @@
-﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
-using Immense.RemoteControl.Desktop.Shared.Native.Windows;
-using Immense.RemoteControl.Shared.Models;
+﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Native.Windows;
+using Remotely.Shared.Models;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;

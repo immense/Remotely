@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace Immense.RemoteControl.Desktop.Shared.Extensions;
+namespace Remotely.Desktop.Shared.Extensions;
 
 public static class SKBitmapExtensions
 {

@@ -1,14 +1,14 @@
 ﻿using Avalonia.Threading;
-using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Desktop.Shared.ViewModels;
+using Remotely.Desktop.Shared.Services;
+using Remotely.Desktop.Shared.ViewModels;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
-using Immense.RemoteControl.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
-using Immense.RemoteControl.Desktop.Shared.Reactive;
+using Remotely.Desktop.Shared.Reactive;
 
-namespace Immense.RemoteControl.Desktop.UI.ViewModels;
+namespace Remotely.Desktop.UI.ViewModels;
 
 public interface IFileTransferWindowViewModel : IBrandedViewModelBase
 {
