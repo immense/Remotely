@@ -14,13 +14,13 @@ public interface IAppState
     event EventHandler<IViewer> ViewerAdded;
 
     event EventHandler<string> ViewerRemoved;
-
     string AccessKey { get; }
     Dictionary<string, string> ArgDict { get; }
     string Host { get; set; }
     bool IsElevate { get; }
     bool IsRelaunch { get; }
     AppMode Mode { get; set; }
+    string OrganizationId { get; set; }
     string OrganizationName { get; }
     string PipeName { get; }
     string[] RelaunchViewers { get; }
@@ -81,7 +81,6 @@ public class AppState : IAppState
         }
     }
 
-
     public string Host
     {
         get => _host;
@@ -94,9 +93,8 @@ public class AppState : IAppState
 
     public bool IsElevate { get; private set; }
     public bool IsRelaunch { get; private set; }
-
     public AppMode Mode { get; set; }
-
+    public string OrganizationId { get; set; } = string.Empty;
     public string OrganizationName { get; private set; } = string.Empty;
 
     public string PipeName { get; private set; } = string.Empty;

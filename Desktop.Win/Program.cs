@@ -45,7 +45,6 @@ public class Program
         }
         var services = new ServiceCollection();
 
-        services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
         services.AddSingleton<IEmbeddedServerDataProvider>(EmbeddedServerDataProvider.Instance);
 
         services.AddRemoteControlXplat();
@@ -64,17 +63,16 @@ public class Program
         var provider = services.BuildServiceProvider();
 
         var appState = provider.GetRequiredService<IAppState>();
-        var orgIdProvider = provider.GetRequiredService<IOrganizationIdProvider>();
 
         if (getEmbeddedResult.IsSuccess)
         {
-            orgIdProvider.OrganizationId = getEmbeddedResult.Value.OrganizationId;
+            appState.OrganizationId = getEmbeddedResult.Value.OrganizationId;
             appState.Host = getEmbeddedResult.Value.ServerUrl.AbsoluteUri;
         }
 
         if (appState.ArgDict.TryGetValue("org-id", out var orgId))
         {
-            orgIdProvider.OrganizationId = orgId;
+            appState.OrganizationId = orgId;
         }
 
         var result = await provider.UseRemoteControlClient(

@@ -22,18 +22,15 @@ public class BrandingProvider : IBrandingProvider
     private readonly IAppState _appState;
     private readonly IEmbeddedServerDataProvider _embeddedDataSearcher;
     private readonly ILogger<BrandingProvider> _logger;
-    private readonly IOrganizationIdProvider _orgIdProvider;
     private BrandingInfo? _brandingInfo;
 
 
     public BrandingProvider(
         IAppState appState,
-        IOrganizationIdProvider orgIdProvider,
         IEmbeddedServerDataProvider embeddedServerDataSearcher,
         ILogger<BrandingProvider> logger)
     {
         _appState = appState;
-        _orgIdProvider = orgIdProvider;
         _embeddedDataSearcher = embeddedServerDataSearcher;
         _logger = logger;
     }
@@ -82,7 +79,7 @@ public class BrandingProvider : IBrandingProvider
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(_orgIdProvider.OrganizationId) ||
+            if (string.IsNullOrWhiteSpace(_appState.OrganizationId) ||
                 string.IsNullOrWhiteSpace(_appState.Host))
             {
                 var filePath = Process.GetCurrentProcess()?.MainModule?.FileName;
@@ -98,7 +95,7 @@ public class BrandingProvider : IBrandingProvider
                 {
                     if (!string.IsNullOrWhiteSpace(result.Value.OrganizationId))
                     {
-                        _orgIdProvider.OrganizationId = result.Value.OrganizationId;
+                        _appState.OrganizationId = result.Value.OrganizationId;
                     }
 
                     if (result.Value.ServerUrl is not null)
@@ -122,7 +119,7 @@ public class BrandingProvider : IBrandingProvider
 
             using var httpClient = new HttpClient();
 
-            var brandingUrl = $"{_appState.Host.TrimEnd('/')}/api/branding/{_orgIdProvider.OrganizationId}";
+            var brandingUrl = $"{_appState.Host.TrimEnd('/')}/api/branding/{_appState.OrganizationId}";
             var httpResult = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
             if (httpResult is null)
             {
