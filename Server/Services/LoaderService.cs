@@ -1,5 +1,5 @@
 ﻿using Immense.RemoteControl.Shared.Primitives;
-using Immense.SimpleMessenger;
+using Bitbound.SimpleMessenger;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
 

@@ -3,6 +3,7 @@
 using Immense.RemoteControl.Shared;
 using MessagePack;
 using Remotely.Shared.Models;
+using Remotely.Shared.Primitives;
 using System;
 using System.IO;
 

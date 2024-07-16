@@ -1,9 +1,9 @@
 ﻿using Immense.RemoteControl.Desktop.Shared.Abstractions;
 using Immense.RemoteControl.Desktop.Shared.Services;
-using Immense.RemoteControl.Shared;
 using Immense.RemoteControl.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Entities;
+using Remotely.Shared.Primitives;
 using Remotely.Shared.Services;
 using System.Diagnostics;
 using System.Net.Http.Json;
@@ -16,7 +16,7 @@ public class BrandingProvider : IBrandingProvider
     private readonly IEmbeddedServerDataProvider _embeddedDataSearcher;
     private readonly ILogger<BrandingProvider> _logger;
     private readonly IOrganizationIdProvider _orgIdProvider;
-    private BrandingInfoBase? _brandingInfo;
+    private BrandingInfo? _brandingInfo;
 
 
     public BrandingProvider(
@@ -31,7 +31,7 @@ public class BrandingProvider : IBrandingProvider
         _logger = logger;
     }
 
-    public BrandingInfoBase CurrentBranding => _brandingInfo ??
+    public BrandingInfo CurrentBranding => _brandingInfo ??
         throw new InvalidOperationException("Branding info has not been set or initialized.");
 
     public async Task Initialize()
@@ -66,7 +66,7 @@ public class BrandingProvider : IBrandingProvider
         }
     }
 
-    public void SetBrandingInfo(BrandingInfoBase brandingInfo)
+    public void SetBrandingInfo(BrandingInfo brandingInfo)
     {
         _brandingInfo = brandingInfo;
     }

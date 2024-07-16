@@ -1,5 +1,4 @@
-﻿using Immense.RemoteControl.Shared;
-using Immense.RemoteControl.Shared.Models;
+﻿using Immense.RemoteControl.Shared.Models;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +16,7 @@ using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Extensions;
 using Remotely.Shared.Models;
+using Remotely.Shared.Primitives;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.ViewModels;
 using System;
@@ -1977,7 +1977,7 @@ public class DataService : IDataService
         }
 
         var entry = dbContext.Entry(organization.BrandingInfo);
-        entry.CurrentValues.SetValues(BrandingInfoBase.Default);
+        entry.CurrentValues.SetValues(BrandingInfo.Default);
         
         await dbContext.SaveChangesAsync();
     }

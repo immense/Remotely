@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es2017",
+    "module": "ESNext",
+    "allowJs": false,
+    "moduleResolution": "Node"
+  },
+  "exclude": [
+    "node_modules",
+    "obj",
+    "bin"
+  ],
+  "compileOnSave": true
+}

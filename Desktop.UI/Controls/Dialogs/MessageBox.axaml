@@ -1,0 +1,47 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="clr-namespace:Immense.RemoteControl.Desktop.UI.ViewModels"
+		xmlns:fakes="clr-namespace:Immense.RemoteControl.Desktop.UI.ViewModels.Fakes"
+        x:Class="Immense.RemoteControl.Desktop.UI.Controls.Dialogs.MessageBox"
+        Icon="{Binding WindowIcon}"
+        Title="{Binding Caption}"
+		Topmost="True"
+		ShowActivated="True"
+        SizeToContent="WidthAndHeight" MinWidth="300" MinHeight="100"
+		x:DataType="vm:MessageBoxViewModel"
+		x:Name="MessageBoxWindow"
+        WindowStartupLocation="CenterScreen">
+
+	<Design.DataContext>
+		<fakes:FakeMessageBoxViewModel />
+	</Design.DataContext>
+
+  <StackPanel Margin="10, 20">
+    <TextBlock Text="{Binding Message}"></TextBlock>
+
+    <Grid Margin="0,20,0,0">
+      <Button Classes="NormalButton" HorizontalAlignment="Right" IsVisible="{Binding IsOkButtonVisible}"
+              Command="{Binding OKCommand}"
+              CommandParameter="{Binding #MessageBoxWindow}"
+              Content="OK">
+      </Button>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Classes="NormalButton" HorizontalAlignment="Right" IsVisible="{Binding AreYesNoButtonsVisible}" Margin="5,0,5,0"
+                Command="{Binding YesCommand}"
+                CommandParameter="{Binding #MessageBoxWindow}"
+                Content="Yes">
+        </Button>
+        <Button Classes="NormalButton" HorizontalAlignment="Right" IsVisible="{Binding AreYesNoButtonsVisible}" Margin="5,0,5,0"
+                Command="{Binding NoCommand}"
+                CommandParameter="{Binding #MessageBoxWindow}"
+                Content="No">
+        </Button>
+      </StackPanel>
+      
+    </Grid>
+
+  </StackPanel>
+</Window>

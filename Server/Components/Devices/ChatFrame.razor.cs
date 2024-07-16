@@ -1,4 +1,4 @@
-﻿using Immense.SimpleMessenger;
+﻿using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Hubs;

@@ -1,0 +1,279 @@
+@page
+@model Immense.RemoteControl.Server.Areas.RemoteControl.Pages.ViewerModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, user-scalable=no" />
+    <title>@(Model.PageTitle)</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="description" content="@(Model.PageDescription)" />
+    <link href="/_content/Immense.RemoteControl.Server/manifest.json" rel="manifest" />
+    <link rel="icon" href="@(Model.FaviconUrl)" />
+    <link href="/_content/Immense.RemoteControl.Server/css/remote-control.css" rel="stylesheet" asp-append-version="true" />
+
+    @if (!string.IsNullOrWhiteSpace(Model.ThemeUrl))
+    {
+        <link href="@(Model.ThemeUrl)" rel="stylesheet" asp-append-version="true" />
+    }
+
+    <link href="/_content/Immense.RemoteControl.Server/lib/fontawesome/css/all.min.css" rel="stylesheet" />
+    <link href="/_content/Immense.RemoteControl.Server/lib/fontawesome/css/brands.min.css" rel="stylesheet" />
+
+    <environment include="Development">
+        <script src="/_content/Immense.RemoteControl.Server/lib/microsoft-signalr/signalr.js"></script>
+        <script src="/_content/Immense.RemoteControl.Server/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.js"></script>
+        <script src="/_content/Immense.RemoteControl.Server/lib/msgpack/dist.es5+umd/msgpack.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="/_content/Immense.RemoteControl.Server/lib/microsoft-signalr/signalr.min.js"></script>
+        <script src="/_content/Immense.RemoteControl.Server/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.min.js"></script>
+        <script src="/_content/Immense.RemoteControl.Server/lib/msgpack/dist.es5+umd/msgpack.min.js"></script>
+    </environment>
+</head>
+<body>
+    <div id="backgroundLayers" class="background-layers">
+        <div class="background-layer-1"></div>
+        <div class="background-layer-2"></div>
+        <div class="background-layer-3"></div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+        {
+            <div class="logo-frame">
+                <img src="@(Model.LogoUrl)" />
+                <div class="beta-pill beta-pill-logo absolute-right-middle">
+                    BETA
+                </div>
+            </div>
+        }
+    </div>
+
+    <div id="screenSelectMenu" class="popup-menu">
+    </div>
+
+    <div id="clipboardTransferMenu" class="popup-menu">
+        <button id="typeClipboardButton">Type Clipboard</button>
+    </div>
+
+    <div id="fileTransferMenu" class="popup-menu">
+        <button id="fileUploadButton">Upload File</button>
+        <button id="fileDownloadButton">Download File</button>
+    </div>
+
+    <div id="windowsSessionMenu" class="popup-menu">
+        <div class="text-center" style="margin-bottom: 5px;">
+            Change Windows Session
+        </div>
+        <select id="windowsSessionSelect"
+                title="Switch to a different Windows session.">
+        </select>
+    </div>
+
+    <div id="extrasMenu" class="popup-menu">
+
+        <button id="audioButton"
+                title="Windows only.  Stream the remote audio to the browser.">
+            <i class="fas fa-volume-up"></i>
+            Audio
+        </button>
+
+        <button id="fileTransferButton"
+                title="Transfer files to the remote computer.">
+            <i class="fas fa-file-upload"></i>
+            File Transfer
+        </button>
+
+        <button id="inviteButton"
+                title="Copy a link that lets another person view the remote screen.">
+            <i class="fas fa-user-plus"></i>
+            Invite Others
+        </button>
+
+        <button id="metricsButton"
+            title="Toggle display of session metrics.">
+            <i class="fas fa-gauge"></i>
+            Metrics
+        </button>
+    </div>
+
+    <div id="metricsFrame" class="d-none">
+        <div>
+            Mbps:
+        </div>
+        <div id="mbpsDiv">
+        </div>
+        <div>
+            FPS:
+        </div>
+        <div id="fpsDiv">
+        </div>
+        <div>
+            Latency:
+        </div>
+        <div id="latencyDiv">
+        </div>
+        <div>
+            GPU:
+        </div>
+        <div id="gpuAcceleratedDiv">
+        </div>
+    </div>
+
+    <div class="connection-box-wrapper">
+        <div class="text-center">
+            <h2 id="connectHeader" class="connect-header" style="display: none">
+                Connect to a Client
+            </h2>
+        </div>
+        <div id="connectBox" class="center-connection-box" style="display: none">
+            <form id="connectForm">
+                <div class="form-block">
+                    <label class="input-label">Your Name (shown to client)</label>
+                    <input id="nameInput" type="text" required value="@Model.UserDisplayName" />
+                </div>
+                <div class="form-block">
+                    <label class="input-label">Session ID</label>
+                    <input id="sessionIDInput" required type="text" pattern="[0-9 ]+" />
+                </div>
+                <div>
+                    <button id="connectButton" disabled>
+                        Connect
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+        <div id="statusMessage" class="status-message">
+        </div>
+
+    </div>
+
+    <div id="workAreaGrid" style="display: none;">
+        <div>
+            <div id="menuFrame">
+                <div class="menu-column menu-column-left">
+                    @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+                    {
+                        <img class="menu-logo" src="@(Model.LogoUrl)" />
+                        <div id="betaPillLogo" class="beta-pill beta-pill-logo ms-1">
+                            BETA
+                        </div>
+                    }
+                </div>
+                <div class="menu-column menu-column-middle">
+                    <button id="changeScreenButton"
+                            title="Switch monitors on remote multi-monitor setups.">
+                        <i class="fas fa-desktop"></i>
+                        Monitors
+                    </button>
+
+                    <button id="viewOnlyButton"
+                            title="If toggled, prevents sending commnads and input to the remote computer.">
+                        <i class="fas fa-eye"></i>
+                        View Only
+                    </button>
+
+                    <button id="clipboardTransferButton"
+                            title="Type the current clipboard text on the remote computer.">
+                        <i class="fas fa-clipboard"></i>
+                        Clipboard
+                    </button>
+
+                    <button id="blockInputButton"
+                            title="Prevent remote user from using keyboard and mouse.">
+                        <i class="fas fa-mouse"></i>
+                        Block Remote Input
+                    </button>
+
+                    <button id="ctrlAltDelButton"
+                            title="Simulate the Ctrl+Alt+Del command on the remote computer.  Must be running as SYSTEM."
+                            class="d-none">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Ctrl+Alt+Del
+                    </button>
+                </div>
+
+                <div class="menu-column menu-column-right">
+                    <button id="disconnectButton"
+                            title="Disconnect from the current session.">
+                        x
+                    </button>
+
+                    <button id="extrasMenuButton">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+
+                    <button id="windowsSessionMenuButton">
+                        <i class="fa-brands fa-windows"></i>
+                    </button>
+
+                    <button id="fullScreenButton" title="Enter fullscreen mode.">
+                        <i class="fas fa-window-maximize"></i>
+                    </button>
+
+                    <button id="fitToScreenButton"
+                            class="toggled"
+                            title="If toggled, will resize image to fit in the window.">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <div id="betaPillPullDown" class="beta-pill ms-1">
+                    BETA
+                </div>
+                <button id="menuButton">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+
+                <button 
+                    id="keyboardButton" 
+                    title="Invoke the mobile touch keyboard."
+                    class="d-none">
+                    <i class="fas fa-keyboard align-middle"></i>
+                </button>
+
+            </div>
+        </div>
+        <div>
+            <div id="screenViewerWrapper">
+                <canvas id="screenViewer" class="fit"></canvas>
+                <input id="fileTransferInput" hidden="hidden" type="file" multiple />
+                <input id="touchKeyboardInput" type="text" autocomplete="off" autocapitalize="off"  />
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toastsWrapper">
+    </div>
+
+
+    <div id="fileTransferDiv" hidden="hidden">
+        <span id="fileTransferNameSpan" class="me-1 font-weight-bold" style="vertical-align: middle;"></span>
+        <progress id="fileTransferProgress"></progress>
+    </div>
+
+    <footer>
+        <div class="copyright-text">
+            &copy; @(DateTime.Now.Year) - Immense Networks
+        </div>
+    </footer>
+
+    <script src="/_content/Immense.RemoteControl.Server/src/App.js" type="module"></script>
+    <script>
+        window.addEventListener("load", () => {
+            ViewerApp.Init();
+        })
+    </script>
+</body>
+</html>

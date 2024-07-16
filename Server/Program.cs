@@ -1,5 +1,5 @@
 using Immense.RemoteControl.Server.Extensions;
-using Immense.SimpleMessenger;
+using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.Circuits;

@@ -1,0 +1,30 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Immense.RemoteControl.Desktop.UI.App"
+			 RequestedThemeVariant="Light">
+    <Application.Styles>
+		<FluentTheme />
+
+		<Style Selector="TextBlock.SectionHeader">
+			<Setter Property="FontWeight" Value="Bold"></Setter>
+			<Setter Property="FontSize" Value="18"></Setter>
+		</Style>
+		<Style Selector="Button.NormalButton">
+			<Setter Property="Background" Value="White"></Setter>
+			<Setter Property="BorderThickness" Value="1"></Setter>
+			<Setter Property="BorderBrush" Value="Black"></Setter>
+			<Setter Property="Padding" Value="6,4"></Setter>
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.HyperlinkButton">
+			<Setter Property="Foreground" Value="DodgerBlue"></Setter>
+			<Setter Property="BorderThickness" Value="0"></Setter>
+			<Setter Property="BorderBrush" Value="Transparent"></Setter>
+			<Setter Property="Cursor" Value="Hand"></Setter>
+			<Setter Property="Background" Value="Transparent"></Setter>
+			<Setter Property="Padding" Value="0"></Setter>
+		</Style>
+    </Application.Styles>
+
+</Application>

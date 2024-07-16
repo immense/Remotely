@@ -1,0 +1,482 @@
+body {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    -ms-touch-action: none;
+    touch-action: none;
+    overscroll-behavior-y: contain;
+    background-position: 0 0;
+    background-size: 40px 40px;
+}
+
+.background-layers {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.background-layer-1 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-position: 0 0;
+    background-size: 40px 40px;
+}
+
+.background-layer-2 {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.logo-frame {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    top: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.connection-box-wrapper {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    z-index: 1;
+}
+
+.center-connection-box {
+    display: inline-block;
+    text-align: left;
+    width: 350px;
+    padding: 30px;
+    margin-bottom: 20px;
+}
+
+    .center-connection-box input {
+        width: 100%;
+    }
+
+.status-message {
+    font-size: 1.25em;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+}
+
+input, select {
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 16px;
+    height: 40px;
+    border-style: solid;
+    border-width: 1px;
+    padding-left: 1em;
+    padding-right: 1em;
+    box-sizing: border-box;
+    outline: none;
+}
+
+input:focus {
+    transition: .1s linear all;
+}
+
+
+.input-label {
+    display: block;
+    font-style: normal;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 16px;
+    margin-bottom: .5em;
+}
+
+.form-block {
+    margin-bottom: 2em;
+}
+
+.connect-header {
+    font-style: normal;
+    font-weight: 100;
+    font-size: 28px;
+    line-height: 32px;
+}
+
+#connectButton {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    width: 100%;
+}
+
+#windowsSessionSelect {
+    width: 200px;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    height: 40px;
+    min-width: 40px;
+}
+
+#menuButton {
+    pointer-events: all;
+    cursor: pointer;
+    z-index: 3;
+    transition: .5s ease all;
+    width: 50px;
+    height: 30px;
+}
+
+    #menuButton:focus {
+        outline: none;
+    }
+
+    #menuButton i {
+        transform: rotateX(0);
+        transition: .5s ease all;
+    }
+
+    #menuButton.open i {
+        transform: rotateX(180deg);
+        transition: .5s ease all;
+    }
+
+#menuFrame {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-column-gap: 10px;
+    overflow: hidden;
+    text-align: center;
+    height: 0;
+    z-index: 3;
+}
+
+    #menuFrame.open {
+        padding-left: 10px;
+        height: auto;
+    }
+
+    #menuFrame #disconnectButton {
+        background-color: #a61930;
+        border: 1px solid #a61930;
+        color: #fff;
+        font-size: 16px;
+    }
+
+        #menuFrame #disconnectButton:hover {
+            border: 1px solid #384346;
+        }
+        #menuFrame #disconnectButton:active {
+            border: 1px solid #009888;
+        }
+
+.menu-column {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+}
+
+.menu-column-left {
+  align-items: center;
+  align-content: center;
+}
+
+.menu-column-right {
+    flex-direction: row-reverse;
+    align-items: flex-start;
+}
+
+.menu-column-middle {
+    justify-content: center;
+}
+
+.popup-menu {
+    position: absolute;
+    overflow: hidden;
+    height: 0;
+}
+
+.popup-menu.open {
+    height: auto;
+    z-index: 5;
+    padding: 10px;
+    transition: .2s ease all;
+}
+
+.popup-menu button {
+    display: block;
+    white-space: nowrap;
+    width: 100%;
+}
+
+#extrasMenu button {
+    text-align: left;
+}
+#extrasMenu button i {
+    margin-right: 8px;
+}
+
+#fileTransferProgress {
+    vertical-align: middle;
+    width: 100%;
+    background-color: limegreen;
+}
+
+.d-none {
+    display: none !important;
+}
+
+.ms-1 {
+    margin-left: .25rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-end {
+    text-align: right;
+}
+
+.right-aligned {
+  text-align: right;
+}
+
+.absolute-right-middle {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translate(110%, -50%);
+}
+
+.menu-options-header {
+  text-align: center;
+  margin: 20px 0 5px 0;
+  font-family: monospace;
+  font-size: .9em;
+}
+
+#metricsFrame {
+    position: fixed;
+    display: grid;
+    right: 0;
+    bottom: 0;
+    padding: 10px;
+    grid-template-columns: auto 1fr;
+    column-gap: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-size: 0.8em;
+    white-space: nowrap;
+    background-color: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    user-select: none;
+    z-index: 5;
+}
+
+
+#keyboardButton {
+    height: 30px;
+}
+
+
+.horizontal-button-bar {
+    position: fixed;
+    height: 0;
+    padding: 0;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    transition: all 250ms;
+    border-radius: 5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: center;
+}
+
+    .horizontal-button-bar.open {
+        height: auto;
+        min-height: 40px;
+        padding: 10px;
+        transition: all 250ms;
+    }
+
+#workAreaGrid {
+    position: fixed;
+    display: grid;
+    text-align: left;
+    grid-template-rows: auto 1fr;
+    grid-row-gap: 5px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2;
+}
+
+#screenViewerWrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    -ms-touch-action: pan-x pan-y;
+    touch-action: pan-x pan-y;
+}
+
+#screenViewer {
+    position: absolute;
+    -ms-touch-action: pan-x pan-y;
+    touch-action: pan-x pan-y;
+}
+#screenViewer.fit {
+    max-width: 99%;
+    max-height: 99%;
+    left: 50%;
+    transform: translateX(-50%);
+    object-fit: contain;
+}
+
+.beta-pill {
+    display: inline-block;
+    font-size: .9em;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background-color: rgb(40, 35, 21);
+    color: rgb(245, 222, 137);
+}
+
+#betaPillPullDown {
+    position: absolute;
+    left: 10px;
+    margin-top: 5px;
+}
+
+
+
+.toast-message {
+    transform: translate(0, 0);
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    opacity: 1;
+    color: white;
+    user-select: none;
+    pointer-events: none;
+    animation-name: toast-message;
+    animation-delay: 2s;
+    animation-duration: .5s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in;
+}
+
+@keyframes toast-message {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(calc(100% + 50px), 0);
+    }
+}
+
+.modal-prompt {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    border: 2px solid white;
+    border-radius: 5px;
+    box-shadow: 10px 10px 5px rgba(50,50,50,0.9);
+    z-index: 3;
+    min-height: 100px;
+}
+
+    .modal-prompt input {
+        margin-top: 15px;
+        width: 100%;
+    }
+
+.buttons-footer {
+    text-align: right;
+    margin-top: 10px
+}
+
+    .buttons-footer button {
+        height: 30px;
+        width: 60px;
+        margin-left: 10px;
+    }
+
+#touchKeyboardInput {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -100%;
+}
+
+
+footer {
+    position: fixed;
+    bottom: 40px;
+    width: 100vw;
+    text-align: center;
+    pointer-events: none;
+    font-size: .9em;
+}
+
+.copyright-text {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    color: #FFFFFF;
+    opacity: 0.5;
+}
+
+#toastsWrapper {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 4;
+}
+
+#fileTransferDiv {
+    position: fixed;
+    right: 5px;
+    bottom: 5px;
+    background-color: rgb(50, 50, 50);
+    color: white;
+    z-index: 3;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+
+@media only screen and (max-width : 667px) {
+    /* Hide the logo column on mobile.  Not enough screen space for it. */
+  #menuFrame {
+    grid-template-columns: 0 2fr 1fr;
+  }
+}

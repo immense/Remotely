@@ -1,5 +1,5 @@
 ﻿using Immense.RemoteControl.Server.Abstractions;
-using Immense.SimpleMessenger;
+using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;

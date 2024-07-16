@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "microsoft-signalr@8.0.7",
+      "destination": "wwwroot/lib/microsoft-signalr/"
+    },
+    {
+      "library": "@msgpack/msgpack@3.0.0-beta2",
+      "destination": "wwwroot/lib/msgpack/",
+      "provider": "unpkg",
+      "files": [
+        "dist.es5+umd/msgpack.js",
+        "dist.es5+umd/msgpack.min.js",
+        "dist.es5+umd/msgpack.js.map",
+        "dist.es5+umd/msgpack.min.js.map"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "@microsoft/signalr-protocol-msgpack@8.0.7",
+      "destination": "wwwroot/lib/microsoft/signalr-protocol-msgpack/",
+      "files": [
+        "dist/browser/signalr-protocol-msgpack.js",
+        "dist/browser/signalr-protocol-msgpack.js.map",
+        "dist/browser/signalr-protocol-msgpack.min.js",
+        "dist/browser/signalr-protocol-msgpack.min.js.map"
+      ]
+    },
+    {
+      "library": "font-awesome@6.5.2",
+      "destination": "wwwroot/lib/fontawesome/"
+    }
+  ]
+}

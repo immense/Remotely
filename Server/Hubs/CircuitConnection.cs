@@ -1,7 +1,6 @@
 ﻿using Immense.RemoteControl.Server.Services;
-using Immense.RemoteControl.Shared;
 using Immense.RemoteControl.Shared.Helpers;
-using Immense.SimpleMessenger;
+using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Components.Server.Circuits;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -13,6 +12,7 @@ using Remotely.Shared;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Interfaces;
+using Remotely.Shared.Primitives;
 using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;

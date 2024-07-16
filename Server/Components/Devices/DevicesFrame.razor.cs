@@ -1,4 +1,4 @@
-﻿using Immense.SimpleMessenger;
+﻿using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Build.Framework;

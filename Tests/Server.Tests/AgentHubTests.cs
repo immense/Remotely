@@ -1,6 +1,6 @@
 ﻿using Immense.RemoteControl.Server.Hubs;
 using Immense.RemoteControl.Server.Services;
-using Immense.SimpleMessenger;
+using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;

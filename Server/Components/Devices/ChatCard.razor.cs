@@ -1,5 +1,4 @@
-﻿using Immense.SimpleMessenger;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
@@ -7,8 +6,6 @@ using Remotely.Server.Services;
 using Remotely.Server.Services.Stores;
 using Remotely.Shared.Enums;
 using Remotely.Shared.ViewModels;
-using System;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 

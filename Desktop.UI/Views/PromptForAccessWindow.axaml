@@ -1,0 +1,57 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:Immense.RemoteControl.Desktop.UI.ViewModels"
+		xmlns:fakes="clr-namespace:Immense.RemoteControl.Desktop.UI.ViewModels.Fakes"
+        mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="275"
+        x:Class="Immense.RemoteControl.Desktop.UI.Views.PromptForAccessWindow"
+		x:DataType="vm:IPromptForAccessWindowViewModel"
+		x:Name="PromptForAccessWindowRef"
+        BorderBrush="DimGray"
+        BorderThickness="1"
+        Title="Remote Control Request" 
+        MinHeight="200"
+        MinWidth="250"
+        Height="275" 
+        Width="450"
+		Topmost="True"
+		ShowActivated="True"
+	    WindowStartupLocation="CenterScreen"
+        Icon="{Binding WindowIcon}">
+
+	<Design.DataContext>
+		<fakes:FakePromptForAccessViewModel />
+	</Design.DataContext>
+
+	<Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Row="0">
+      <TextBlock Classes="SectionHeader"  FontWeight="Bold" FontSize="18" Foreground="DimGray" Margin="10" TextWrapping="Wrap">
+        A remote control session has been requested.
+      </TextBlock>
+
+      <TextBlock FontSize="16"
+                 Margin="10"
+                 TextWrapping="Wrap"
+                 Text="{Binding RequestMessage}"></TextBlock>
+
+    </StackPanel>
+
+    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+      <Button Width="60" Height="40" Content="Yes" Margin="10"
+              Classes="NormalButton"
+              Command="{Binding SetResultYes}"
+              CommandParameter="{Binding #PromptForAccessWindowRef}"></Button>
+      <Button Width="60" Height="40" Content="No" Margin="10"
+              Classes="NormalButton"
+              Command="{Binding SetResultNo}"
+              CommandParameter="{Binding #PromptForAccessWindowRef}"></Button>
+    </StackPanel>
+
+  </Grid>
+</Window>

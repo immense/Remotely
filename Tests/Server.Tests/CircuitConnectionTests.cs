@@ -1,6 +1,6 @@
 ﻿#nullable enable
 using Immense.RemoteControl.Server.Services;
-using Immense.SimpleMessenger;
+using Bitbound.SimpleMessenger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
