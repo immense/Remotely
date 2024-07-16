@@ -31,7 +31,7 @@ public interface ICircuitConnection
 
     Task ReinstallAgents(string[] deviceIDs);
 
-    Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceID, bool viewOnly);
+    Task<Result<RemoteControlSession>> RemoteControl(string deviceID, bool viewOnly);
 
     Task RemoveDevices(string[] deviceIDs);
 
@@ -215,7 +215,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         _dataService.RemoveDevices(deviceIDs);
     }
 
-    public async Task<Result<RemoteControlSessionEx>> RemoteControl(string deviceId, bool viewOnly)
+    public async Task<Result<RemoteControlSession>> RemoteControl(string deviceId, bool viewOnly)
     {
         var settings = await _dataService.GetSettings();
 
@@ -228,7 +228,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
 
             await _messenger.Send(message, ConnectionId);
 
-            return Result.Fail<RemoteControlSessionEx>("Device is not online.");
+            return Result.Fail<RemoteControlSession>("Device is not online.");
         }
 
 
@@ -239,24 +239,8 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                 "Remote control attempted by unauthorized user.  Device ID: {deviceId}.  User Name: {userName}.",
                 deviceId,
                 User.UserName);
-            return Result.Fail<RemoteControlSessionEx>("Unauthorized.");
+            return Result.Fail<RemoteControlSession>("Unauthorized.");
 
-        }
-
-        var sessionCount = _remoteControlSessionCache.Sessions
-               .OfType<RemoteControlSessionEx>()
-               .Count(x => x.OrganizationId == User.OrganizationID);
-
-        if (sessionCount >= settings.RemoteControlSessionLimit)
-        {
-            var message = new DisplayNotificationMessage(
-                "There are already the maximum amount of active remote control sessions for your organization.",
-                "Max number of concurrent sessions reached.",
-                "bg-warning");
-            
-            await _messenger.Send(message, ConnectionId);
-
-            return Result.Fail<RemoteControlSessionEx>("Max number of concurrent sessions reached.");
         }
 
         if (!_agentSessionCache.TryGetConnectionId(targetDevice.ID, out var serviceConnectionId))
@@ -267,13 +251,13 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
                 "bg-warning");
             
             await _messenger.Send(message, ConnectionId);
-            return Result.Fail<RemoteControlSessionEx>("Service connection not found.");
+            return Result.Fail<RemoteControlSession>("Service connection not found.");
         }
 
         var sessionId = Guid.NewGuid();
         var accessKey = RandomGenerator.GenerateAccessKey();
 
-        var session = new RemoteControlSessionEx()
+        var session = new RemoteControlSession()
         {
             UnattendedSessionId = sessionId,
             UserConnectionId = ConnectionId,
@@ -292,7 +276,7 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         if (!orgResult.IsSuccess)
         {
             _toastService.ShowToast2(orgResult.Reason, Enums.ToastType.Warning);
-            return Result.Fail<RemoteControlSessionEx>(orgResult.Reason);
+            return Result.Fail<RemoteControlSession>(orgResult.Reason);
         }
 
         await _agentHubContext.Clients.Client(serviceConnectionId).RemoteControl(

@@ -1,30 +1,27 @@
-﻿using Remotely.Server.Abstractions;
-using Remotely.Server.Enums;
+﻿using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
 using Remotely.Shared.Helpers;
 using Remotely.Shared.Interfaces;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Remotely.Server.Services;
 
 internal class RemoteControlSessionReconnector : BackgroundService
 {
     private readonly IRemoteControlSessionCache _sessionCache;
-    private readonly IHubEventHandler _hubEvents;
     private readonly IHubContext<ViewerHub, IViewerHubClient> _viewerHub;
+    private readonly IHubContext<AgentHub, IAgentHubClient> _agentHub;
     private readonly ILogger<RemoteControlSessionCleaner> _logger;
 
     public RemoteControlSessionReconnector(
         IRemoteControlSessionCache sessionCache,
-        IHubEventHandler hubEvents,
         IHubContext<ViewerHub, IViewerHubClient> viewerHub,
+        IHubContext<AgentHub, IAgentHubClient> agentHub,
         ILogger<RemoteControlSessionCleaner> logger)
     {
         _sessionCache = sessionCache;
-        _hubEvents = hubEvents;
         _viewerHub = viewerHub;
+        _agentHub = agentHub;
         _logger = logger;
     }
 
@@ -64,7 +61,16 @@ internal class RemoteControlSessionReconnector : BackgroundService
                     await RateLimiter.Throttle(async () =>
                         {
                             await _viewerHub.Clients.Clients(session.ViewerList).Reconnecting();
-                            await _hubEvents.RestartScreenCaster(session);
+                            await _agentHub.Clients
+                                .Client(session.AgentConnectionId)
+                                .RestartScreenCaster(
+                                    [.. session.ViewerList],
+                                    $"{session.UnattendedSessionId}",
+                                    session.AccessKey,
+                                    session.UserConnectionId,
+                                    session.RequesterName,
+                                    session.OrganizationName,
+                                    session.OrganizationId);
                         },
                         TimeSpan.FromSeconds(10),
                         key: $"{session.UnattendedSessionId}",

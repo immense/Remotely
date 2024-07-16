@@ -1,7 +1,5 @@
-using Remotely.Server.Abstractions;
 using Remotely.Server.Models;
 using Remotely.Shared.Services;
-using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
@@ -35,17 +33,14 @@ internal class RemoteControlSessionCache : IRemoteControlSessionCache
     // so we need to use an outer lock.
     private readonly object _sessionsLock = new();
 
-    private readonly IHubEventHandler _hubEventHandler;
     private readonly ILogger<RemoteControlSessionCache> _logger;
     private readonly ISystemTime _systemTime;
 
     public RemoteControlSessionCache(
         ISystemTime systemTime,
-        IHubEventHandler hubEventHandler,
         ILogger<RemoteControlSessionCache> logger)
     {
         _systemTime = systemTime;
-        _hubEventHandler = hubEventHandler;
         _logger = logger;
     }
 
@@ -77,7 +72,6 @@ internal class RemoteControlSessionCache : IRemoteControlSessionCache
             }
 
             _sessions[sessionId] = session;
-            NotifySessionAdded(session);
             return session;
         }
     }
@@ -88,9 +82,7 @@ internal class RemoteControlSessionCache : IRemoteControlSessionCache
         {
             return _sessions.GetOrAdd(sessionId, (key) =>
             {
-                var session = valueFactory(key);
-                NotifySessionAdded(session);
-                return session;
+                return valueFactory(key);
             });
         }
     }
@@ -102,13 +94,12 @@ internal class RemoteControlSessionCache : IRemoteControlSessionCache
             foreach (var session in _sessions)
             {
                 if (session.Value.Mode is RemoteControlMode.Unattended or RemoteControlMode.Unknown &&
-                    !session.Value.ViewerList.Any() &&
+                    session.Value.ViewerList.Count == 0 &&
                     session.Value.Created < _systemTime.Now.AddMinutes(-1))
                 {
                     _logger.LogWarning("Removing expired session: {session}", JsonSerializer.Serialize(session.Value));
                     if (_sessions.TryRemove(session.Key, out var expiredSession))
                     {
-                        NotifySessionRemoved(expiredSession);
                         expiredSession.Dispose();
                     }
                 }
@@ -121,13 +112,7 @@ internal class RemoteControlSessionCache : IRemoteControlSessionCache
     {
         lock (_sessionsLock)
         {
-            if (_sessions.TryAdd(sessionId, session))
-            {
-                NotifySessionAdded(session);
-                return true;
-            }
-
-            return false;
+            return _sessions.TryAdd(sessionId, session);
         }
     }
 
@@ -147,7 +132,6 @@ internal class RemoteControlSessionCache : IRemoteControlSessionCache
             {
                 try
                 {
-                    NotifySessionRemoved(session);
                     session.Dispose();
                 }
                 catch (Exception ex)
@@ -161,20 +145,4 @@ internal class RemoteControlSessionCache : IRemoteControlSessionCache
         return false;
     }
 
-    private void NotifySessionAdded(RemoteControlSession session)
-    {
-        try
-        {
-            _ = _hubEventHandler.NotifyDesktopSessionAdded(session);
-        }
-        catch { } // Ignore errors thrown by consumer.
-    }
-    private void NotifySessionRemoved(RemoteControlSession session)
-    {
-        try
-        {
-            _ = _hubEventHandler.NotifyDesktopSessionRemoved(session);
-        }
-        catch { } // Ignore errors thrown by consumer.
-    }
 }

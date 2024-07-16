@@ -1,4 +1,3 @@
-using Remotely.Server.Abstractions;
 using Remotely.Server.Enums;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
@@ -10,23 +9,26 @@ namespace Remotely.Server.Hubs;
 
 public class DesktopHub : Hub<IDesktopHubClient>
 {
-    private readonly IHubEventHandler _hubEvents;
+    private readonly IAgentHubSessionCache _agentCache;
     private readonly ILogger<DesktopHub> _logger;
     private readonly IRemoteControlSessionCache _sessionCache;
     private readonly IDesktopStreamCache _streamCache;
     private readonly IHubContext<ViewerHub, IViewerHubClient> _viewerHub;
+    private readonly IHubContext<AgentHub, IAgentHubClient> _agentHub;
 
     public DesktopHub(
         IRemoteControlSessionCache sessionCache,
         IDesktopStreamCache streamCache,
-        IHubContext<ViewerHub, IViewerHubClient> viewerHubContext,
-        IHubEventHandler hubEvents,
+        IAgentHubSessionCache agentCache,
+        IHubContext<AgentHub, IAgentHubClient> agentHub,
+        IHubContext<ViewerHub, IViewerHubClient> viewerHub,
         ILogger<DesktopHub> logger)
     {
         _sessionCache = sessionCache;
+        _agentCache = agentCache;
         _streamCache = streamCache;
-        _viewerHub = viewerHubContext;
-        _hubEvents = hubEvents;
+        _viewerHub = viewerHub;
+        _agentHub = agentHub;
         _logger = logger;
     }
 
@@ -109,7 +111,7 @@ public class DesktopHub : Hub<IDesktopHubClient>
     {
         SessionInfo.StreamerState = StreamerState.ChangingSessions | StreamerState.DisconnectExpected;
         await _viewerHub.Clients.Clients(ViewerList).ShowMessage("Changing sessions");
-        await _hubEvents.NotifySessionChanged(SessionInfo, reason, currentSessionId);
+        await NotifySessionChangedImpl(reason, currentSessionId);
     }
 
     public async Task NotifySessionEnding(SessionEndReasonsEx reason)
@@ -119,7 +121,7 @@ public class DesktopHub : Hub<IDesktopHubClient>
             case SessionEndReasonsEx.Logoff:
                 SessionInfo.StreamerState = StreamerState.WindowsLoggingOff | StreamerState.DisconnectExpected;
                 await _viewerHub.Clients.Clients(ViewerList).ShowMessage("Windows session ending");
-                await _hubEvents.NotifySessionChanged(SessionInfo, SessionSwitchReasonEx.SessionLogoff, -1);
+                await NotifySessionChangedImpl(SessionSwitchReasonEx.SessionLogoff, -1);
                 break;
             case SessionEndReasonsEx.SystemShutdown:
                 SessionInfo.StreamerState = StreamerState.WindowsShuttingDown | StreamerState.DisconnectExpected;
@@ -163,11 +165,10 @@ public class DesktopHub : Hub<IDesktopHubClient>
             SessionInfo.Mode == RemoteControlMode.Unattended &&
             !SessionInfo.StreamerState.HasFlag(StreamerState.DisconnectExpected))
         {
-            if (ViewerList.Count > 0)
+            // Don't restart if consent wasn't granted on the first request.
+            if (ViewerList.Count > 0 && SessionInfo.RequireConsent)
             {
-                SessionInfo.StreamerState = StreamerState.Reconnecting;
-                await _viewerHub.Clients.Clients(ViewerList).Reconnecting();
-                await _hubEvents.RestartScreenCaster(SessionInfo);
+                await RestartScreenCaster();
             }
             else
             {
@@ -228,6 +229,7 @@ public class DesktopHub : Hub<IDesktopHubClient>
 
         return Task.FromResult(Result.Ok());
     }
+
     public Task SendConnectionFailedToViewers(List<string> viewerIDs)
     {
         return _viewerHub.Clients.Clients(viewerIDs).ConnectionFailed();
@@ -248,11 +250,9 @@ public class DesktopHub : Hub<IDesktopHubClient>
             signaler.Stream = stream;
             signaler.ReadySignal.Release();
 
-            await _hubEvents.NotifyRemoteControlStarted(SessionInfo);
             // TODO: We can remove the timeout once we implement add a
             // timeout for viewer idle (i.e. no input).
             await signaler.EndSignal.WaitAsync(TimeSpan.FromHours(8));
-            await _hubEvents.NotifyRemoteControlEnded(SessionInfo);
         }
         finally
         {
@@ -268,5 +268,60 @@ public class DesktopHub : Hub<IDesktopHubClient>
     public Task SendMessageToViewer(string viewerId, string message)
     {
         return _viewerHub.Clients.Client(viewerId).ShowMessage(message);
+    }
+
+    private async Task RestartScreenCaster()
+    {
+        SessionInfo.StreamerState = StreamerState.Reconnecting;
+        await _viewerHub.Clients.Clients(ViewerList).Reconnecting();
+
+        if (!_agentCache.TryGetConnectionId(SessionInfo.DeviceId, out var agentConnectionId))
+        {
+            await _viewerHub.Clients
+                .Clients(SessionInfo.ViewerList)
+                .ShowMessage("Waiting for agent to come online");
+
+            return;
+        }
+
+        SessionInfo.AgentConnectionId = agentConnectionId;
+
+        await _agentHub.Clients
+                 .Client(SessionInfo.AgentConnectionId)
+                 .RestartScreenCaster(
+                        [.. SessionInfo.ViewerList],
+                        $"{SessionInfo.UnattendedSessionId}",
+                        SessionInfo.AccessKey,
+                        SessionInfo.UserConnectionId,
+                        SessionInfo.RequesterName,
+                        SessionInfo.OrganizationName,
+                        SessionInfo.OrganizationId);
+    }
+    private async Task NotifySessionChangedImpl(SessionSwitchReasonEx reason, int currentSessionId)
+    {
+        if (SessionInfo.RequireConsent)
+        {
+            // Don't restart if consent wasn't granted on the first request.
+            return;
+        }
+
+        _logger.LogDebug("Windows session changed during remote control.  " +
+            "Reason: {reason}.  " +
+            "Current Session ID: {sessionId}.  " +
+            "Session Info: {@sessionInfo}",
+            reason,
+            currentSessionId,
+            SessionInfo);
+
+        await _agentHub.Clients
+            .Client(SessionInfo.AgentConnectionId)
+            .RestartScreenCaster(
+                [.. SessionInfo.ViewerList],
+                $"{SessionInfo.UnattendedSessionId}",
+                SessionInfo.AccessKey,
+                SessionInfo.UserConnectionId,
+                SessionInfo.RequesterUserName,
+                SessionInfo.OrganizationName,
+                SessionInfo.OrganizationId);
     }
 }

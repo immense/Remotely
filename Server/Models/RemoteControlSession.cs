@@ -20,12 +20,12 @@ public class RemoteControlSession : IDisposable
     {
         Created = DateTimeOffset.Now;
     }
-
     public string AccessKey { get; internal set; } = string.Empty;
     public string AgentConnectionId { get; set; } = string.Empty;
     public string AttendedSessionId { get; set; } = string.Empty;
     public DateTimeOffset Created { get; internal set; }
     public string DesktopConnectionId { get; internal set; } = string.Empty;
+    public string DeviceId { get; set; } = string.Empty;
     public DateTimeOffset LastStateChange { get; private set; } = DateTimeOffset.Now;
     public string MachineName { get; internal set; } = string.Empty;
     public RemoteControlMode Mode { get; internal set; }
@@ -35,6 +35,7 @@ public class RemoteControlSession : IDisposable
     /// </summary>
     public bool NotifyUserOnStart { get; set; } = true;
 
+    public string OrganizationId { get; set; } = string.Empty;
     public string OrganizationName { get; internal set; } = string.Empty;
     public string RelativeAccessUri => $"/RemoteControl/Viewer?mode=Unattended&sessionId={UnattendedSessionId}&accessKey={AccessKey}&viewonly=False";
     public string RequesterName { get; set; } = string.Empty;

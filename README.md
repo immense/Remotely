@@ -121,7 +121,6 @@ All other configuration is done in the Server Config page once you're logged in.
   - Set this to -1 or increase it to a specific number to allow multi-tenancy.
 - RedirectToHttps: Whether ASP.NET Core will redirect all traffic from HTTP to HTTPS. This is independent of Caddy, Nginx, and IIS configurations that do the same.
 - RemoteControlNotifyUsers: Whether to show a notification to the end user when an unattended remote control session starts.
-- RemoteControlSessionLimit: How many concurrent remote control sessions are allowed per organization.
 - RemoteControlRequiresAuthentication: Whether the remote control page requires authentication to establish a connection.
 - Require2FA: Require users to set up 2FA before they can use the main app.
 - Smpt-: SMTP settings for auto-generated system emails (such as registration and password reset).

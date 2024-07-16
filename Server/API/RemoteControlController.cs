@@ -5,7 +5,6 @@ using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Server.Auth;
-using Remotely.Server.Abstractions;
 using Remotely.Shared.Helpers;
 using Remotely.Server.Extensions;
 using Remotely.Shared.Entities;
@@ -24,7 +23,6 @@ public class RemoteControlController : ControllerBase
     private readonly IAgentHubSessionCache _serviceSessionCache;
     private readonly IDataService _dataService;
     private readonly IOtpProvider _otpProvider;
-    private readonly IHubEventHandler _hubEvents;
     private readonly SignInManager<RemotelyUser> _signInManager;
     private readonly ILogger<RemoteControlController> _logger;
 
@@ -35,7 +33,6 @@ public class RemoteControlController : ControllerBase
         IHubContext<AgentHub, IAgentHubClient> agentHub,
         IAgentHubSessionCache serviceSessionCache,
         IOtpProvider otpProvider,
-        IHubEventHandler hubEvents,
         ILogger<RemoteControlController> logger)
     {
         _dataService = dataService;
@@ -43,7 +40,6 @@ public class RemoteControlController : ControllerBase
         _remoteControlSessionCache = remoteControlSessionCache;
         _serviceSessionCache = serviceSessionCache;
         _otpProvider = otpProvider;
-        _hubEvents = hubEvents;
         _signInManager = signInManager;
         _logger = logger;
     }
@@ -134,20 +130,12 @@ public class RemoteControlController : ControllerBase
             }
         }
 
-        var sessionCount = _remoteControlSessionCache.Sessions
-               .OfType<RemoteControlSessionEx>()
-               .Count(x => x.OrganizationId == orgId);
-
-        var settings = await _dataService.GetSettings();
-        if (sessionCount > settings.RemoteControlSessionLimit)
-        {
-            return BadRequest("There are already the maximum amount of active remote control sessions for your organization.");
-        }
+        var sessionCount = _remoteControlSessionCache.Sessions.Count(x => x.OrganizationId == orgId);
 
         var sessionId = Guid.NewGuid();
         var accessKey = RandomGenerator.GenerateAccessKey();
 
-        var session = new RemoteControlSessionEx()
+        var session = new RemoteControlSession()
         {
             UnattendedSessionId = sessionId,
             UserConnectionId = HttpContext.Connection.Id,
@@ -158,13 +146,8 @@ public class RemoteControlController : ControllerBase
 
         _remoteControlSessionCache.AddOrUpdate($"{sessionId}", session, (k, v) =>
         {
-            if (v is RemoteControlSessionEx ex)
-            {
-                ex.AgentConnectionId = HttpContext.Connection.Id;
-                return ex;
-            }
-            v.Dispose();
-            return session;
+            v.AgentConnectionId = HttpContext.Connection.Id;
+            return v;
         });
 
         var orgNameResult = await _dataService.GetOrganizationNameById(orgId);

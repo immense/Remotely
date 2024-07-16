@@ -1,14 +1,11 @@
-using Remotely.Server.Abstractions;
 using Remotely.Server.Enums;
 using Remotely.Server.Filters;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
-using Remotely.Shared;
 using Remotely.Shared.Interfaces;
 using Remotely.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 
 namespace Remotely.Server.Hubs;
 
@@ -16,27 +13,27 @@ namespace Remotely.Server.Hubs;
 public class ViewerHub : Hub<IViewerHubClient>
 {
     private readonly IHubContext<DesktopHub, IDesktopHubClient> _desktopHub;
-    private readonly IViewerOptionsProvider _viewerOptionsProvider;
+    private readonly IHubContext<AgentHub, IAgentHubClient> _agentHub;
+    private readonly IDataService _dataService;
     private readonly ISessionRecordingSink _sessionRecordingSink;
     private readonly IRemoteControlSessionCache _desktopSessionCache;
-    private readonly IHubEventHandler _hubEvents;
     private readonly ILogger<ViewerHub> _logger;
     private readonly IDesktopStreamCache _streamCache;
 
     public ViewerHub(
-        IHubEventHandler hubEvents,
         IRemoteControlSessionCache desktopSessionCache,
         IDesktopStreamCache streamCache,
+        IHubContext<AgentHub, IAgentHubClient> agentHub,
         IHubContext<DesktopHub, IDesktopHubClient> desktopHub,
-        IViewerOptionsProvider viewerOptionsProvider,
         ISessionRecordingSink sessionRecordingSink,
+        IDataService dataService,
         ILogger<ViewerHub> logger)
     {
-        _hubEvents = hubEvents;
         _desktopSessionCache = desktopSessionCache;
         _streamCache = streamCache;
         _desktopHub = desktopHub;
-        _viewerOptionsProvider = viewerOptionsProvider;
+        _agentHub = agentHub;
+        _dataService = dataService;
         _sessionRecordingSink = sessionRecordingSink;
         _logger = logger;
     }
@@ -79,21 +76,40 @@ public class ViewerHub : Hub<IViewerHubClient>
     }
     public async Task<Result> ChangeWindowsSession(int targetWindowsSession)
     {
-        if (SessionInfo.Mode != RemoteControlMode.Unattended)
+        try
         {
-            return Result.Fail("Only available in unattended mode.");
+            if (SessionInfo.Mode != RemoteControlMode.Unattended)
+            {
+                return Result.Fail("Only available in unattended mode.");
+            }
+
+            SessionInfo.ViewerList.Remove(Context.ConnectionId);
+            await _desktopHub.Clients
+                .Client(SessionInfo.DesktopConnectionId)
+                .ViewerDisconnected(Context.ConnectionId);
+
+            SessionInfo = SessionInfo.CreateNew();
+            _desktopSessionCache.AddOrUpdate($"{SessionInfo.UnattendedSessionId}", SessionInfo);
+
+            await _agentHub.Clients
+                .Client(SessionInfo.AgentConnectionId)
+                .ChangeWindowsSession(
+                    Context.ConnectionId,
+                    $"{SessionInfo.UnattendedSessionId}",
+                    SessionInfo.AccessKey,
+                    SessionInfo.UserConnectionId,
+                    SessionInfo.RequesterUserName,
+                    SessionInfo.OrganizationName,
+                    SessionInfo.OrganizationId,
+                    targetWindowsSession);
+
+            return Result.Ok();
         }
-
-        SessionInfo.ViewerList.Remove(Context.ConnectionId);
-        await _desktopHub.Clients
-            .Client(SessionInfo.DesktopConnectionId)
-            .ViewerDisconnected(Context.ConnectionId);
-
-        SessionInfo = SessionInfo.CreateNew();
-        _desktopSessionCache.AddOrUpdate($"{SessionInfo.UnattendedSessionId}", SessionInfo);
-
-        await _hubEvents.ChangeWindowsSession(SessionInfo, Context.ConnectionId, targetWindowsSession);
-        return Result.Ok();
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while changing Windows session.");
+            return Result.Fail("An error occurred while changing Windows session.");
+        }
     }
 
     public async IAsyncEnumerable<byte[]> GetDesktopStream()
@@ -136,12 +152,23 @@ public class ViewerHub : Hub<IViewerHubClient>
 
     public async Task<RemoteControlViewerOptions> GetViewerOptions()
     {
-        return await _viewerOptionsProvider.GetViewerOptions();
+        var settings = await _dataService.GetSettings();
+        return new RemoteControlViewerOptions()
+        {
+            ShouldRecordSession = settings.EnableRemoteControlRecording
+        };
     }
 
-    public Task InvokeCtrlAltDel()
+    public async Task InvokeCtrlAltDel()
     {
-        return _hubEvents.InvokeCtrlAltDel(SessionInfo, Context.ConnectionId);
+        try
+        {
+            await _agentHub.Clients.Client(SessionInfo.AgentConnectionId).InvokeCtrlAltDel();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while invoking Ctrl+Alt+Del.");
+        }
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -274,4 +301,5 @@ public class ViewerHub : Hub<IViewerHubClient>
             _logger.LogError(ex, "Error while storing session recording for stream {streamId}.", SessionInfo.StreamId);
         }
     }
+
 }

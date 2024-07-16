@@ -104,7 +104,6 @@ public class AgentHub : Hub<IAgentHubClient>
 
             var waitingSessions = _remoteControlSessions
                 .Sessions
-                .OfType<RemoteControlSessionEx>()
                 .Where(x => x.DeviceId == Device.ID);
 
             foreach (var session in waitingSessions)

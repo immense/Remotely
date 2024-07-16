@@ -17,13 +17,13 @@ using Remotely.Server.Hubs;
 using Remotely.Server.Models;
 using Remotely.Server.Options;
 using Remotely.Server.Services;
-using Remotely.Server.Services.RcImplementations;
 using Remotely.Server.Services.Stores;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Services;
 using Serilog;
 using System.Net;
 using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
+using Remotely.Server.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -116,7 +116,7 @@ services.AddIdentityCore<RemotelyUser>(options =>
 services.AddScoped<IAuthorizationHandler, TwoFactorRequiredHandler>();
 services.AddScoped<IAuthorizationHandler, OrganizationAdminRequirementHandler>();
 services.AddScoped<IAuthorizationHandler, ServerAdminRequirementHandler>();
-builder.Services.AddSingleton<IEmailSender<RemotelyUser>, IdentityNoOpEmailSender>();
+services.AddSingleton<IEmailSender<RemotelyUser>, IdentityNoOpEmailSender>();
 
 services.AddAuthorization(options =>
 {
@@ -248,18 +248,15 @@ services.AddSingleton<ILogsManager, LogsManager>();
 services.AddScoped<IThemeProvider, ThemeProvider>();
 services.AddScoped<IChatSessionStore, ChatSessionStore>();
 services.AddScoped<ITerminalStore, TerminalStore>();
+services.AddScoped<ViewerAuthorizationFilter>();
 services.AddSingleton(WeakReferenceMessenger.Default);
-
-services.AddRemoteControlServer(config =>
-{
-    config.AddHubEventHandler<HubEventHandler>();
-    config.AddViewerAuthorizer<ViewerAuthorizer>();
-    config.AddViewerPageDataProvider<ViewerPageDataProvider>();
-    config.AddViewerOptionsProvider<ViewerOptionsProvider>();
-    config.AddSessionRecordingSink<SessionRecordingSink>();
-});
-
+services.AddSingleton<ISessionRecordingSink, SessionRecordingSink>();
+services.AddSingleton<IDesktopStreamCache, DesktopStreamCache>();
+services.AddSingleton<IRemoteControlSessionCache, RemoteControlSessionCache>();
+services.AddSingleton<ISystemTime, SystemTime>();
 services.AddSingleton<IAgentHubSessionCache, AgentHubSessionCache>();
+services.AddHostedService<RemoteControlSessionCleaner>();
+services.AddHostedService<RemoteControlSessionReconnector>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

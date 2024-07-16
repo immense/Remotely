@@ -1,25 +1,42 @@
-using Remotely.Server.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Remotely.Server.Services;
 
 namespace Remotely.Server.Filters;
 
-internal class ViewerAuthorizationFilter :  IAsyncAuthorizationFilter
+internal class ViewerAuthorizationFilter(
+    IDataService _dataService,
+    IOtpProvider _otpProvider):  IAsyncAuthorizationFilter
 {
-    private readonly IViewerAuthorizer _authorizer;
-
-    public ViewerAuthorizationFilter(IViewerAuthorizer authorizer)
-    {
-        _authorizer = authorizer;
-    }
-
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
-        if (await _authorizer.IsAuthorized(context))
+        if (await IsAuthorized(context))
         {
             return;
         }
 
-        context.Result = new RedirectResult(_authorizer.UnauthorizedRedirectUrl);
+        context.Result = new RedirectResult("/Account/Login");
+    }
+
+    private async Task<bool> IsAuthorized(AuthorizationFilterContext context)
+    {
+        var settings = await _dataService.GetSettings();
+        if (!settings.RemoteControlRequiresAuthentication)
+        {
+            return true;
+        }
+
+        if (context.HttpContext.User.Identity?.IsAuthenticated == true)
+        {
+            return true;
+        }
+
+        if (context.HttpContext.Request.Query.TryGetValue("otp", out var otp) &&
+            _otpProvider.Exists($"{otp}"))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

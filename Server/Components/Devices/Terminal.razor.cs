@@ -1,9 +1,6 @@
-﻿using Remotely.Server.Abstractions;
-using Bitbound.SimpleMessenger;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.Extensions.Logging;
 using Remotely.Server.Components.ModalContents;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
@@ -13,10 +10,6 @@ using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 
@@ -122,7 +115,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
             var match = completion.CompletionMatches[completion.CurrentMatchIndex];
 
             var replacementText = string.Concat(
-                _lastCompletionInput.Substring(0, completion.ReplacementIndex),
+                _lastCompletionInput[..completion.ReplacementIndex],
                 match.CompletionText,
                 _lastCompletionInput[(completion.ReplacementIndex + completion.ReplacementLength)..]);
 
@@ -170,7 +163,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
             }
 
             var devices = CardStore.SelectedDevices.ToArray();
-            if (!devices.Any())
+            if (devices.Length == 0)
             {
                 ToastService.ShowToast("You must select at least one device.", classString: "bg-warning");
                 return;
@@ -281,7 +274,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
         EnsureUserSet();
 
         var quickScripts = await DataService.GetQuickScripts(User.Id);
-        if (quickScripts?.Any() != true)
+        if (quickScripts.Count == 0)
         {
             ToastService.ShowToast("No quick scripts saved.", classString: "bg-warning");
             return;
@@ -307,8 +300,8 @@ public partial class Terminal : AuthComponentBase, IDisposable
 
     private void ShowTerminalHelp()
     {
-        ModalService.ShowModal("Terminal Help", new[]
-        {
+        ModalService.ShowModal("Terminal Help",
+        [
             "Enter terminal commands that will execute on all selected devices.",
 
             "Tab completion is available for PowerShell Core (PSCore) and Windows PowerShell (WinPS).  Tab and Shift + Tab " +
@@ -324,7 +317,7 @@ public partial class Terminal : AuthComponentBase, IDisposable
 
             "Note: The first PS Core command or tab completion takes a few moments while the service is " +
             "starting on the remote device."
-        });
+        ]);
     }
 
     private async void TerminalStore_TerminalLinesChanged(object? sender, EventArgs e)
