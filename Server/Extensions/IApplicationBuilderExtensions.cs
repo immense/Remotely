@@ -8,7 +8,7 @@ public static class IApplicationBuilderExtensions
     /// <summary>
     /// <para>
     ///     Maps Razor pages and SignalR hubs.  The remote control viewer page will be mapped
-    ///     to path "/RemoteControl/Viewer", the desktop hub to "/hubs/desktop", and viewer hub
+    ///     to path "/Viewer", the desktop hub to "/hubs/desktop", and viewer hub
     ///     to "/hubs/viewer".
     /// </para>
     /// <para>
@@ -19,12 +19,7 @@ public static class IApplicationBuilderExtensions
     /// <returns></returns>
     public static IApplicationBuilder UseRemoteControlServer(this IApplicationBuilder app)
     {
-        app.UseEndpoints(config =>
-        {
-            config.MapRazorPages();
-            config.MapHub<DesktopHub>("/hubs/desktop");
-            config.MapHub<ViewerHub>("/hubs/viewer");
-        });
+   
 
         return app;
     }

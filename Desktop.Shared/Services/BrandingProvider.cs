@@ -10,6 +10,13 @@ using System.Net.Http.Json;
 
 namespace Desktop.Shared.Services;
 
+public interface IBrandingProvider
+{
+    BrandingInfo CurrentBranding { get; }
+    Task Initialize();
+    void SetBrandingInfo(BrandingInfo brandingInfo);
+}
+
 public class BrandingProvider : IBrandingProvider
 {
     private readonly IAppState _appState;
@@ -56,9 +63,9 @@ public class BrandingProvider : IBrandingProvider
             };
         }
 
-        if (_brandingInfo.Icon?.Any() != true)
+        if (_brandingInfo.Icon is not { Length: > 0 })
         {
-            using var mrs = typeof(BrandingProvider).Assembly.GetManifestResourceStream("Desktop.Shared.Assets.Remotely_Icon.png");
+            using var mrs = typeof(BrandingProvider).Assembly.GetManifestResourceStream("Remotely.Desktop.Shared.Assets.Remotely_Icon.png");
             using var ms = new MemoryStream();
             mrs!.CopyTo(ms);
 
@@ -87,21 +94,24 @@ public class BrandingProvider : IBrandingProvider
 
                 var result = _embeddedDataSearcher.TryGetEmbeddedData(filePath);
 
-                if (!result.IsSuccess)
+                if (result.IsSuccess)
+                {
+                    if (!string.IsNullOrWhiteSpace(result.Value.OrganizationId))
+                    {
+                        _orgIdProvider.OrganizationId = result.Value.OrganizationId;
+                    }
+
+                    if (result.Value.ServerUrl is not null)
+                    {
+                        _appState.Host = result.Value.ServerUrl.AbsoluteUri;
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(_appState.Host))
                 {
                     return result.HadException ?
                         Result.Fail<BrandingInfo>(result.Exception) :
                         Result.Fail<BrandingInfo>(result.Reason);
-                }
-
-                if (!string.IsNullOrWhiteSpace(result.Value.OrganizationId))
-                {
-                    _orgIdProvider.OrganizationId = result.Value.OrganizationId;
-                }
-
-                if (result.Value.ServerUrl is not null)
-                {
-                    _appState.Host = result.Value.ServerUrl.AbsoluteUri;
                 }
             }
 

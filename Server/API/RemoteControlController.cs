@@ -173,6 +173,6 @@ public class RemoteControlController : ControllerBase
        
         var otp = _otpProvider.GetOtp(targetDevice.ID);
 
-        return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/RemoteControl/Viewer?mode=Unattended&sessionId={sessionId}&accessKey={accessKey}&otp={otp}");
+        return Ok($"{HttpContext.Request.Scheme}://{Request.Host}/Viewer?mode=Unattended&sessionId={sessionId}&accessKey={accessKey}&otp={otp}");
     }
 }

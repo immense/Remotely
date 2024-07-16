@@ -3,6 +3,7 @@ using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.Shared.Reactive;
 using Microsoft.Extensions.Logging;
 using System.Windows.Input;
+using Desktop.Shared.Services;
 
 
 namespace Remotely.Desktop.UI.ViewModels;

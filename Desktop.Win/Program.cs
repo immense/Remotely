@@ -11,6 +11,9 @@ using Remotely.Shared.Utilities;
 using System.Diagnostics;
 using System.Runtime.Versioning;
 using System.Threading;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.UI.Startup;
+using Remotely.Desktop.Win.Services;
 
 namespace Remotely.Desktop.Win;
 
@@ -45,11 +48,9 @@ public class Program
         services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
         services.AddSingleton<IEmbeddedServerDataProvider>(EmbeddedServerDataProvider.Instance);
 
-        services.AddRemoteControlWindows(
-            config =>
-            {
-                config.AddBrandingProvider<BrandingProvider>();
-            });
+        services.AddRemoteControlXplat();
+        services.AddRemoteControlUi();
+        services.AddRemoteControlWindows();
 
         services.AddLogging(builder =>
         {

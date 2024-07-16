@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Shared.Entities;
 using System.IO;
 using System.Reflection;
+using Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.ViewModels;
 
@@ -66,7 +67,7 @@ public class BrandedViewModelBase : ObservableObject, IBrandedViewModelBase
 
                 ProductName = _brandingInfo.Product;
 
-                if (_brandingInfo.Icon?.Any() == true)
+                if (_brandingInfo.Icon is { Length: > 0 })
                 {
                     using var imageStream = new MemoryStream(_brandingInfo.Icon);
                     Icon = new Bitmap(imageStream);

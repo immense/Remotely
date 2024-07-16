@@ -17,11 +17,9 @@ public static class IServiceCollectionExtensions
     /// <param name="services"></param>
     /// <param name="clientConfig"></param>
     [SupportedOSPlatform("windows")]
-    public static void AddRemoteControlWindows(
-        this IServiceCollection services,
-        Action<IRemoteControlClientBuilder> clientConfig)
+    public static void AddRemoteControlWindows(this IServiceCollection services)
     {
-        services.AddRemoteControlXplat(clientConfig);
+        services.AddRemoteControlXplat();
         services.AddRemoteControlUi();
 
         services.AddSingleton<ICursorIconWatcher, CursorIconWatcherWin>();

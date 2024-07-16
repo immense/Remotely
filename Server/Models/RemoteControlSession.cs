@@ -37,7 +37,7 @@ public class RemoteControlSession : IDisposable
 
     public string OrganizationId { get; set; } = string.Empty;
     public string OrganizationName { get; internal set; } = string.Empty;
-    public string RelativeAccessUri => $"/RemoteControl/Viewer?mode=Unattended&sessionId={UnattendedSessionId}&accessKey={AccessKey}&viewonly=False";
+    public string RelativeAccessUri => $"/Viewer?mode=Unattended&sessionId={UnattendedSessionId}&accessKey={AccessKey}&viewonly=False";
     public string RequesterName { get; set; } = string.Empty;
     public string RequesterUserName { get; internal set; } = string.Empty;
     /// <summary>

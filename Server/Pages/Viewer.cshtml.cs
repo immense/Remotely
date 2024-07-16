@@ -22,9 +22,9 @@ public class ViewerModel(IDataService _dataService) : PageModel
 
         ThemeUrl = theme switch
         {
-            ViewerPageTheme.Dark => "/_content/Remotely.Server/css/remote-control-dark.css",
-            ViewerPageTheme.Light => "/_content/Remotely.Server/css/remote-control-light.css",
-            _ => "/_content/Remotely.Server/css/remote-control-dark.css"
+            ViewerPageTheme.Dark => "/css/remote-control-dark.css",
+            ViewerPageTheme.Light => "/css/remote-control-light.css",
+            _ => "/css/remote-control-dark.css"
         };
         UserDisplayName = await GetUserDisplayName();
         LogoUrl = await GetLogoUrl();

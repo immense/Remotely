@@ -135,7 +135,7 @@ public class MainViewViewModel : BrandedViewModelBase, IMainViewViewModel
             return;
         }
 
-        await _dispatcher.Clipboard.SetTextAsync($"{Host}/RemoteControl/Viewer?sessionId={StatusMessage.Replace(" ", "")}");
+        await _dispatcher.Clipboard.SetTextAsync($"{Host}/Viewer?sessionId={StatusMessage.Replace(" ", "")}");
 
         CopyMessageOpacity = 1;
         IsCopyMessageVisible = true;

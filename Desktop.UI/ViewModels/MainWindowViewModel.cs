@@ -1,5 +1,6 @@
 ﻿using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
+using Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.ViewModels;
 

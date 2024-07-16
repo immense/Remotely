@@ -17,11 +17,9 @@ public static class IServiceCollectionExtensions
     /// </summary>
     /// <param name="services"></param>
     /// <param name="clientConfig"></param>
-    public static void AddRemoteControlLinux(
-        this IServiceCollection services,
-        Action<IRemoteControlClientBuilder> clientConfig)
+    public static void AddRemoteControlLinux(this IServiceCollection services)
     {
-        services.AddRemoteControlXplat(clientConfig);
+        services.AddRemoteControlXplat();
         services.AddRemoteControlUi();
 
         services.AddSingleton<IAppStartup, AppStartup>();

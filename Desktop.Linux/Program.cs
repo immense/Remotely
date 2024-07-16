@@ -44,12 +44,7 @@ public class Program
 
         services.AddSingleton<IOrganizationIdProvider, OrganizationIdProvider>();
         services.AddSingleton<IEmbeddedServerDataProvider, EmbeddedServerDataProvider>();
-
-        services.AddRemoteControlLinux(
-            config =>
-            {
-                config.AddBrandingProvider<BrandingProvider>();
-            });
+        services.AddRemoteControlLinux();
 
         services.AddLogging(builder =>
         {

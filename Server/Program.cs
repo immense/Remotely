@@ -24,6 +24,7 @@ using Serilog;
 using System.Net;
 using RatePolicyNames = Remotely.Server.RateLimiting.PolicyNames;
 using Remotely.Server.Filters;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -303,8 +304,10 @@ app.UseCors("TrustedOriginPolicy");
 
 app.UseAntiforgery();
 
-app.UseRemoteControlServer();
 
+app.MapRazorPages();
+app.MapHub<DesktopHub>("/hubs/desktop");
+app.MapHub<ViewerHub>("/hubs/viewer");
 app.MapHub<AgentHub>("/hubs/service");
 app.MapControllers();
 

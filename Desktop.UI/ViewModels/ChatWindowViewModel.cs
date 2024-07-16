@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Remotely.Desktop.Shared.Reactive;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Shared.Models;
+using Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.ViewModels;
 

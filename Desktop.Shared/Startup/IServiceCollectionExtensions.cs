@@ -5,19 +5,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Bitbound.SimpleMessenger;
 using Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Abstractions;
 
 namespace Remotely.Desktop.Shared.Startup;
 
 public static class IServiceCollectionExtensions
 {
     internal static void AddRemoteControlXplat(
-        this IServiceCollection services,
-        Action<IRemoteControlClientBuilder> clientConfig)
+        this IServiceCollection services)
     {
-        var builder = new RemoteControlClientBuilder(services);
-        clientConfig.Invoke(builder);
-        builder.Validate();
-
         services.AddLogging(builder =>
         {
             builder.AddConsole().AddDebug();
@@ -31,6 +27,7 @@ public static class IServiceCollectionExtensions
         services.AddSingleton(s => WeakReferenceMessenger.Default);
         services.AddSingleton<IDesktopEnvironment, DesktopEnvironment>();
         services.AddSingleton<IDtoMessageHandler, DtoMessageHandler>();
+        services.AddSingleton<IBrandingProvider, BrandingProvider>();
         services.AddSingleton<IAppState, AppState>();
         services.AddSingleton<IViewerFactory, ViewerFactory>();
         services.AddTransient<IScreenCaster, ScreenCaster>();

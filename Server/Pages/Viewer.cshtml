@@ -15,27 +15,27 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="description" content="@(Model.PageDescription)" />
-    <link href="/_content/Remotely.Server/manifest.json" rel="manifest" />
+    <link href="/manifest.json" rel="manifest" />
     <link rel="icon" href="@(Model.FaviconUrl)" />
-    <link href="/_content/Remotely.Server/css/remote-control.css" rel="stylesheet" asp-append-version="true" />
+    <link href="/css/remote-control.css" rel="stylesheet" asp-append-version="true" />
 
     @if (!string.IsNullOrWhiteSpace(Model.ThemeUrl))
     {
         <link href="@(Model.ThemeUrl)" rel="stylesheet" asp-append-version="true" />
     }
 
-    <link href="/_content/Remotely.Server/lib/fontawesome/css/all.min.css" rel="stylesheet" />
-    <link href="/_content/Remotely.Server/lib/fontawesome/css/brands.min.css" rel="stylesheet" />
+    <link href="/lib/fontawesome/css/all.min.css" rel="stylesheet" />
+    <link href="/lib/fontawesome/css/brands.min.css" rel="stylesheet" />
 
     <environment include="Development">
-        <script src="/_content/Remotely.Server/lib/microsoft-signalr/signalr.js"></script>
-        <script src="/_content/Remotely.Server/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.js"></script>
-        <script src="/_content/Remotely.Server/lib/msgpack/dist.es5+umd/msgpack.js"></script>
+        <script src="/lib/microsoft-signalr/signalr.js"></script>
+        <script src="/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.js"></script>
+        <script src="/lib/msgpack/dist.es5+umd/msgpack.js"></script>
     </environment>
     <environment exclude="Development">
-        <script src="/_content/Remotely.Server/lib/microsoft-signalr/signalr.min.js"></script>
-        <script src="/_content/Remotely.Server/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.min.js"></script>
-        <script src="/_content/Remotely.Server/lib/msgpack/dist.es5+umd/msgpack.min.js"></script>
+        <script src="/lib/microsoft-signalr/signalr.min.js"></script>
+        <script src="/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.min.js"></script>
+        <script src="/lib/msgpack/dist.es5+umd/msgpack.min.js"></script>
     </environment>
 </head>
 <body>
@@ -43,16 +43,6 @@
         <div class="background-layer-1"></div>
         <div class="background-layer-2"></div>
         <div class="background-layer-3"></div>
-
-        @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
-        {
-            <div class="logo-frame">
-                <img src="@(Model.LogoUrl)" />
-                <div class="beta-pill beta-pill-logo absolute-right-middle">
-                    BETA
-                </div>
-            </div>
-        }
     </div>
 
     <div id="screenSelectMenu" class="popup-menu">
@@ -160,13 +150,7 @@
         <div>
             <div id="menuFrame">
                 <div class="menu-column menu-column-left">
-                    @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
-                    {
-                        <img class="menu-logo" src="@(Model.LogoUrl)" />
-                        <div id="betaPillLogo" class="beta-pill beta-pill-logo ms-1">
-                            BETA
-                        </div>
-                    }
+
                 </div>
                 <div class="menu-column menu-column-middle">
                     <button id="changeScreenButton"
@@ -228,9 +212,6 @@
             </div>
 
             <div class="text-center">
-                <div id="betaPillPullDown" class="beta-pill ms-1">
-                    BETA
-                </div>
                 <button id="menuButton">
                     <i class="fas fa-chevron-down"></i>
                 </button>
@@ -269,7 +250,7 @@
         </div>
     </footer>
 
-    <script src="/_content/Remotely.Server/src/App.js" type="module"></script>
+    <script src="/src/App.js" type="module"></script>
     <script>
         window.addEventListener("load", () => {
             ViewerApp.Init();

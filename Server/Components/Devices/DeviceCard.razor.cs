@@ -334,7 +334,7 @@ public partial class DeviceCard : AuthComponentBase
         }
 
         JsInterop.OpenWindow(
-            $"/RemoteControl/Viewer" +
+            $"/Viewer" +
                 $"?mode=Unattended&sessionId={session.UnattendedSessionId}" +
                 $"&accessKey={session.AccessKey}" +
                 $"&viewonly={viewOnly}", 
