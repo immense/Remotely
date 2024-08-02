@@ -191,7 +191,7 @@ There are a few shortcut keys available when using the console.
 
 ## Port Configuration
 
-Ports are configured in the `docker-compose.yml` file. If you change the internal port for the container, make sure you update `ASPNETCORE_HTTP_PORTS` variable to match.
+The host port (left side) can be configured in `docker-compose.yml`.  The container port (right side) should not be changed. See the [compose docs](https://docs.docker.com/compose/compose-file/05-services/#ports) for details.
 
 ## API and Integrations
 
