@@ -104,11 +104,9 @@ public class Win32Interop
 
     public static bool CreateInteractiveSystemProcess(
         string commandLine,
-         int targetSessionId,
-         bool forceConsoleSession,
-         string desktopName,
-         bool hiddenWindow,
-         out PROCESS_INFORMATION procInfo)
+        int targetSessionId,
+        bool hiddenWindow,
+        out PROCESS_INFORMATION procInfo)
     {
         uint winlogonPid = 0;
         var hUserTokenDup = nint.Zero;
@@ -117,21 +115,7 @@ public class Win32Interop
 
         procInfo = new PROCESS_INFORMATION();
 
-        // If not force console, find target session.  If not present,
-        // use last active session.
-        var dwSessionId = Kernel32.WTSGetActiveConsoleSessionId();
-        if (!forceConsoleSession)
-        {
-            var activeSessions = GetActiveSessions();
-            if (activeSessions.Any(x => x.Id == targetSessionId))
-            {
-                dwSessionId = (uint)targetSessionId;
-            }
-            else
-            {
-                dwSessionId = activeSessions.Last().Id;
-            }
-        }
+        var dwSessionId = ResolveWindowsSession(targetSessionId);
 
         // Obtain the process ID of the winlogon process that is running within the currently active session.
         var processes = Process.GetProcessesByName("winlogon");
@@ -171,7 +155,7 @@ public class Win32Interop
         // interaction with the new process.
         var si = new STARTUPINFO();
         si.cb = Marshal.SizeOf(si);
-        si.lpDesktop = @"winsta0\" + desktopName;
+        si.lpDesktop = @"winsta0\" + ResolveDesktopName(dwSessionId);
 
         // Flags that specify the priority and creation method of the process.
         uint dwCreationFlags;
@@ -206,6 +190,53 @@ public class Win32Interop
         Kernel32.CloseHandle(hUserTokenDup);
 
         return result;
+    }
+
+    public static string ResolveDesktopName(uint targetSessionId)
+    {
+        var winDir = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+        var logonUiPath = Path.Combine(winDir, "System32", "LogonUI.exe");
+        var consentPath = Path.Combine(winDir, "System32", "consent.exe");
+
+        var isLogonScreenVisible = Process
+            .GetProcessesByName("LogonUI")
+            .Any(x => x.SessionId == targetSessionId && x.MainModule?.FileName.Equals(logonUiPath, StringComparison.OrdinalIgnoreCase) == true);
+
+        var isSecureDesktopVisible = Process
+            .GetProcessesByName("consent")
+            .Any(x => x.SessionId == targetSessionId && x.MainModule?.FileName.Equals(consentPath, StringComparison.OrdinalIgnoreCase) == true);
+
+        if (isLogonScreenVisible || isSecureDesktopVisible)
+        {
+            return "Winlogon";
+        }
+
+        return "Default";
+    }
+
+    public static uint ResolveWindowsSession(int targetSessionId)
+    {
+        var activeSessions = GetActiveSessions();
+        if (activeSessions.Any(x => x.Id == targetSessionId))
+        {
+            // If exact match is found, return that session.
+            return (uint)targetSessionId;
+        }
+        
+        if (Shlwapi.IsOS(OsType.OS_ANYSERVER))
+        {
+            // If Windows Server, default to console session.
+            return Kernel32.WTSGetActiveConsoleSessionId();
+        }
+
+        // If consumer version and there's an RDP session active, return that.
+        if (activeSessions.Find(x => x.Type == WindowsSessionType.RDP) is { } rdSession)
+        {
+            return rdSession.Id;
+        }
+
+        // Otherwise, return the console session.
+        return Kernel32.WTSGetActiveConsoleSessionId();
     }
 
     public static void SetMonitorState(MonitorState state)

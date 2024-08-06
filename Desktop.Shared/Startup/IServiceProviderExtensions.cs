@@ -154,8 +154,6 @@ public static class IServiceProviderExtensions
             commandLine,
             -1,
             false,
-            "default",
-            true,
             out var procInfo);
         Console.WriteLine($"Elevate result: {result}. Process ID: {procInfo.dwProcessId}.");
         Environment.Exit(0);
