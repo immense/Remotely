@@ -49,8 +49,6 @@ public class AppLauncherWin : IAppLauncher
                         $" --org-name \"{orgName}\"" +
                         $" --org-id \"{orgId}\"",
                     targetSessionId: -1,
-                    forceConsoleSession: false,
-                    desktopName: "default",
                     hiddenWindow: false,
                     out var procInfo);
                 if (!result)
@@ -122,8 +120,6 @@ public class AppLauncherWin : IAppLauncher
                         $" --session-id \"{sessionId}\"" +
                         $" --access-key \"{accessKey}\"",
                     targetSessionId: targetSessionId,
-                    forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionId == -1,
-                    desktopName: "default",
                     hiddenWindow: false,
                     out _);
                 if (!result)
@@ -180,8 +176,6 @@ public class AppLauncherWin : IAppLauncher
                         $" --viewers {string.Join(",", viewerIds)}",
 
                     targetSessionId: targetSessionID,
-                    forceConsoleSession: Shlwapi.IsOS(OsType.OS_ANYSERVER) && targetSessionID == -1,
-                    desktopName: "default",
                     hiddenWindow: false,
                     out _);
 
