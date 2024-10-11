@@ -232,7 +232,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
                     senderUsername,
                     senderConnectionId,
                     ScriptInputType.Terminal,
-                    TimeSpan.FromSeconds(30),
+                    TimeSpan.FromSeconds(30), // TODO
                     _hubConnection)
                 .ConfigureAwait(false);
         }

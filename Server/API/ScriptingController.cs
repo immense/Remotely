@@ -104,7 +104,9 @@ public class ScriptingController : ControllerBase
             command,
             User?.Identity?.Name ?? "API Key");
 
-        var success = await WaitHelper.WaitForAsync(() => AgentHub.ApiScriptResults.TryGetValue(requestID, out _), TimeSpan.FromSeconds(30));
+        var success = await WaitHelper.WaitForAsync(
+            () => AgentHub.ApiScriptResults.TryGetValue(requestID, out _),
+            TimeSpan.FromSeconds(30)); // TODO
         if (!success)
         {
             return NotFound();

@@ -11,13 +11,15 @@ networks:
 
 services:
   remotely:
-    image: immybot/remotely:latest
+    build:
+      context: ../
+      dockerfile: ./Server/Dockerfile
     container_name: remotely
     volumes:
-      - /var/www/remotely:/app/AppData
+      - /home/bot/remotely:/app/AppData
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "5001:5000"
     networks:
       - remotely
     environment:

@@ -339,9 +339,9 @@ public class AgentHub : Hub<IAgentHubClient>
         await _messenger.Send(message, $"{result.Value.SenderConnectionID}");
     }
 
-    public void ScriptResultViaApi(string commandID, string requestID)
+    public void ScriptResultViaApi(string requestID) // PROBLEMATIC
     {
-        ApiScriptResults.Set(requestID, commandID, DateTimeOffset.Now.AddHours(1));
+        ApiScriptResults.Set(requestID, requestID, DateTimeOffset.Now.AddHours(1));
     }
 
     public Task SendConnectionFailedToViewers(List<string> viewerIDs)
