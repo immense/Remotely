@@ -4,7 +4,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <ApplicationIcon>Assets\favicon.ico</ApplicationIcon>
     <AssemblyName>Remotely_Desktop</AssemblyName>
-    <RootNamespace>Remotely.Desktop.Linux</RootNamespace>
     <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
   <PropertyGroup>

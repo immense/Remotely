@@ -1,6 +1,7 @@
 <Project>
     <PropertyGroup>
         <Nullable>enable</Nullable>
+      <RootNamespace>Remotely.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     </PropertyGroup>
 </Project>
    

@@ -4,12 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
-
     <AssemblyName>Remotely.Shared.Tests</AssemblyName>
-
-    <RootNamespace>Remotely.Shared.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
