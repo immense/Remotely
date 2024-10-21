@@ -274,6 +274,7 @@ public static class ADVAPI32
     public const uint MAXIMUM_ALLOWED = 0x2000000;
     public const int CREATE_NEW_CONSOLE = 0x00000010;
     public const int CREATE_NO_WINDOW = 0x08000000;
+    public const int CREATE_NEW_PROCESS_GROUP = 0x00000200;
     public const int CREATE_UNICODE_ENVIRONMENT = 0x00000400;
     public const int STARTF_USESHOWWINDOW = 0x00000001;
     public const int DETACHED_PROCESS = 0x00000008;

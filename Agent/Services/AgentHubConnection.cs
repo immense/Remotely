@@ -19,6 +19,8 @@ using System.Threading.Tasks;
 using System.Timers;
 using Timer = System.Timers.Timer;
 using Remotely.Desktop.Native.Windows;
+using Remotely.Shared.Primitives;
+using Remotely.Shared.Extensions;
 
 namespace Remotely.Agent.Services;
 
@@ -358,6 +360,12 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
                 _logger.LogWarning("Remote control attempted before server was verified.");
                 return;
             }
+
+            _logger.LogInformation(
+                "Starting remote control session.  Requester Name: {Requester}.  Org Name: {OrgName}", 
+                requesterName, 
+                orgName);
+
             await _appLauncher.LaunchRemoteControl(-1, $"{sessionId}", accessKey, userConnectionId, requesterName, orgName, orgId, _hubConnection);
         }
         catch (Exception ex)
@@ -468,6 +476,41 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         }
     }
 
+    public async Task<Result> StartBackstage(Guid sessionId, string accessKey, string userConnectionId)
+    {
+        try
+        {
+            if (!OperatingSystem.IsWindows())
+            {
+                return Result.Fail("Only available on Windows.");
+            }
+
+            EnsureHubConnection();
+
+            if (!_isServerVerified)
+            {
+                _logger.LogWarning("Remote control attempted before server was verified.");
+                return Result.Fail("Agent trust issue with server.");
+            }
+
+            _logger.LogInformation("Starting backstage session.");
+            var result = await _appLauncher.StartBackstage($"{sessionId}", accessKey, userConnectionId, _hubConnection);
+            if (result.IsSuccess)
+            {
+                return Result.Ok();
+            }
+            else
+            {
+                _logger.LogResult(result);
+                return Result.Fail(result.Reason);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while starting backstage session.");
+            return Result.Fail("An error occurred while starting backstage.");
+        }
+    }
     public async Task TransferFileFromBrowserToAgent(string transferId, string[] fileIds, string requesterId, string expiringToken)
     {
         try
@@ -644,6 +687,7 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
         _hubConnection.On(nameof(TriggerHeartbeat), TriggerHeartbeat);
 
         _hubConnection.On<string>(nameof(WakeDevice), WakeDevice);
+        _hubConnection.On<Guid, string, string, Result>(nameof(StartBackstage), StartBackstage);
     }
 
     private async Task<bool> VerifyServer()

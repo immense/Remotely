@@ -21,35 +21,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Remotely.Desktop.Shared.Abstractions;
-using Remotely.Desktop.Shared.Services;
-using Remotely.Shared.Models;
 using Bitbound.SimpleMessenger;
+using Remotely.Desktop.Native.Windows;
+using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Messages;
+using Remotely.Desktop.Shared.Services;
 using Remotely.Desktop.Win.Helpers;
 using Remotely.Desktop.Win.Models;
+using Remotely.Shared.Extensions;
+using Remotely.Shared.Helpers;
+using Remotely.Shared.Models;
+using Remotely.Shared.Primitives;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using SkiaSharp;
 using SkiaSharp.Views.Desktop;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Text.Json;
 using Result = Remotely.Shared.Primitives.Result;
-using Remotely.Desktop.Shared.Messages;
-using Remotely.Shared.Primitives;
-using Remotely.Desktop.Native.Windows;
 
 namespace Remotely.Desktop.Win.Services;
 
 [SupportedOSPlatform("windows")]
 public class ScreenCapturerWin : IScreenCapturer
 {
-    private readonly ConcurrentDictionary<string, DisplayInfo> _displays = new();
     private readonly Dictionary<string, DirectXOutput> _directxScreens = new();
+    private readonly ConcurrentDictionary<string, DisplayInfo> _displays = new();
     private readonly IImageHelper _imageHelper;
     private readonly ILogger<ScreenCapturerWin> _logger;
     private readonly object _screenBoundsLock = new();
@@ -154,6 +158,19 @@ public class ScreenCapturerWin : IScreenCapturer
                     Init();
                 }
 
+                if (Process.GetCurrentProcess().SessionId == 0)
+                {
+                    var backstageResult = GetBackstageFrame();
+                    if (!backstageResult.IsSuccess)
+                    {
+                        var ex = backstageResult.Exception ?? new(backstageResult.Reason);
+                        _logger.LogError(ex, "Error while getting backstage frame.");
+                        return Result.Fail<SKBitmap>(ex);
+                    }
+                    CurrentFrame = backstageResult.Value;
+                    return Result.Ok(CurrentFrame);
+                }
+
                 var result = GetDirectXFrame();
 
                 if (result.IsSuccess && !result.HadChanges)
@@ -164,18 +181,17 @@ public class ScreenCapturerWin : IScreenCapturer
                 if (result.HadChanges && !IsEmpty(result.Bitmap))
                 {
                     CurrentFrame = result.Bitmap;
+                    return Result.Ok(CurrentFrame);
                 }
-                else
+
+                var bitBltResult = GetBitBltFrame();
+                if (!bitBltResult.IsSuccess)
                 {
-                    var bitBltResult = GetBitBltFrame();
-                    if (!bitBltResult.IsSuccess)
-                    {
-                        var ex = bitBltResult.Exception ?? new("Unknown error.");
-                        _logger.LogError(ex, "Error while getting next frame.");
-                        return Result.Fail<SKBitmap>(ex);
-                    }
-                    CurrentFrame = bitBltResult.Value;
+                    var ex = bitBltResult.Exception ?? new("Unknown error.");
+                    _logger.LogError(ex, "Error while getting next frame.");
+                    return Result.Fail<SKBitmap>(ex);
                 }
+                CurrentFrame = bitBltResult.Value;
 
                 return Result.Ok(CurrentFrame);
             }
@@ -248,6 +264,40 @@ public class ScreenCapturerWin : IScreenCapturer
 
     internal Result<SKBitmap> GetBitBltFrame()
     {
+        var hwnd = nint.Zero;
+        var screenDc = nint.Zero;
+
+        try
+        {
+            hwnd = User32.GetDesktopWindow();
+            screenDc = User32.GetWindowDC(hwnd);
+            using var bitmap = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height);
+            using var graphics = Graphics.FromImage(bitmap);
+            var targetDc = graphics.GetHdc();
+
+            GDI32.BitBlt(
+                targetDc, 0, 0, bitmap.Width, bitmap.Height,
+                screenDc, 0, 0, GDI32.TernaryRasterOperations.SRCCOPY);
+
+            graphics.ReleaseHdc(targetDc);
+
+            return Result.Ok(bitmap.ToSKBitmap());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Capturer error in BitBltCapture.");
+            _needsInit = true;
+            return Result.Fail<SKBitmap>("Error while capturing BitBlt frame.");
+        }
+        finally
+        {
+            _ = User32.ReleaseDC(hwnd, screenDc);
+        }
+    }
+
+    [Obsolete($"Use {nameof(GetBitBltFrame)}.")]
+    internal Result<SKBitmap> GetBitBltFrameOld()
+    {
         try
         {
             using var bitmap = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height, PixelFormat.Format32bppArgb);
@@ -276,6 +326,92 @@ public class ScreenCapturerWin : IScreenCapturer
             catch { }
         }
         _directxScreens.Clear();
+    }
+
+    private Result<SKBitmap> GetBackstageFrame()
+    {
+        try
+        {
+            PrintDebugInfo();
+
+            using var bitmap = new Bitmap(CurrentScreenBounds.Width, CurrentScreenBounds.Height);
+            using var graphics = Graphics.FromImage(bitmap);
+            var targetDc = graphics.GetHdc();
+
+            var windowList = new List<nint>();
+
+            var enumResult = User32.EnumWindows((
+                hwnd, lparam) =>
+            {
+                windowList.Add(hwnd);
+                return true;
+            },
+                nint.Zero);
+
+            windowList.Reverse();
+
+            if (!enumResult)
+            {
+                var result = Result.Fail<SKBitmap>(
+                    $"Failed to enumerate desktop windows. Last error code: {Marshal.GetLastPInvokeError()}");
+                _logger.LogResult(result);
+                return result;
+            }
+
+            if (windowList.Count == 0)
+            {
+                return Result.Fail<SKBitmap>("No windows found.");
+            }
+
+            foreach (var hwnd in windowList)
+            {
+                try
+                {
+                    var winInfo = new User32.WINDOWINFO();
+                    winInfo.cbSize = (uint)Marshal.SizeOf(winInfo);
+
+                    if (!User32.GetWindowInfo(hwnd, ref winInfo))
+                    {
+                        _logger.LogError("Failed to get window info.");
+                        continue;
+                    }
+
+                    var windowDc = User32.GetWindowDC(hwnd);
+
+                    var winRect = new Rectangle(
+                        winInfo.rcWindow.Left,
+                        winInfo.rcWindow.Top,
+                        winInfo.rcWindow.Right - winInfo.rcWindow.Left,
+                        winInfo.rcWindow.Bottom - winInfo.rcWindow.Top);
+
+                    if (winRect.IsEmpty)
+                    {
+                        _logger.LogWarning("Backstage window region is empty.");
+                        continue;
+                    }
+
+                    GDI32.BitBlt(
+                       targetDc, winRect.Left, winRect.Top, winRect.Width, winRect.Height,
+                       windowDc, 0, 0, GDI32.TernaryRasterOperations.SRCCOPY);
+
+                    User32.ReleaseDC(hwnd, windowDc);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error while calling BitBlt on child window.");
+                }
+            }
+
+            graphics.ReleaseHdc(targetDc);
+
+            return Result.Ok(bitmap.ToSKBitmap());
+        }
+        catch (Exception ex)
+        {
+            const string err = "Error while capturing backstage frame.";
+            _logger.LogError(ex, err);
+            return Result.Fail<SKBitmap>(err);
+        }
     }
 
     private DxCaptureResult GetDirectXFrame()
@@ -363,25 +499,10 @@ public class ScreenCapturerWin : IScreenCapturer
         return DxCaptureResult.Fail("Failed to get DirectX frame.");
     }
 
-    private Task HandleDisplaySettingsChanged(object subscriber, DisplaySettingsChangedMessage message)
+    private Task HandleDisplaySettingsChanged(object recipient, DisplaySettingsChangedMessage message)
     {
         _needsInit = true;
         return Task.CompletedTask;
-    }
-
-    private void InitDisplays()
-    {
-        _displays.Clear();
-
-        var displays = DisplaysEnumerationHelper.GetDisplays().ToArray();
-        foreach (var display in displays)
-        {
-            _displays.AddOrUpdate(display.DeviceName, display, (k, v) => display);
-        }
-
-        var primary = displays.FirstOrDefault(x => x.IsPrimary) ?? displays.First();
-        SelectedScreen = primary.DeviceName;
-        CurrentScreenBounds = primary.MonitorArea;
     }
 
     private void InitDirectX()
@@ -442,6 +563,24 @@ public class ScreenCapturerWin : IScreenCapturer
         }
     }
 
+    private void InitDisplays()
+    {
+        _displays.Clear();
+
+        var displays = DisplaysEnumerationHelper.GetDisplays().ToArray();
+        foreach (var display in displays)
+        {
+            _displays.AddOrUpdate(display.DeviceName, display, (k, v) => display);
+        }
+
+        var primary = displays.FirstOrDefault(x => x.IsPrimary) ?? displays.First();
+        SelectedScreen = primary.DeviceName;
+        CurrentScreenBounds = primary.MonitorArea;
+
+        _logger.LogInformation("Found {count} displays.", displays.Length);
+        _logger.LogInformation("Current bounds: {bounds}", JsonSerializer.Serialize(CurrentScreenBounds));
+    }
+
     private bool IsEmpty(SKBitmap bitmap)
     {
         if (bitmap is null)
@@ -486,6 +625,84 @@ public class ScreenCapturerWin : IScreenCapturer
         }
     }
 
+    // TODO:  Remove when done testing.
+    private void PrintDebugInfo()
+    {
+        _ = RateLimiter.Throttle(
+            () =>
+            {
+                var jsonOptions = new JsonSerializerOptions() { IncludeFields = true };
+
+                _logger.LogInformation("Screen bounds: {Bounds}", CurrentScreenBounds);
+
+                if (Win32Interop.GetCurrentDesktopName(out var currentDesktop))
+                {
+                    _logger.LogInformation("Current Desktop: {desktopName}", currentDesktop);
+                }
+                else
+                {
+                    _logger.LogError("Failed to get current desktop.");
+                }
+
+                if (Win32Interop.GetInputDesktopName(out var inputDesktop))
+                {
+                    _logger.LogInformation("Input Desktop: {desktopName}", currentDesktop);
+                }
+                else
+                {
+                    _logger.LogError("Failed to get input desktop.");
+                }
+
+                var desktopHwnd = Win32Interop.OpenInputDesktop();
+                //var desktopHwnd = User32.GetDesktopWindow();
+                if (desktopHwnd == nint.Zero)
+                {
+                    _logger.LogError("Failed to get desktop window.");
+                }
+
+                var notepad = Process.GetProcessesByName("notepad").FirstOrDefault();
+                if (notepad is null)
+                {
+                    _logger.LogError("Notepad not found.");
+                }
+                else
+                {
+                    _logger.LogInformation("Notepad hwnd: {hwnd}", notepad.MainWindowHandle.ToInt64());
+                    var parentHwnd = User32.GetParent(notepad.MainWindowHandle);
+                    _logger.LogInformation("Notepad parent: {parentHwnd}", parentHwnd.ToInt64());
+                    _logger.LogInformation("Desktop window: {desktopHwnd}", desktopHwnd.ToInt64());
+
+                    var setParentResult = User32.SetParent(notepad.MainWindowHandle, desktopHwnd);
+                    User32.SetWindowPos(notepad.MainWindowHandle, 0, 0, 0, 400, 400, User32.SWP.SWP_SHOWWINDOW | User32.SWP.SWP_NOSIZE);
+                    _logger.LogInformation("Set parent result: {result}", setParentResult.ToInt64());
+                    parentHwnd = User32.GetParent(notepad.MainWindowHandle);
+                    _logger.LogInformation("Notepad parent: {parentHwnd}", parentHwnd.ToInt64());
+                }
+
+                var enumResult = User32.EnumWindows((hwnd, lParam) =>
+                {
+                    var winInfo = new User32.WINDOWINFO();
+                    winInfo.cbSize = (uint)Marshal.SizeOf(winInfo);
+
+                    if (!User32.GetWindowInfo(hwnd, ref winInfo))
+                    {
+                        _logger.LogError("Failed to get window info.");
+                    }
+
+                    _logger.LogInformation("Get window info: {info}", JsonSerializer.Serialize(winInfo, jsonOptions));
+
+                    return true;
+                }, IntPtr.Zero);
+
+                if (!enumResult)
+                {
+                    _logger.LogError("Failed to enumerate desktop windows. Last error code: {code}", Marshal.GetLastPInvokeError());
+                }
+
+                return Task.CompletedTask;
+            },
+            TimeSpan.FromSeconds(10));
+    }
     private class DxCaptureResult
     {
         public SKBitmap? Bitmap { get; init; }

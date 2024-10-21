@@ -1060,6 +1060,91 @@ public static class User32
         SW_SHOWDEFAULT = 10,
         SW_MAX = 10
     }
+
+    [Flags]
+    public enum SWP
+    {
+        SWP_NOSIZE = 0x0001,
+        SWP_NOMOVE = 0x0002,
+        SWP_NOZORDER = 0x0004,
+        SWP_NOREDRAW = 0x0008,
+        SWP_NOACTIVATE = 0x0010,
+        SWP_DRAWFRAME = 0x0020,
+        SWP_FRAMECHANGED = 0x0020,
+        SWP_SHOWWINDOW = 0x0040,
+        SWP_HIDEWINDOW = 0x0080,
+        SWP_NOCOPYBITS = 0x0100,
+        SWP_NOOWNERZORDER = 0x0200,
+        SWP_NOREPOSITION = 0x0200,
+        SWP_NOSENDCHANGING = 0x0400,
+        SWP_DEFERERASE = 0x2000,
+        SWP_ASYNCWINDOWPOS = 0x4000,
+    }
+
+    [Flags]
+    public enum RedrawWindowFlags : uint
+    {
+        /// <summary>
+        /// Invalidates the rectangle or region that you specify in lprcUpdate or hrgnUpdate.
+        /// You can set only one of these parameters to a non-NULL value. If both are NULL, RDW_INVALIDATE invalidates the entire window.
+        /// </summary>
+        Invalidate = 0x1,
+
+        /// <summary>Causes the OS to post a WM_PAINT message to the window regardless of whether a portion of the window is invalid.</summary>
+        InternalPaint = 0x2,
+
+        /// <summary>
+        /// Causes the window to receive a WM_ERASEBKGND message when the window is repainted.
+        /// Specify this value in combination with the RDW_INVALIDATE value; otherwise, RDW_ERASE has no effect.
+        /// </summary>
+        Erase = 0x4,
+
+        /// <summary>
+        /// Validates the rectangle or region that you specify in lprcUpdate or hrgnUpdate.
+        /// You can set only one of these parameters to a non-NULL value. If both are NULL, RDW_VALIDATE validates the entire window.
+        /// This value does not affect internal WM_PAINT messages.
+        /// </summary>
+        Validate = 0x8,
+
+        /// <summary>
+        /// Suppresses any pending internal WM_PAINT messages.
+        /// This flag does not affect WM_PAINT messages resulting from a non-NULL update area.
+        /// </summary>
+        NoInternalPaint = 0x10,
+
+        /// <summary>Suppresses any pending WM_ERASEBKGND messages.</summary>
+        NoErase = 0x20,
+
+        /// <summary>Excludes child windows, if any, from the repainting operation.</summary>
+        NoChildren = 0x40,
+
+        /// <summary>Includes child windows, if any, in the repainting operation.</summary>
+        AllChildren = 0x80,
+
+        /// <summary>Causes the affected windows, which you specify by setting the RDW_ALLCHILDREN and RDW_NOCHILDREN values, to receive WM_ERASEBKGND and WM_PAINT messages before the RedrawWindow returns, if necessary.</summary>
+        UpdateNow = 0x100,
+
+        /// <summary>
+        /// Causes the affected windows, which you specify by setting the RDW_ALLCHILDREN and RDW_NOCHILDREN values, to receive WM_ERASEBKGND messages before RedrawWindow returns, if necessary.
+        /// The affected windows receive WM_PAINT messages at the ordinary time.
+        /// </summary>
+        EraseNow = 0x200,
+
+        /// <summary>
+        /// Causes any part of the nonclient area of the window that intersects the update region to receive a WM_NCPAINT message.
+        /// The RDW_INVALIDATE flag must also be specified; otherwise, RDW_FRAME has no effect.
+        /// The WM_NCPAINT message is typically not sent during the execution of RedrawWindow unless either RDW_UPDATENOW or RDW_ERASENOW is specified.
+        /// </summary>
+        Frame = 0x400,
+
+        /// <summary>
+        /// Suppresses any pending WM_NCPAINT messages.
+        /// This flag must be used with RDW_VALIDATE and is typically used with RDW_NOCHILDREN.
+        /// RDW_NOFRAME should be used with care, as it could cause parts of a window to be painted improperly.
+        /// </summary>
+        NoFrame = 0x800
+    }
+
     public enum VkMapType : uint
     {
         MAPVK_VK_TO_VSC = 0,
@@ -1150,6 +1235,30 @@ public static class User32
         public short wParamL;
         public short wParamH;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct WINDOWINFO
+    {
+        public uint cbSize;
+        public RECT rcWindow;
+        public RECT rcClient;
+        public uint dwStyle;
+        public uint dwExStyle;
+        public uint dwWindowStatus;
+        public uint cxWindowBorders;
+        public uint cyWindowBorders;
+        public ushort atomWindowType;
+        public ushort wCreatorVersion;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RECT
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
     #endregion
 
     #region DLL Imports
@@ -1169,6 +1278,9 @@ public static class User32
 
     [DllImport("user32.dll")]
     public static extern bool GetIconInfo(nint hIcon, out ICONINFO piconinfo);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern IntPtr GetThreadDesktop(uint dwThreadId);
 
     [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
     public static extern void Mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, nuint dwExtraInfo);
@@ -1260,9 +1372,6 @@ public static class User32
     public static extern nint GetProcessWindowStation();
 
     [DllImport("user32.dll", SetLastError = true)]
-    public static extern nint GetThreadDesktop(uint threadId);
-
-    [DllImport("user32.dll", SetLastError = true)]
     public static extern bool SetThreadDesktop(nint hDesktop);
 
     [DllImport("user32.dll")]
@@ -1344,5 +1453,56 @@ public static class User32
     [DllImport("user32.dll", SetLastError = true)]
     public static extern bool GetUserObjectInformationW(nint hObj, int nIndex,
          [Out] byte[] pvInfo, uint nLength, out uint lpnLengthNeeded);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+    public static extern IntPtr CreateWindowStation(string name, int flags, ACCESS_MASK desiredAccess, nint securityAttrs);
+
+    // ms-help://MS.VSCC.v80/MS.MSDN.v80/MS.WIN32COM.v10.en/dllproc/base/createdesktop.htm
+    [DllImport("user32.dll", EntryPoint = "CreateDesktop", CharSet = CharSet.Unicode, SetLastError = true)]
+    public static extern IntPtr CreateDesktop(
+                    [MarshalAs(UnmanagedType.LPWStr)] string desktopName,
+                    [MarshalAs(UnmanagedType.LPWStr)] string? device, // must be null.
+                    [MarshalAs(UnmanagedType.LPWStr)] string? deviceMode, // must be null,
+                    [MarshalAs(UnmanagedType.U4)] int flags,  // use 0
+                    [MarshalAs(UnmanagedType.U4)] ACCESS_MASK accessMask,
+                    nint securityAttributes);
+
+    /// <summary>
+    ///     Retrieves a handle to the foreground window (the window with which the user is currently working). The system
+    ///     assigns a slightly higher priority to the thread that creates the foreground window than it does to other threads.
+    ///     <para>See https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505%28v=vs.85%29.aspx for more information.</para>
+    /// </summary>
+    /// <returns>
+    ///     C++ ( Type: Type: HWND )The return value is a handle to the foreground window. The foreground window
+    ///     can be NULL in certain circumstances, such as when a window is losing activation.
+    /// </returns>
+    [DllImport("user32.dll")]
+    public static extern nint GetForegroundWindow();
+
+    [DllImport("user32.dll")]
+    public static extern bool PaintDesktop(nint hdc);
+
+    [return: MarshalAs(UnmanagedType.Bool)]
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool GetWindowInfo(nint hwnd, ref WINDOWINFO pwi);
+
+    [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+    public static extern nint GetParent(nint hWnd);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern nint SetParent(nint hWndChild, nint hWndNewParent);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern bool SetWindowPos(nint hWnd, nint hWndInsertAfter, int X, int Y, int cx, int cy, SWP uFlags);
+
+    [DllImport("user32.dll")]
+    public static extern bool RedrawWindow(nint hWnd, [In] ref RECT lprcUpdate, nint hrgnUpdate, RedrawWindowFlags flags);
+
+    [DllImport("user32.dll")]
+    public static extern bool RedrawWindow(nint hWnd, nint lprcUpdate, nint hrgnUpdate, RedrawWindowFlags flags);
+
+    [DllImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
     #endregion
 }

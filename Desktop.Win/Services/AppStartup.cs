@@ -122,7 +122,7 @@ internal class AppStartup : IAppStartup
 
         try
         {
-            if (Win32Interop.GetCurrentDesktop(out var currentDesktopName))
+            if (Win32Interop.GetInputDesktopName(out var currentDesktopName))
             {
                 _logger.LogInformation("Setting initial desktop to {currentDesktopName}.", currentDesktopName);
             }

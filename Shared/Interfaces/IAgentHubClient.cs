@@ -1,4 +1,5 @@
 ﻿using Remotely.Shared.Enums;
+using Remotely.Shared.Primitives;
 
 namespace Remotely.Shared.Interfaces;
 public interface IAgentHubClient
@@ -74,6 +75,11 @@ public interface IAgentHubClient
         string initiator, 
         ScriptInputType scriptInputType, 
         string authToken);
+
+    Task<Result> StartBackstage(
+        Guid sessionId, 
+        string accessKey, 
+        string userConnectionId);
 
     Task TransferFileFromBrowserToAgent(
         string transferId, 

@@ -10,6 +10,8 @@ using System.Runtime.Versioning;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using Remotely.Desktop.Native.Windows;
+using Remotely.Shared.Extensions;
+using Remotely.Shared.Primitives;
 
 namespace Remotely.Agent.Services.Windows;
 
@@ -26,6 +28,55 @@ public class AppLauncherWin : IAppLauncher
         _logger = logger;
     }
 
+    public Task<Result<BackstageSession>> StartBackstage(string remoteControlSessionId, string accessKey, string userConnectionId, HubConnection hubConnection)
+    {
+        try
+        {
+            if (Process.GetCurrentProcess().SessionId != 0)
+            {
+                return Result
+                    .Fail<BackstageSession>("Backstage can only be started from session 0.")
+                    .AsTaskResult();
+            }
+
+            var desktopName = "RemotelyDesktop";
+
+            var result = Win32Interop.StartProcessInBackstage(
+                  _rcBinaryPath +
+                      $" --mode Unattended" +
+                      $" --host {_connectionInfo.Host}" +
+                      $" --session-id \"{remoteControlSessionId}\"" +
+                      $" --access-key \"{accessKey}\"" +
+                      $" --viewers \"{userConnectionId}\"",
+                  desktopName,
+                  _logger,
+                  out _);
+
+            if (!result.IsSuccess)
+            {
+                return Result
+                    .Fail<BackstageSession>("Backstage failed to start.")
+                    .AsTaskResult();
+            }
+
+            // TODO:  Replace with "CheckForRunningShell" and launch if not running.
+            Win32Interop.StartProcessInBackstage(
+                 @"C:\Windows\system32\notepad.exe",
+                 desktopName,
+                 _logger,
+                 out _);
+
+            return result.AsTaskResult();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while starting backstage.");
+            return Result
+                .Fail<BackstageSession>("Error while starting backstage.")
+                .AsTaskResult();
+        }
+    }
+
     public async Task<int> LaunchChatService(string pipeName, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
     {
         try
@@ -34,7 +85,6 @@ public class AppLauncherWin : IAppLauncher
             {
                 await hubConnection.SendAsync("DisplayMessage", "Chat executable not found on target device.", "Executable not found on device.", "bg-danger", userConnectionId);
             }
-
 
             // Start Desktop app.
             await hubConnection.SendAsync("DisplayMessage", $"Starting chat service.", "Starting chat service.", "bg-success", userConnectionId);
@@ -50,6 +100,8 @@ public class AppLauncherWin : IAppLauncher
                         $" --org-id \"{orgId}\"",
                     targetSessionId: -1,
                     hiddenWindow: false,
+                    desktopName: null,
+                    logger: _logger,
                     out var procInfo);
                 if (!result)
                 {
@@ -121,7 +173,10 @@ public class AppLauncherWin : IAppLauncher
                         $" --access-key \"{accessKey}\"",
                     targetSessionId: targetSessionId,
                     hiddenWindow: false,
+                    desktopName: null,
+                    logger: _logger,
                     out _);
+
                 if (!result)
                 {
                     await hubConnection.SendAsync("DisplayMessage",
@@ -177,6 +232,8 @@ public class AppLauncherWin : IAppLauncher
 
                     targetSessionId: targetSessionID,
                     hiddenWindow: false,
+                    desktopName: null,
+                    logger: _logger,
                     out _);
 
                 if (!result)

@@ -229,7 +229,7 @@ Below are examples of using the cookie-based login API (JavaScript):
     	}
     }).then(response=>{
     	if (response.ok) {
-    		fetch("https://localhost:44351/api/RemoteControl/Viewer/b68c24b0-2c67-4524-ad28-dadea7a576a4", {
+    		fetch("https://localhost:44351/api/Viewer/b68c24b0-2c67-4524-ad28-dadea7a576a4", {
     			method: "get",
     			credentials: "include",
     			mode: "cors"
@@ -244,7 +244,7 @@ Below are examples of using the cookie-based login API (JavaScript):
     })
 
     // Log in and launch remote control in the same request.
-    fetch("https://localhost:5001/api/RemoteControl/Viewer/", {
+    fetch("https://localhost:5001/api/Viewer/", {
     	method: "post",
     	credentials: "include",
     	mode: "cors",

@@ -12,6 +12,7 @@ using Remotely.Shared.Enums;
 using Remotely.Shared.Interfaces;
 using Remotely.Shared.Utilities;
 using System.Collections.Concurrent;
+using Microsoft.Identity.Client;
 
 namespace Remotely.Server.Hubs;
 
@@ -38,6 +39,7 @@ public interface ICircuitConnection
     Task RunScript(IEnumerable<string> deviceIds, Guid savedScriptId, int scriptRunId, ScriptInputType scriptInputType, bool runAsHostedService);
 
     Task SendChat(string message, string deviceId, bool isDisconnecting = false);
+    Task<Result<RemoteControlSession>> StartBackstage(string deviceId);
     Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds);
 
     Task TriggerHeartbeat(string deviceId);
@@ -215,9 +217,23 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
         _dataService.RemoveDevices(deviceIDs);
     }
 
-    public async Task<Result<RemoteControlSession>> RemoteControl(string deviceId, bool viewOnly)
+    public Task<Result<RemoteControlSession>> RemoteControl(string deviceId, bool viewOnly)
+    {
+        return RemoteControlImpl(deviceId, viewOnly, false);
+    }
+
+    public async Task<Result<RemoteControlSession>> RemoteControlImpl(string deviceId, bool viewOnly, bool isBackstage)
     {
         var settings = await _dataService.GetSettings();
+
+        if (!_dataService.DoesUserHaveAccessToDevice(deviceId, User))
+        {
+            _logger.LogWarning(
+                "Remote control attempted by unauthorized user.  Device ID: {deviceId}.  User Name: {userName}.",
+                deviceId,
+                User.UserName);
+            return Result.Fail<RemoteControlSession>("Unauthorized.");
+        }
 
         if (!_agentSessionCache.TryGetByDeviceId(deviceId, out var targetDevice))
         {
@@ -231,25 +247,13 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             return Result.Fail<RemoteControlSession>("Device is not online.");
         }
 
-
-        if (!_dataService.DoesUserHaveAccessToDevice(deviceId, User))
-        {
-            var device = _dataService.GetDevice(targetDevice.ID);
-            _logger.LogWarning(
-                "Remote control attempted by unauthorized user.  Device ID: {deviceId}.  User Name: {userName}.",
-                deviceId,
-                User.UserName);
-            return Result.Fail<RemoteControlSession>("Unauthorized.");
-
-        }
-
         if (!_agentSessionCache.TryGetConnectionId(targetDevice.ID, out var serviceConnectionId))
         {
             var message = new DisplayNotificationMessage(
                 "Service connection not found.",
                 "Service connection not found.",
                 "bg-warning");
-            
+
             await _messenger.Send(message, ConnectionId);
             return Result.Fail<RemoteControlSession>("Service connection not found.");
         }
@@ -262,14 +266,13 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             UnattendedSessionId = sessionId,
             UserConnectionId = ConnectionId,
             AgentConnectionId = serviceConnectionId,
+            IsBackstage = isBackstage,
             DeviceId = deviceId,
             ViewOnly = viewOnly,
             OrganizationId = User.OrganizationID,
-            RequireConsent = settings.EnforceAttendedAccess,
+            RequireConsent = !isBackstage && settings.EnforceAttendedAccess,
             NotifyUserOnStart = settings.RemoteControlNotifyUser
         };
-
-        _remoteControlSessionCache.AddOrUpdate($"{sessionId}", session);
 
         var orgResult = await _dataService.GetOrganizationNameByUserName($"{User.UserName}");
 
@@ -279,14 +282,34 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             return Result.Fail<RemoteControlSession>(orgResult.Reason);
         }
 
-        await _agentHubContext.Clients.Client(serviceConnectionId).RemoteControl(
-            sessionId,
-            accessKey,
-            ConnectionId,
-            $"{User.UserOptions?.DisplayName}",
-            orgResult.Value,
-            User.OrganizationID);
+        if (isBackstage)
+        {
+           var startResult = await _agentHubContext.Clients
+                .Client(serviceConnectionId)
+                .StartBackstage(
+                    sessionId,
+                    accessKey,
+                    ConnectionId);
 
+            if (!startResult.IsSuccess)
+            {
+                return Result.Fail<RemoteControlSession>(startResult.Reason);
+            }
+        }
+        else
+        {
+            await _agentHubContext.Clients
+                .Client(serviceConnectionId)
+                .RemoteControl(
+                    sessionId,
+                    accessKey,
+                    ConnectionId,
+                    $"{User.UserOptions?.DisplayName}",
+                    orgResult.Value,
+                    User.OrganizationID);
+        }
+
+        _remoteControlSessionCache.AddOrUpdate($"{sessionId}", session);
         return Result.Ok(session);
     }
 
@@ -369,6 +392,11 @@ public class CircuitConnection : CircuitHandler, ICircuitConnection
             User.OrganizationID,
             isDisconnecting,
             ConnectionId);
+    }
+
+    public Task<Result<RemoteControlSession>> StartBackstage(string deviceId)
+    {
+        return RemoteControlImpl(deviceId, false, true);
     }
 
     public async Task<bool> TransferFileFromBrowserToAgent(string deviceId, string transferId, string[] fileIds)

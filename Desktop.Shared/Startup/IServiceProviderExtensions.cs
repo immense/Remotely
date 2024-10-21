@@ -39,7 +39,7 @@ public static class IServiceProviderExtensions
 
             if (OperatingSystem.IsWindows() && elevate)
             {
-                RelaunchElevated();
+                RelaunchElevated(logger);
                 return Result.Ok();
             }
 
@@ -145,15 +145,17 @@ public static class IServiceProviderExtensions
     }
 
     [SupportedOSPlatform("windows")]
-    private static void RelaunchElevated()
+    private static void RelaunchElevated<T>(ILogger<T> logger)
     {
         var commandLine = Win32Interop.GetCommandLine().Replace(" --elevate", "");
 
         Console.WriteLine($"Elevating process {commandLine}.");
         var result = Win32Interop.CreateInteractiveSystemProcess(
             commandLine,
-            -1,
-            false,
+            targetSessionId: -1,
+            hiddenWindow: false,
+            desktopName: null,
+            logger: logger,
             out var procInfo);
         Console.WriteLine($"Elevate result: {result}. Process ID: {procInfo.dwProcessId}.");
         Environment.Exit(0);

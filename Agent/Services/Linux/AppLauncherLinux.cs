@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
+using Remotely.Desktop.Native.Windows;
 using Remotely.Shared.Extensions;
 using Remotely.Shared.Models;
 using Remotely.Shared.Primitives;
@@ -71,7 +72,6 @@ public class AppLauncherLinux : IAppLauncher
         }
         return -1;
     }
-
     public async Task LaunchRemoteControl(int targetSessionId, string sessionId, string accessKey, string userConnectionId, string requesterName, string orgName, string orgId, HubConnection hubConnection)
     {
         try
@@ -128,6 +128,12 @@ public class AppLauncherLinux : IAppLauncher
             _logger.LogError(ex, "Error while restarting screen caster.");
             throw;
         }
+    }
+
+    public Task<Result<BackstageSession>> StartBackstage(string remoteControlSessionId, string accessKey, string userConnectionId, HubConnection hubConnection)
+    {
+        return Task.FromResult(
+            Result.Fail<BackstageSession>("Backstage is unavailable on Linux."));
     }
 
     private int StartLinuxDesktopApp(string args)

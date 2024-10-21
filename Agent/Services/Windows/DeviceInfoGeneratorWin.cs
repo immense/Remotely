@@ -5,9 +5,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Remotely.Desktop.Native.Windows;
+using System.Runtime.Versioning;
 
 namespace Remotely.Agent.Services.Windows;
 
+[SupportedOSPlatform("windows")]
 public class DeviceInfoGeneratorWin : DeviceInfoGeneratorBase, IDeviceInformationService
 {
     private readonly ICpuUtilizationSampler _cpuUtilSampler;

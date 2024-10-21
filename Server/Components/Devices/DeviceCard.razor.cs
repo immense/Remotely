@@ -309,32 +309,79 @@ public partial class DeviceCard : AuthComponentBase
 
     private async Task StartRemoteControl(bool viewOnly)
     {
-        if (!ServiceSessionCache.TryGetConnectionId(Device.ID, out _))
+        try
         {
-            ToastService.ShowToast("Device connection not found", classString: "bg-danger");
-            return;
-        }
+            if (!ServiceSessionCache.TryGetConnectionId(Device.ID, out _))
+            {
+                ToastService.ShowToast("Device connection not found", classString: "bg-danger");
+                return;
+            }
 
-        var result = await CircuitConnection.RemoteControl(Device.ID, viewOnly);
-        if (!result.IsSuccess)
+            var result = await CircuitConnection.RemoteControl(Device.ID, viewOnly);
+            if (!result.IsSuccess)
+            {
+                ToastService.ShowToast2(result.Reason, ToastType.Error);
+                return;
+            }
+
+            var session = result.Value;
+
+            if (!await session.WaitForSessionReady(TimeSpan.FromSeconds(20)))
+            {
+                ToastService.ShowToast("Session failed to start", classString: "bg-danger");
+                return;
+            }
+
+            JsInterop.OpenWindow(
+                $"/Viewer" +
+                    $"?mode=Unattended&sessionId={session.UnattendedSessionId}" +
+                    $"&accessKey={session.AccessKey}" +
+                    $"&viewonly={viewOnly}", 
+                "_blank");
+        }
+        catch (Exception ex)
         {
-            return;
+            Logger.LogError(ex, "Error while starting remote control session.");
+            ToastService.ShowToast2("An error occurred", ToastType.Error);
         }
+    }
 
-        var session = result.Value;
-
-        if (!await session.WaitForSessionReady(TimeSpan.FromSeconds(20)))
+    private async Task StartBackstage()
+    {
+        try
         {
-            ToastService.ShowToast("Session failed to start", classString: "bg-danger");
-            return;
-        }
+            if (!ServiceSessionCache.TryGetConnectionId(Device.ID, out _))
+            {
+                ToastService.ShowToast("Device connection not found", classString: "bg-danger");
+                return;
+            }
 
-        JsInterop.OpenWindow(
-            $"/Viewer" +
-                $"?mode=Unattended&sessionId={session.UnattendedSessionId}" +
-                $"&accessKey={session.AccessKey}" +
-                $"&viewonly={viewOnly}", 
-            "_blank");
+            var result = await CircuitConnection.StartBackstage(Device.ID);
+            if (!result.IsSuccess)
+            {
+                ToastService.ShowToast2(result.Reason, ToastType.Error);
+                return;
+            }
+
+            var session = result.Value;
+
+            if (!await session.WaitForSessionReady(TimeSpan.FromSeconds(20)))
+            {
+                ToastService.ShowToast("Session failed to start", classString: "bg-danger");
+                return;
+            }
+
+            JsInterop.OpenWindow(
+                $"/Viewer" +
+                    $"?mode=Unattended&sessionId={session.UnattendedSessionId}" +
+                    $"&accessKey={session.AccessKey}",
+                "_blank");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error while starting backstage session.");
+            ToastService.ShowToast2("An error occurred", ToastType.Error);
+        }
     }
 
     private void ToggleIsSelected(ChangeEventArgs args)

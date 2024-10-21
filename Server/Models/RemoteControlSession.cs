@@ -26,6 +26,7 @@ public class RemoteControlSession : IDisposable
     public DateTimeOffset Created { get; internal set; }
     public string DesktopConnectionId { get; internal set; } = string.Empty;
     public string DeviceId { get; set; } = string.Empty;
+    public bool IsBackstage { get; init; }
     public DateTimeOffset LastStateChange { get; private set; } = DateTimeOffset.Now;
     public string MachineName { get; internal set; } = string.Empty;
     public RemoteControlMode Mode { get; internal set; }
