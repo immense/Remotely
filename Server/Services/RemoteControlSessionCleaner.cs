@@ -1,6 +1,3 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
 namespace Remotely.Server.Services;
 
 public class RemoteControlSessionCleaner : BackgroundService

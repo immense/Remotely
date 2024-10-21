@@ -1,17 +1,13 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Threading;
 using Remotely.Desktop.Shared.Services;
 using Remotely.Shared.Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Input;
-using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
 using Remotely.Desktop.Shared.Reactive;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Desktop.UI.Controls.Dialogs;
-using Remotely.Desktop.Shared.Native.Linux;
-using Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.ViewModels;
 

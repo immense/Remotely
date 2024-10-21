@@ -3,10 +3,10 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
-using static Remotely.Desktop.Shared.Native.Windows.ADVAPI32;
-using static Remotely.Desktop.Shared.Native.Windows.User32;
+using static Remotely.Desktop.Native.Windows.ADVAPI32;
+using static Remotely.Desktop.Native.Windows.User32;
 
-namespace Remotely.Desktop.Shared.Native.Windows;
+namespace Remotely.Desktop.Native.Windows;
 
 // TODO: Use https://github.com/microsoft/CsWin32 for all p/invokes.
 public class Win32Interop
@@ -222,7 +222,7 @@ public class Win32Interop
             // If exact match is found, return that session.
             return (uint)targetSessionId;
         }
-        
+
         if (Shlwapi.IsOS(OsType.OS_ANYSERVER))
         {
             // If Windows Server, default to console session.

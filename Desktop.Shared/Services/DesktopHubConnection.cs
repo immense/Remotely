@@ -1,6 +1,5 @@
 ﻿using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.Shared.Messages;
-using Remotely.Desktop.Shared.Native.Windows;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Interfaces;
 using Remotely.Shared.Models;
@@ -10,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Primitives;
 using System.Diagnostics;
+using Remotely.Desktop.Native.Windows;
 
 namespace Remotely.Desktop.Shared.Services;
 

@@ -1,14 +1,12 @@
 ﻿using Avalonia.Controls;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Text.Json;
 using System.Windows.Input;
-using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
 using Remotely.Desktop.Shared.Reactive;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Shared.Models;
-using Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.ViewModels;
 

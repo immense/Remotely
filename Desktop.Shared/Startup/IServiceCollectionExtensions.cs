@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Bitbound.SimpleMessenger;
-using Desktop.Shared.Services;
-using Remotely.Desktop.Shared.Abstractions;
 
 namespace Remotely.Desktop.Shared.Startup;
 

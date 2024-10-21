@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
 using Remotely.Server.Services;
 using Remotely.Shared;
 using Remotely.Shared.Utilities;
-using System;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Auth;
 

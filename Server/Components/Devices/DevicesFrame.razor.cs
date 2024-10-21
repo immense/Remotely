@@ -1,9 +1,6 @@
-﻿using Bitbound.SimpleMessenger;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Build.Framework;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Remotely.Server.Enums;
 using Remotely.Server.Hubs;
 using Remotely.Server.Models.Messages;
@@ -12,15 +9,10 @@ using Remotely.Server.Services.Stores;
 using Remotely.Shared.Attributes;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Utilities;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 

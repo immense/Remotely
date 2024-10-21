@@ -6,7 +6,6 @@ using Avalonia.Threading;
 using Remotely.Shared.Helpers;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Primitives;
-using System.Threading;
 
 namespace Remotely.Desktop.UI.Services;
 

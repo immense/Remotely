@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Components;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.ModalContents;
 

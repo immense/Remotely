@@ -11,9 +11,8 @@ using Remotely.Desktop.Linux.Startup;
 using Remotely.Desktop.UI.Services;
 using Avalonia;
 using Remotely.Desktop.UI;
-using Desktop.Shared.Services;
 
-namespace Remotely.Desktop.XPlat;
+namespace Remotely.Desktop.Linux;
 
 public class Program
 {

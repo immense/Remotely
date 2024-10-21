@@ -1,14 +1,7 @@
 ﻿using Remotely.Shared.Extensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Build.Framework;
-using Microsoft.Extensions.Logging;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.API;
 

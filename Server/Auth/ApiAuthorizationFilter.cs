@@ -1,15 +1,8 @@
-﻿using Remotely.Shared.Extensions;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Build.Framework;
-using Microsoft.Extensions.Logging;
 using Remotely.Server.Services;
 using Remotely.Shared;
-using System;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Auth;
 

@@ -1,5 +1,4 @@
-﻿using Bitbound.SimpleMessenger;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 using Remotely.Server.Enums;
@@ -12,11 +11,8 @@ using Remotely.Shared.Entities;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.ViewModels;
-using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Devices;
 

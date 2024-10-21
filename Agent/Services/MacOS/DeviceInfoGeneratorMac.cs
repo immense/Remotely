@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Dtos;
-using Remotely.Shared.Models;
 using Remotely.Shared.Services;
 using System;
 using System.Linq;

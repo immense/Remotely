@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Remotely.Shared.Models;
+﻿namespace Remotely.Shared.Models;
 
 public class Drive
 {

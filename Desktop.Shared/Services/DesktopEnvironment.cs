@@ -1,7 +1,7 @@
-﻿using Remotely.Desktop.Shared.Native.Linux;
+﻿using Remotely.Desktop.Native.Linux;
 using System.Security.Principal;
 
-namespace Desktop.Shared.Services;
+namespace Remotely.Desktop.Shared.Services;
 
 public interface IDesktopEnvironment
 {

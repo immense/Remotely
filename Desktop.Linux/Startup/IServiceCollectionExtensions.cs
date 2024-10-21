@@ -2,7 +2,6 @@ using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.Shared.Startup;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Desktop.Linux.Services;
-using Remotely.Desktop.UI.ViewModels;
 using Remotely.Desktop.UI.Services;
 using Remotely.Desktop.UI.Startup;
 

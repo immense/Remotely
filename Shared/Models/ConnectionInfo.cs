@@ -1,6 +1,4 @@
 ﻿#nullable enable
-using System;
-
 namespace Remotely.Shared.Models;
 
 public class ConnectionInfo

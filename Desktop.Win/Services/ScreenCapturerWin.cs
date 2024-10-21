@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 using Remotely.Desktop.Shared.Abstractions;
-using Remotely.Desktop.Shared.Native.Windows;
 using Remotely.Desktop.Shared.Services;
 using Remotely.Shared.Models;
 using Bitbound.SimpleMessenger;
@@ -42,6 +41,7 @@ using System.Runtime.Versioning;
 using Result = Remotely.Shared.Primitives.Result;
 using Remotely.Desktop.Shared.Messages;
 using Remotely.Shared.Primitives;
+using Remotely.Desktop.Native.Windows;
 
 namespace Remotely.Desktop.Win.Services;
 

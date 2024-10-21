@@ -1,16 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.CodeAnalysis.Scripting;
 using Remotely.Server.Components.Pages;
 using Remotely.Server.Enums;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Scripts;
 

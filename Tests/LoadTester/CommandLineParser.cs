@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace Remotely.Tests.LoadTester;
+namespace Remotely.LoadTester;
 
 public class CommandLineParser
 {

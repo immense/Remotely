@@ -1,10 +1,5 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
-using Microsoft.Extensions.DependencyInjection;
-using Remotely.Desktop.Shared;
-using Remotely.Desktop.Shared.Abstractions;
-using Remotely.Desktop.UI.Controls.Dialogs;
 
 namespace Remotely.Desktop.UI.Views;
 

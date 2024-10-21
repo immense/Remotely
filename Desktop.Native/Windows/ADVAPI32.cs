@@ -1,8 +1,7 @@
-using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Remotely.Desktop.Shared.Native.Windows;
+namespace Remotely.Desktop.Native.Windows;
 
 public static class ADVAPI32
 {

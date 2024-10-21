@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Remotely.Server.Services;
 
-namespace Remotely.Server.Areas.RemoteControl.Pages;
+namespace Remotely.Server.Pages;
 
 [ServiceFilter(typeof(ViewerAuthorizationFilter))]
 public class ViewerModel(IDataService _dataService) : PageModel

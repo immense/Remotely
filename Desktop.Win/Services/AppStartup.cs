@@ -1,7 +1,6 @@
-using Desktop.Shared.Services;
+using Remotely.Desktop.Native.Windows;
 using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.Shared.Enums;
-using Remotely.Desktop.Shared.Native.Windows;
 using Remotely.Desktop.Shared.Services;
 using Remotely.Desktop.UI.Services;
 using Remotely.Shared.Models;

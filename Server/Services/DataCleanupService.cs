@@ -1,15 +1,4 @@
 ﻿using Remotely.Shared.Services;
-using Microsoft.Build.Framework;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Timers;
 
 namespace Remotely.Server.Services;
 

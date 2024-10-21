@@ -2,7 +2,6 @@
 using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
-using Remotely.Server.Models;
 using Remotely.Server.Models.Messages;
 using Remotely.Shared;
 using Remotely.Shared.Dtos;

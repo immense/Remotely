@@ -1,8 +1,8 @@
 using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.Shared.Enums;
-using Remotely.Desktop.Shared.Native.Linux;
 using Remotely.Desktop.Shared.Services;
 using Microsoft.Extensions.Logging;
+using Remotely.Desktop.Native.Linux;
 
 namespace Remotely.Desktop.Linux.Services;
 

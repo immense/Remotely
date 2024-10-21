@@ -6,10 +6,6 @@ using Remotely.Server.Enums;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Components.Scripts;
 

@@ -1,17 +1,11 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 using Remotely.Server.Hubs;
 using Remotely.Server.RateLimiting;
 using Remotely.Server.Services;
 using Remotely.Shared.Interfaces;
-using System;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.API;
 

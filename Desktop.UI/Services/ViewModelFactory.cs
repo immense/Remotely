@@ -2,8 +2,6 @@
 using Remotely.Desktop.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System.IO;
-using Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.Services;
 

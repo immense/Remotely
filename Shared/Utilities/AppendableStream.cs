@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace Remotely.Shared.Utilities;
+﻿namespace Remotely.Shared.Utilities;
 
 public class AppendableStream : Stream
 {

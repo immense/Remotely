@@ -4,7 +4,6 @@ using Remotely.Desktop.Shared.Services;
 using Remotely.Desktop.UI.Services;
 using Remotely.Shared.Models;
 using Microsoft.Extensions.Logging;
-using Desktop.Shared.Services;
 
 namespace Remotely.Desktop.Linux.Services;
 

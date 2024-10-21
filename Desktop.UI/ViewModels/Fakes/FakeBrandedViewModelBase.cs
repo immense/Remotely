@@ -1,11 +1,7 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Remotely.Desktop.UI.Controls.Dialogs;
-using Remotely.Shared.Models;
 using Remotely.Shared.Entities;
 using System.Diagnostics;
-using System.IO;
 
 namespace Remotely.Desktop.UI.ViewModels.Fakes;
 

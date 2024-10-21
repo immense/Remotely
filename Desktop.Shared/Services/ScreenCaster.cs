@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
 using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.Shared.Enums;
@@ -6,10 +5,8 @@ using Remotely.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Helpers;
 using Remotely.Shared.Models.Dtos;
-using MessagePack;
 using Remotely.Shared.Services;
 using Microsoft.IO;
-using System.Diagnostics;
 using Bitbound.SimpleMessenger;
 using Remotely.Desktop.Shared.Messages;
 

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Agent.Models;
 using Remotely.Shared.Models;
-using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;

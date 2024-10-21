@@ -1,10 +1,9 @@
 ﻿using Avalonia.Controls;
 using System.Windows.Input;
 using Remotely.Desktop.Shared.Reactive;
-using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
 using Remotely.Desktop.UI.Controls.Dialogs;
-using Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.ViewModels;
 

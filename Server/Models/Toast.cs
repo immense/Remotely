@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Remotely.Server.Models;
+﻿namespace Remotely.Server.Models;
 
 public class Toast
 {

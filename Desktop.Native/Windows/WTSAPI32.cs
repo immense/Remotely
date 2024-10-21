@@ -1,7 +1,6 @@
-﻿using System;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
-namespace Remotely.Desktop.Shared.Native.Windows;
+namespace Remotely.Desktop.Native.Windows;
 
 public static class WTSAPI32
 {

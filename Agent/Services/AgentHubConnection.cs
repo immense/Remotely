@@ -1,5 +1,4 @@
-﻿using Remotely.Desktop.Shared.Native.Windows;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -19,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Timer = System.Timers.Timer;
+using Remotely.Desktop.Native.Windows;
 
 namespace Remotely.Agent.Services;
 

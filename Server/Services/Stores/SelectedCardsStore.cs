@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace Remotely.Server.Services.Stores;
+﻿namespace Remotely.Server.Services.Stores;
 
 public interface ISelectedCardsStore
 {

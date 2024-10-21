@@ -1,6 +1,4 @@
-﻿using Microsoft.Identity.Client;
-using Remotely.Shared.Enums;
-using System.Threading.Tasks;
+﻿using Remotely.Shared.Enums;
 
 namespace Remotely.Server.Services;
 

@@ -1,8 +1,7 @@
-﻿using Remotely.Desktop.Shared.Native.Windows;
-using Microsoft.Win32.SafeHandles;
-using System;
+﻿using Microsoft.Win32.SafeHandles;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using Remotely.Desktop.Native.Windows;
 
 public static class SECUR32
 {

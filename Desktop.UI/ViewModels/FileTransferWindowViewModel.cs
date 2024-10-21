@@ -2,12 +2,10 @@
 using Remotely.Desktop.Shared.Services;
 using Remotely.Desktop.Shared.ViewModels;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Windows.Input;
 using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
 using Remotely.Desktop.Shared.Reactive;
-using Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.ViewModels;
 

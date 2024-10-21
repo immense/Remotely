@@ -1,10 +1,10 @@
-﻿using Remotely.Desktop.Shared.Native.Windows;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Dtos;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Remotely.Desktop.Native.Windows;
 
 namespace Remotely.Agent.Services.Windows;
 

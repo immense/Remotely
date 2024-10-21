@@ -1,14 +1,10 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
-using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.Shared.Reactive;
-using Remotely.Shared.Models;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Entities;
-using System.IO;
 using System.Reflection;
-using Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.ViewModels;
 

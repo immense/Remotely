@@ -1,6 +1,5 @@
 using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
-using System.Threading;
 
 namespace Remotely.Desktop.UI.Services;
 

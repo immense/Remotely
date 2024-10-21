@@ -1,17 +1,14 @@
-﻿using Castle.Core.Logging;
-using Microsoft.AspNetCore.Http.Connections;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Remotely.Agent.Services;
 using Remotely.Agent.Services.Windows;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Remotely.Tests.LoadTester;
+namespace Remotely.LoadTester;
 
 internal class Program
 {

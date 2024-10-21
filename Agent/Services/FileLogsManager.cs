@@ -1,12 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using Remotely.Shared.Services;
-using System;
+﻿using Remotely.Shared.Services;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

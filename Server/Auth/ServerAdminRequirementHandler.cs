@@ -1,10 +1,7 @@
 ﻿#nullable enable
 
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Remotely.Server.Services;
-using Remotely.Shared.Entities;
-using System.Threading.Tasks;
 
 namespace Remotely.Server.Auth;
 

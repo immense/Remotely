@@ -1,6 +1,4 @@
-﻿using Remotely.Shared.Extensions;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared;
 using Remotely.Shared.Dtos;

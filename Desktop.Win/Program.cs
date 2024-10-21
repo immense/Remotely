@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Desktop.Shared.Services;
 using Remotely.Desktop.Shared.Services;
 using Remotely.Desktop.Shared.Startup;
 using Remotely.Desktop.UI;
@@ -10,10 +9,7 @@ using Remotely.Shared.Services;
 using Remotely.Shared.Utilities;
 using System.Diagnostics;
 using System.Runtime.Versioning;
-using System.Threading;
-using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.UI.Startup;
-using Remotely.Desktop.Win.Services;
 
 namespace Remotely.Desktop.Win;
 

@@ -1,8 +1,7 @@
-﻿using Remotely.Desktop.Shared;
-using Remotely.Desktop.Shared.Abstractions;
+﻿using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.UI.Controls.Dialogs;
 using Microsoft.Extensions.Logging;
-using Desktop.Shared.Services;
+using Remotely.Desktop.Shared.Services;
 
 namespace Remotely.Desktop.UI.ViewModels;
 

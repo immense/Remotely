@@ -1,6 +1,4 @@
 ﻿using Remotely.Server.Models;
-using Remotely.Shared;
-using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 

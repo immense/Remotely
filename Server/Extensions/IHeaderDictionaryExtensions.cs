@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Remotely.Server.Auth;
 
 namespace Remotely.Server.Extensions;

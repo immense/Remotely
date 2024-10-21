@@ -1,5 +1,4 @@
 using Remotely.Desktop.Shared.Abstractions;
-using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using System.Timers;
 

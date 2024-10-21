@@ -1,6 +1,4 @@
 ﻿using Remotely.Shared.Enums;
-using System;
-using System.Diagnostics;
 
 namespace Remotely.Shared.Utilities;
 

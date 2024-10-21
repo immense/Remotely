@@ -1,10 +1,8 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using CommunityToolkit.Diagnostics;
 using Remotely.Desktop.Shared;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading;
 
 namespace Remotely.Desktop.UI.Controls.Dialogs;
 

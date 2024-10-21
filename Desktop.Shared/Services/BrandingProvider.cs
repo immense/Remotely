@@ -1,14 +1,11 @@
-﻿using Remotely.Desktop.Shared.Abstractions;
-using Remotely.Desktop.Shared.Services;
-using Remotely.Shared.Models;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Remotely.Shared.Entities;
 using Remotely.Shared.Primitives;
 using Remotely.Shared.Services;
 using System.Diagnostics;
 using System.Net.Http.Json;
 
-namespace Desktop.Shared.Services;
+namespace Remotely.Desktop.Shared.Services;
 
 public interface IBrandingProvider
 {

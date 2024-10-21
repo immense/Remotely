@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Remotely.Shared.Utilities;
+﻿namespace Remotely.Shared.Utilities;
 
 public static class Disposer
 {

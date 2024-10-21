@@ -1,13 +1,13 @@
-﻿using Remotely.Desktop.Shared.Abstractions;
+﻿using Remotely.Desktop.Native.Windows;
+using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Desktop.Shared.Enums;
-using Remotely.Desktop.Shared.Native.Windows;
 using Remotely.Desktop.Shared.Services;
 using Remotely.Desktop.UI.Services;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using static Remotely.Desktop.Shared.Native.Windows.User32;
+using static Remotely.Desktop.Native.Windows.User32;
 
 namespace Remotely.Desktop.Win.Services;
 

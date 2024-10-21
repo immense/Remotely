@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using Remotely.Shared.Utilities;
+﻿using Remotely.Shared.Utilities;
 using System;
 using System.Diagnostics;
 using System.IO;

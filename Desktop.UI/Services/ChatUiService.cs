@@ -1,8 +1,6 @@
-using Avalonia.Controls;
 using Remotely.Desktop.Shared.Abstractions;
 using System.ComponentModel;
 using Remotely.Desktop.UI.Controls.Dialogs;
-using CommunityToolkit.Diagnostics;
 using Remotely.Shared.Models;
 
 namespace Remotely.Desktop.UI.Services;

@@ -1,12 +1,4 @@
-﻿using Remotely.Shared.Enums;
-using Remotely.Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Remotely.Shared.Utilities;
+﻿namespace Remotely.Shared.Utilities;
 
 // TODO: Replace with ISystemTime.
 public static class Time

@@ -1,7 +1,4 @@
-﻿using Remotely.Server.Hubs;
-using Microsoft.AspNetCore.Builder;
-
-namespace Remotely.Server.Extensions;
+﻿namespace Remotely.Server.Extensions;
 
 public static class IApplicationBuilderExtensions
 {

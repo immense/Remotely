@@ -1,5 +1,5 @@
-﻿using Remotely.Desktop.Shared.Abstractions;
-using Remotely.Desktop.Shared.Native.Windows;
+﻿using Remotely.Desktop.Native.Windows;
+using Remotely.Desktop.Shared.Abstractions;
 using Remotely.Shared.Models;
 using System.Drawing;
 using System.Drawing.Imaging;

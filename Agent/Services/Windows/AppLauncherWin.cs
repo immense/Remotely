@@ -1,5 +1,4 @@
-﻿using Remotely.Desktop.Shared.Native.Windows;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Models;
@@ -10,6 +9,7 @@ using System.IO;
 using System.Runtime.Versioning;
 using System.Security.Principal;
 using System.Threading.Tasks;
+using Remotely.Desktop.Native.Windows;
 
 namespace Remotely.Agent.Services.Windows;
 
