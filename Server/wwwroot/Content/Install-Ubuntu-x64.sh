@@ -8,7 +8,7 @@ InstallDir="/usr/local/bin/Remotely"
 apt-get update
 apt-get -y install curl
 
-ETag=$(curl --head $HostName/Content/Remotely-Linux.zip | grep -i "etag" | cut -d' ' -f 2)
+ETag=$(curl --head --location $HostName/Content/Remotely-Linux.zip | grep -i "etag" | cut -d' ' -f 2)
 LogPath="/var/log/remotely/Agent_Install.log"
 
 mkdir -p /var/log/remotely
