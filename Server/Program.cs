@@ -184,6 +184,22 @@ services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.KnownProxies.Add(ip);
             }
+            // Allow for CIDR in Known Proxies
+            else
+            {
+                // Try to parse the CIDR address
+                try
+                {
+                    var network = Microsoft.AspNetCore.HttpOverrides.IPNetwork.Parse(proxy);
+                    options.KnownNetworks.Add(network); // Add the network to KnownNetworks
+                }
+                catch (FormatException)
+                {
+                    // Handle invalid CIDR format gracefully
+                    // Log or throw an exception as needed
+                    Console.WriteLine($"Invalid CIDR format: {proxy}");
+                }
+            }
         }
     }
 });

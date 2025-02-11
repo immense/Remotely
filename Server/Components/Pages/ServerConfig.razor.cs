@@ -105,13 +105,34 @@ public partial class ServerConfig : AuthComponentBase
 
     private void AddKnownProxy()
     {
+        // Ensure _knownProxyToAdd is not null or empty before proceeding
+        if (string.IsNullOrEmpty(_knownProxyToAdd))
+        {
+            ToastService.ShowToast2("Input cannot be null or empty.", Enums.ToastType.Warning);
+            return;
+        }
         if (IPAddress.TryParse(_knownProxyToAdd, out _))
         {
             Input.KnownProxies.Add(_knownProxyToAdd);
         }
-        else
+       else
         {
-            ToastService.ShowToast2("Invalid IP address.", Enums.ToastType.Warning);
+        // Allow for CIDR in Known Proxies
+        // If it's not an IP, attempt to parse it as a CIDR block (e.g., 192.168.1.0/24)
+        try
+        {
+            var network = IPNetwork.Parse(_knownProxyToAdd);
+
+            // Convert the IPNetwork object to a string (CIDR format)
+            string networkString = network.ToString();
+
+            Input.KnownProxies.Add(networkString);
+        }
+        catch (FormatException)
+        {
+            // If it's neither a valid IP nor a valid CIDR block, show a warning toast
+            ToastService.ShowToast2("Invalid IP address or CIDR format.", Enums.ToastType.Warning);
+        }
         }
 
         _knownProxyToAdd = string.Empty;
