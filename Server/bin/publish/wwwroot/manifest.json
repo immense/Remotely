@@ -1,0 +1,37 @@
+{
+  "id": "Remotely",
+  "name": "Remotely",
+  "short_name": "Remotely",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "black",
+  "theme_color": "white",
+  "categories": [ "remote control", "remote access", "IT tools" ],
+  "description": "Remote access tools designed to get things done quickly.",
+  "icons": [
+    {
+      "src": "./images/Remotely_Icon_128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/Remotely_Icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "windows",
+      "url":  "./"
+    },
+    {
+      "platform": "play",
+      "url": "./"
+    },
+    {
+      "platform": "itunes",
+      "url": "./"
+    }
+  ]
+}

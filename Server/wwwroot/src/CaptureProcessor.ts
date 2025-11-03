@@ -13,7 +13,15 @@ export async function ProcessStream(streamingState: StreamingState): Promise<voi
 
     try {
         const chunks = streamingState.ReceivedChunks.splice(0);
-        streamingState.Buffer = new Blob([streamingState.Buffer, ...chunks]);
+
+        // ensure we always start from a blob
+        const base = streamingState.Buffer ?? new Blob();
+
+        // map each Uint8Array -> ArrayBuffer (BlobPart)
+        const parts: BlobPart[] = [base, ...chunks.map(c => c.buffer as ArrayBuffer)];
+
+        streamingState.Buffer = new Blob(parts);
+
 
         const bufferSize = streamingState.Buffer.size;
 

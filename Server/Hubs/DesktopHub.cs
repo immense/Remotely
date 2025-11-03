@@ -4,6 +4,8 @@ using Remotely.Server.Services;
 using Remotely.Shared.Enums;
 using Remotely.Shared.Interfaces;
 using Microsoft.AspNetCore.SignalR;
+using Remotely.Desktop.Shared.Messages;
+
 
 namespace Remotely.Server.Hubs;
 

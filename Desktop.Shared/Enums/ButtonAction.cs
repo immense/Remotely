@@ -3,5 +3,7 @@
 public enum ButtonAction
 {
     Down,
-    Up
+    Up,
+    PrivacyOn,
+    PrivacyOff
 }

@@ -1,4 +1,4 @@
-import { ViewerApp } from "./App.js";
+﻿import { ViewerApp } from "./App.js";
 import { ConvertUInt8ArrayToBase64 } from "./Utilities.js";
 import { WindowsSession } from "./Models/WindowsSession.js";
 import { WindowsSessionType } from "./Enums/WindowsSessionType.js";
@@ -66,6 +66,7 @@ export function CloseAllPopupMenus(exceptMenuId: string) {
     })
 }
 
+
 export function Prompt(promptMessage: string): Promise<string> {
     return new Promise((resolve, reject) => {
         var modalDiv = document.createElement("div");
@@ -126,12 +127,15 @@ export function ShowToast(message: string) {
     }, 5000);
 }
 
-
+export const PrivacyButton =
+    document.getElementById("privacyButton") as HTMLButtonElement;
 export function ToggleConnectUI(shown: boolean) {
     if (shown) {
         ConnectButton.innerText = "Connect";
         Screen2DContext.clearRect(0, 0, ScreenViewer.width, ScreenViewer.height);
         ScreenViewerWrapper.setAttribute("hidden", "hidden");
+        PrivacyButton?.classList.remove("toggled");       // ← add
+        PrivacyButton?.setAttribute("disabled", "disabled"); // ← add
         if (ViewerApp.Mode == RemoteControlMode.Attended) {
             ConnectBox.style.removeProperty("display");
             ConnectHeader.style.removeProperty("display");
@@ -218,4 +222,5 @@ export function UpdateWindowsSessions(windowsSessions: Array<WindowsSession>) {
         option.title = `${sessionType} Session (ID: ${x.ID} | User: ${x.Username})`;
         WindowsSessionSelect.options.add(option);
     });
+
 }

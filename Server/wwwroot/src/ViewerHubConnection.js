@@ -14,9 +14,11 @@ export class ViewerHubConnection {
         this.PartialCaptureFrames = [];
     }
     Connect() {
+        var _a;
         if (this.Connection) {
             this.Connection.stop();
         }
+        (_a = UI.PrivacyButton) === null || _a === void 0 ? void 0 : _a.setAttribute("disabled", "disabled");
         this.Connection = new signalR.HubConnectionBuilder()
             .withUrl("/hubs/viewer")
             .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
@@ -26,16 +28,20 @@ export class ViewerHubConnection {
         this.Connection.start().then(async () => {
             this.SendScreenCastRequestToDevice();
         }).catch(err => {
+            var _a;
             console.error(err.toString());
             console.log("Connection closed.");
             UI.StatusMessage.innerHTML = `Connection error: ${err.message}`;
             UI.ToggleConnectUI(true);
+            (_a = UI.PrivacyButton) === null || _a === void 0 ? void 0 : _a.setAttribute("disabled", "disabled");
         });
         this.Connection.onclose(() => {
+            var _a;
             if (!UI.StatusMessage.innerText) {
                 UI.SetStatusMessage("Connection closed.");
             }
             UI.ToggleConnectUI(true);
+            (_a = UI.PrivacyButton) === null || _a === void 0 ? void 0 : _a.setAttribute("disabled", "disabled");
         });
         ViewerApp.ClipboardWatcher.WatchClipboard();
     }
@@ -63,6 +69,13 @@ export class ViewerHubConnection {
         }
         await this.Connection.invoke("InvokeCtrlAltDel");
     }
+    async TogglePrivacy(enable) {
+        var _a;
+        if (((_a = this.Connection) === null || _a === void 0 ? void 0 : _a.state) != HubConnectionState.Connected) {
+            return;
+        }
+        await this.Connection.invoke("TogglePrivacy", enable);
+    }
     async SendDtoToClient(dto, type) {
         var _a;
         if (((_a = this.Connection) === null || _a === void 0 ? void 0 : _a.state) != HubConnectionState.Connected) {
@@ -82,6 +95,7 @@ export class ViewerHubConnection {
         await this.Connection.send("StoreSessionRecording", subject);
     }
     async SendScreenCastRequestToDevice() {
+        var _a;
         const viewerOptions = await this.GetRemoteControlViewerOptions();
         const result = await this.Connection.invoke("SendScreenCastRequestToDevice", ViewerApp.SessionId, ViewerApp.AccessKey, ViewerApp.RequesterName);
         if (!result.IsSuccess) {
@@ -89,6 +103,7 @@ export class ViewerHubConnection {
             UI.SetStatusMessage(result.Reason);
             return;
         }
+        (_a = UI.PrivacyButton) === null || _a === void 0 ? void 0 : _a.removeAttribute("disabled");
         const streamingState = new StreamingState();
         ProcessStream(streamingState);
         if (viewerOptions.ShouldRecordSession) {
@@ -100,20 +115,26 @@ export class ViewerHubConnection {
                 streamingState.ReceivedChunks.push(chunk);
             },
             complete: () => {
+                var _a, _b;
                 streamingState.StreamEnded = true;
                 if (!UI.StatusMessage.innerText) {
                     UI.SetStatusMessage("Stream ended.");
                 }
                 ViewerApp.SessionRecorder.Stop();
+                (_a = UI.PrivacyButton) === null || _a === void 0 ? void 0 : _a.setAttribute("disabled", "disabled"); // ← add
+                (_b = UI.PrivacyButton) === null || _b === void 0 ? void 0 : _b.classList.remove("toggled"); // ← add
                 UI.ToggleConnectUI(true);
             },
             error: (err) => {
+                var _a, _b;
                 console.warn(err);
                 streamingState.StreamEnded = true;
                 if (!UI.StatusMessage.innerText) {
                     UI.SetStatusMessage("Stream ended.");
                 }
                 ViewerApp.SessionRecorder.Stop();
+                (_a = UI.PrivacyButton) === null || _a === void 0 ? void 0 : _a.setAttribute("disabled", "disabled"); // ← add
+                (_b = UI.PrivacyButton) === null || _b === void 0 ? void 0 : _b.classList.remove("toggled"); // ← add
                 UI.ToggleConnectUI(true);
             },
         });

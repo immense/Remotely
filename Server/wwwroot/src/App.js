@@ -9,6 +9,8 @@ import { ApplyInputHandlers } from "./InputEventHandlers.js";
 import { ViewerHubConnection } from "./ViewerHubConnection.js";
 import { GetSettings, SetSettings } from "./SettingsService.js";
 var queryString = Utilities.ParseSearchString();
+// track local privacy state for the toggle button UI
+let privacyOn = false;
 export const ViewerApp = {
     ClipboardWatcher: new ClipboardWatcher(),
     MessageSender: new MessageSender(),
@@ -24,6 +26,7 @@ export const ViewerApp = {
     Mode: RemoteControlMode.Unknown,
     Settings: GetSettings(),
     Init: () => {
+        var _a, _b;
         ViewerApp.Mode = queryString["mode"] ?
             RemoteControlMode[decodeURIComponent(queryString["mode"])] :
             RemoteControlMode.Attended;
@@ -31,6 +34,21 @@ export const ViewerApp = {
             UI.ViewOnlyButton.classList.add("toggled");
         }
         ApplyInputHandlers();
+        // Wire the Privacy toggle button once at startup
+        if (UI.PrivacyButton) {
+            UI.PrivacyButton.addEventListener("click", async () => {
+                try {
+                    privacyOn = !privacyOn;
+                    await ViewerApp.ViewerHubConnection.TogglePrivacy(privacyOn);
+                    UI.PrivacyButton.classList.toggle("toggled", privacyOn);
+                }
+                catch (e) {
+                    // revert state if call failed
+                    privacyOn = !privacyOn;
+                    UI.ShowToast("Failed to toggle privacy.");
+                }
+            });
+        }
         if (UI.RequesterNameInput.value) {
             ViewerApp.RequesterName = UI.RequesterNameInput.value;
         }
@@ -43,6 +61,10 @@ export const ViewerApp = {
             // a service (i.e. unattended mode).
             UI.CtrlAltDelButton.classList.remove("d-none");
             UI.WindowsSessionMenuButton.classList.remove("d-none");
+            // ensure privacy button starts disabled & untoggled
+            (_a = UI.PrivacyButton) === null || _a === void 0 ? void 0 : _a.setAttribute("disabled", "disabled");
+            (_b = UI.PrivacyButton) === null || _b === void 0 ? void 0 : _b.classList.remove("toggled");
+            privacyOn = false;
             ViewerApp.ViewerHubConnection.Connect();
             UI.StatusMessage.innerHTML = "Connecting to remote device";
         }
@@ -53,6 +75,7 @@ export const ViewerApp = {
         }
     },
     ConnectToClient: () => {
+        var _a, _b;
         ViewerApp.SessionId = UI.SessionIDInput.value.split(" ").join("").trim();
         if (!ViewerApp.SessionId) {
             UI.ShowToast("Session ID is required");
@@ -63,6 +86,10 @@ export const ViewerApp = {
         UI.ConnectButton.innerText = "Requesting remote control";
         ViewerApp.RequesterName = UI.RequesterNameInput.value;
         ViewerApp.Mode = RemoteControlMode.Attended;
+        // reset privacy button before connecting
+        (_a = UI.PrivacyButton) === null || _a === void 0 ? void 0 : _a.setAttribute("disabled", "disabled");
+        (_b = UI.PrivacyButton) === null || _b === void 0 ? void 0 : _b.classList.remove("toggled");
+        privacyOn = false;
         ViewerApp.ViewerHubConnection.Connect();
         ViewerApp.Settings.DisplayName = ViewerApp.RequesterName;
         SetSettings(ViewerApp.Settings);

@@ -1,42 +1,72 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Remotely.Desktop.Shared.Enums;
+using Remotely.Desktop.Shared.Messages;
 using Remotely.Server.Enums;
 using Remotely.Server.Filters;
 using Remotely.Server.Models;
 using Remotely.Server.Services;
 using Remotely.Shared.Interfaces;
 using Remotely.Shared.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 
 namespace Remotely.Server.Hubs;
 
 [ServiceFilter(typeof(ViewerAuthorizationFilter))]
 public class ViewerHub : Hub<IViewerHubClient>
 {
-    private readonly IHubContext<DesktopHub, IDesktopHubClient> _desktopHub;
+    private readonly IHubContext<DesktopHub, IDesktopHubClient> _desktopHub;      // typed (used elsewhere)
+    private readonly IHubContext<DesktopHub> _desktopHubUntyped;                   // untyped (for SendAsync)
     private readonly IHubContext<AgentHub, IAgentHubClient> _agentHub;
     private readonly IDataService _dataService;
     private readonly ISessionRecordingSink _sessionRecordingSink;
     private readonly IRemoteControlSessionCache _desktopSessionCache;
     private readonly ILogger<ViewerHub> _logger;
     private readonly IDesktopStreamCache _streamCache;
+    private readonly IHubContext<DesktopHub> _desktopHubRaw;
+
+
+
+
 
     public ViewerHub(
-        IRemoteControlSessionCache desktopSessionCache,
-        IDesktopStreamCache streamCache,
-        IHubContext<AgentHub, IAgentHubClient> agentHub,
-        IHubContext<DesktopHub, IDesktopHubClient> desktopHub,
-        ISessionRecordingSink sessionRecordingSink,
-        IDataService dataService,
-        ILogger<ViewerHub> logger)
+    IRemoteControlSessionCache desktopSessionCache,
+    IDesktopStreamCache streamCache,
+    IHubContext<AgentHub, IAgentHubClient> agentHub,
+    IHubContext<DesktopHub, IDesktopHubClient> desktopHub,
+    IHubContext<DesktopHub> desktopHubRaw,              // <— ADD THIS
+    ISessionRecordingSink sessionRecordingSink,
+    IDataService dataService,
+    ILogger<ViewerHub> logger)
     {
         _desktopSessionCache = desktopSessionCache;
         _streamCache = streamCache;
         _desktopHub = desktopHub;
+        _desktopHubRaw = desktopHubRaw;                     // <— AND ASSIGN
         _agentHub = agentHub;
         _dataService = dataService;
         _sessionRecordingSink = sessionRecordingSink;
         _logger = logger;
     }
+
+    // Called from viewer to toggle privacy on the desktop side.
+    public Task TogglePrivacy(bool enable)
+    {
+        if (string.IsNullOrWhiteSpace(SessionInfo.DesktopConnectionId))
+            return Task.CompletedTask;
+
+        var msg = new Remotely.Desktop.Shared.Messages.ButtonActionMessage
+        {
+            Action = enable
+                ? Remotely.Desktop.Shared.Enums.ButtonAction.PrivacyOn
+                : Remotely.Desktop.Shared.Enums.ButtonAction.PrivacyOff
+        };
+
+        // Send to the current desktop (screen-caster) connection.
+        return _desktopHubRaw.Clients
+            .Client(SessionInfo.DesktopConnectionId)
+            .SendAsync("ReceiveButtonAction", msg);
+    }
+
 
     private string RequesterDisplayName
     {
@@ -49,10 +79,7 @@ public class ViewerHub : Hub<IViewerHubClient>
             }
             return string.Empty;
         }
-        set
-        {
-            Context.Items[nameof(RequesterDisplayName)] = value;
-        }
+        set => Context.Items[nameof(RequesterDisplayName)] = value;
     }
 
     private RemoteControlSession SessionInfo
@@ -69,11 +96,9 @@ public class ViewerHub : Hub<IViewerHubClient>
             Context.Items[nameof(SessionInfo)] = newSession;
             return newSession;
         }
-        set
-        {
-            Context.Items[nameof(SessionInfo)] = value;
-        }
+        set => Context.Items[nameof(SessionInfo)] = value;
     }
+
     public async Task<Result> ChangeWindowsSession(int targetWindowsSession)
     {
         try
@@ -195,6 +220,7 @@ public class ViewerHub : Hub<IViewerHubClient>
             .Client(SessionInfo.DesktopConnectionId)
             .SendDtoToClient(dtoWrapper, Context.ConnectionId);
     }
+
     public async Task<Result> SendScreenCastRequestToDevice(string sessionId, string accessKey, string requesterName)
     {
         if (string.IsNullOrWhiteSpace(sessionId))
@@ -231,14 +257,14 @@ public class ViewerHub : Hub<IViewerHubClient>
         }
 
         var logMessage = $"Remote control session requested.  " +
-                            $"Login ID (if logged in): {Context.User?.Identity?.Name}.  " +
-                            $"Machine Name: {SessionInfo.MachineName}.  " +
-                            $"Stream ID: {SessionInfo.StreamId}.  " +
-                            $"Requester Name (if specified): {RequesterDisplayName}.  " +
-                            $"Connection ID: {Context.ConnectionId}. User ID: {Context.UserIdentifier}.  " +
-                            $"Screen Caster Connection ID: {SessionInfo.DesktopConnectionId}.  " +
-                            $"Mode: {SessionInfo.Mode}.  " +
-                            $"Requester IP Address: {Context.GetHttpContext()?.Connection?.RemoteIpAddress}";
+                         $"Login ID (if logged in): {Context.User?.Identity?.Name}.  " +
+                         $"Machine Name: {SessionInfo.MachineName}.  " +
+                         $"Stream ID: {SessionInfo.StreamId}.  " +
+                         $"Requester Name (if specified): {RequesterDisplayName}.  " +
+                         $"Connection ID: {Context.ConnectionId}. User ID: {Context.UserIdentifier}.  " +
+                         $"Screen Caster Connection ID: {SessionInfo.DesktopConnectionId}.  " +
+                         $"Mode: {SessionInfo.Mode}.  " +
+                         $"Requester IP Address: {Context.GetHttpContext()?.Connection?.RemoteIpAddress}";
 
         _logger.LogInformation("{msg}", logMessage);
 
@@ -301,5 +327,4 @@ public class ViewerHub : Hub<IViewerHubClient>
             _logger.LogError(ex, "Error while storing session recording for stream {streamId}.", SessionInfo.StreamId);
         }
     }
-
 }

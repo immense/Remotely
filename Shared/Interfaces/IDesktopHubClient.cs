@@ -14,7 +14,7 @@ public interface IDesktopHubClient
         Guid streamId);
 
     Task<PromptForAccessResult> PromptForAccess(RemoteControlAccessRequest accessRequest);
-
+    //Task ReceiveButtonAction(Remotely.Desktop.Shared.Messages.ButtonActionMessage msg);
     Task RequestScreenCast(
         string viewerId,
         string requesterName,

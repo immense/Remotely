@@ -107,11 +107,14 @@ export function ShowToast(message) {
         messageDiv.remove();
     }, 5000);
 }
+export const PrivacyButton = document.getElementById("privacyButton");
 export function ToggleConnectUI(shown) {
     if (shown) {
         ConnectButton.innerText = "Connect";
         Screen2DContext.clearRect(0, 0, ScreenViewer.width, ScreenViewer.height);
         ScreenViewerWrapper.setAttribute("hidden", "hidden");
+        PrivacyButton === null || PrivacyButton === void 0 ? void 0 : PrivacyButton.classList.remove("toggled"); // ← add
+        PrivacyButton === null || PrivacyButton === void 0 ? void 0 : PrivacyButton.setAttribute("disabled", "disabled"); // ← add
         if (ViewerApp.Mode == RemoteControlMode.Attended) {
             ConnectBox.style.removeProperty("display");
             ConnectHeader.style.removeProperty("display");

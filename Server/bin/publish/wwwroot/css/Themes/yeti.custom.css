@@ -1,0 +1,25 @@
+﻿hr {
+    border-top: 1px solid #282828;
+}
+
+.console-prompt {
+    color: slategray;
+}
+
+.console-output {
+    color: darkgreen;
+}
+
+.logo-title {
+    font-size: 1.25rem !important;
+    font-weight: bold;
+}
+
+.logo-subtitle {
+    font-size: .75em;
+    color: lightgray;
+}
+
+.jumbotron {
+    padding: 4rem !important;
+}

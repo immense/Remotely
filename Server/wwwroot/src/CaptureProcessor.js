@@ -3,12 +3,17 @@ import { Screen2DContext } from "./UI.js";
 import { GetUint64 } from "./Utilities.js";
 const FrameHeaderSize = 28;
 export async function ProcessStream(streamingState) {
+    var _a;
     if (streamingState.StreamEnded) {
         return;
     }
     try {
         const chunks = streamingState.ReceivedChunks.splice(0);
-        streamingState.Buffer = new Blob([streamingState.Buffer, ...chunks]);
+        // ensure we always start from a blob
+        const base = (_a = streamingState.Buffer) !== null && _a !== void 0 ? _a : new Blob();
+        // map each Uint8Array -> ArrayBuffer (BlobPart)
+        const parts = [base, ...chunks.map(c => c.buffer)];
+        streamingState.Buffer = new Blob(parts);
         const bufferSize = streamingState.Buffer.size;
         if (bufferSize < FrameHeaderSize) {
             return;

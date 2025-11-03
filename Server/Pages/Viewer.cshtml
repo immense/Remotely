@@ -27,17 +27,18 @@
 
     <link href="/lib/fontawesome/css/all.min.css" rel="stylesheet" />
     <link href="/lib/fontawesome/css/brands.min.css" rel="stylesheet" />
+    <!-- SignalR + MsgPack (CDN) -->
+    <!-- SignalR + MsgPack (CDN) -->
+    <script src="https://unpkg.com/@@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
+    <script src="https://unpkg.com/@@microsoft/signalr-protocol-msgpack@8.0.7/dist/browser/signalr-protocol-msgpack.min.js"></script>
+    <script src="https://unpkg.com/@@msgpack/msgpack@3.0.0-beta2/dist.es5+umd/msgpack.min.js"></script>
 
-    <environment include="Development">
-        <script src="/lib/microsoft-signalr/signalr.js"></script>
-        <script src="/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.js"></script>
-        <script src="/lib/msgpack/dist.es5+umd/msgpack.js"></script>
-    </environment>
-    <environment exclude="Development">
-        <script src="/lib/microsoft-signalr/signalr.min.js"></script>
-        <script src="/lib/microsoft/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.min.js"></script>
-        <script src="/lib/msgpack/dist.es5+umd/msgpack.min.js"></script>
-    </environment>
+
+    <!-- Font Awesome (CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    
+
 </head>
 <body>
     <div id="backgroundLayers" class="background-layers">
@@ -86,6 +87,12 @@
             <i class="fas fa-user-plus"></i>
             Invite Others
         </button>
+        <button id="privacyButton"
+                title="Local user sees black screen; you keep seeing the desktop.">
+            <i class="fas fa-user-secret"></i>
+            Privacy
+        </button>
+
 
         <button id="metricsButton"
             title="Toggle display of session metrics.">

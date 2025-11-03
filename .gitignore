@@ -297,3 +297,40 @@ Server.Installer/Properties/launchSettings.json
 !/.vscode/tasks.json
 /Server/appsettings.Development.json
 /Server/AppData
+# build/IDE
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# artifacts
+*.zip
+*.7z
+*.tar
+*.tgz
+
+# system
+Thumbs.db
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.zip
+*.7z
+*.tgz
+Thumbs.db
+# .NET
+bin/
+obj/
+.vs/
+
+# Rider/other IDEs
+.idea/
+
+# Publish & local artifacts (don’t commit compiled builds)
+publish-linux/
+artifacts/
+Server/wwwroot/Downloads/
+AppData/

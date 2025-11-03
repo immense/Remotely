@@ -1,4 +1,4 @@
-import * as UI from "./UI.js";
+﻿import * as UI from "./UI.js";
 import { ViewerApp } from "./App.js";
 import { CursorInfo } from "./Models/CursorInfo.js";
 import { RemoteControlMode } from "./Enums/RemoteControlMode.js";
@@ -28,6 +28,7 @@ export class ViewerHubConnection {
         if (this.Connection) {
             this.Connection.stop();
         }
+        UI.PrivacyButton?.setAttribute("disabled", "disabled");
 
         this.Connection = new signalR.HubConnectionBuilder()
             .withUrl("/hubs/viewer")
@@ -44,6 +45,8 @@ export class ViewerHubConnection {
             console.log("Connection closed.");
             UI.StatusMessage.innerHTML = `Connection error: ${err.message}`;
             UI.ToggleConnectUI(true);
+            UI.PrivacyButton?.setAttribute("disabled", "disabled");
+
         });
 
         this.Connection.onclose(() => {
@@ -51,6 +54,8 @@ export class ViewerHubConnection {
                 UI.SetStatusMessage("Connection closed.");
             }
             UI.ToggleConnectUI(true);
+            UI.PrivacyButton?.setAttribute("disabled", "disabled");
+
         });
 
         ViewerApp.ClipboardWatcher.WatchClipboard();
@@ -83,6 +88,13 @@ export class ViewerHubConnection {
 
         await this.Connection.invoke("InvokeCtrlAltDel");
     }
+    async TogglePrivacy(enable: boolean) {
+        if (this.Connection?.state != HubConnectionState.Connected) {
+            return;
+        }
+        await this.Connection.invoke("TogglePrivacy", enable);
+    }
+
 
     async SendDtoToClient<T>(dto: T, type: DtoType): Promise<void> {
 
@@ -120,6 +132,7 @@ export class ViewerHubConnection {
             UI.SetStatusMessage(result.Reason);
             return;
         }
+        UI.PrivacyButton?.removeAttribute("disabled");
 
         const streamingState = new StreamingState();
         ProcessStream(streamingState);
@@ -139,6 +152,8 @@ export class ViewerHubConnection {
                         UI.SetStatusMessage("Stream ended.");
                     }
                     ViewerApp.SessionRecorder.Stop();
+                    UI.PrivacyButton?.setAttribute("disabled", "disabled");   // ← add
+                    UI.PrivacyButton?.classList.remove("toggled");            // ← add
                     UI.ToggleConnectUI(true);
                 },
                 error: (err) => {
@@ -148,9 +163,12 @@ export class ViewerHubConnection {
                         UI.SetStatusMessage("Stream ended.");
                     }
                     ViewerApp.SessionRecorder.Stop();
+                    UI.PrivacyButton?.setAttribute("disabled", "disabled");   // ← add
+                    UI.PrivacyButton?.classList.remove("toggled");            // ← add
                     UI.ToggleConnectUI(true);
                 },
             });
+
 
     }
 

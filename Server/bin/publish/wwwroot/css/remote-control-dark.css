@@ -1,0 +1,109 @@
+body {
+  background-color: #151718;
+  background-image: radial-gradient(#fafafa 1%, transparent 2.6%);
+  color: white;
+}
+
+.background-layer-1 {
+  background-image: radial-gradient(#fafafa 1%, transparent 2.8%);
+  background-color: black;
+}
+
+.background-layer-2 {
+  background-image: url("../images/viewer-background-gradient-dark.svg");
+}
+
+.center-connection-box {
+  background-color: #151718;
+}
+
+input, select {
+  background-color: #0D0D0D;
+  border-color: #323334;
+  color: white;
+}
+
+  input:focus, select:focus {
+    border-color: white;
+  }
+
+button {
+  background-color: #212526;
+  border: 1px solid #212526;
+  color: #FFFFFF;
+}
+
+  button.toggled {
+    background-color: #16191a;
+    border: 1px solid #16191a;
+    color: #07b5a4;
+  }
+
+  button:hover {
+    border: 1px solid #384346;
+  }
+
+  button:active {
+    border: 1px solid #009888;
+  }
+
+.menu-options-header {
+  color: lightgray;
+}
+
+#menuButton {
+  color: #01EAD1;
+  background-color: #212526;
+}
+
+  #menuButton:hover {
+    color: #33ffe9;
+  }
+
+
+#menuFrame {
+  color: white;
+  background-color: #212526;
+}
+
+.popup-menu {
+  color: white;
+  background-color: #212526;
+}
+
+#connectButton {
+  color: black;
+  background-color: #01EAD1;
+}
+
+  #connectButton:active {
+    border: 1px solid #009888;
+    background-color: #01ad9b;
+  }
+
+  #connectButton:disabled {
+    background-color: #152826;
+    color: #01EAD1;
+    cursor: no-drop;
+    border: none;
+  }
+
+footer a {
+  color: deepskyblue;
+}
+
+
+
+.status-message {
+  color: deepskyblue;
+}
+
+.toast-message {
+  background-color: #151718;
+  color: white;
+}
+
+.modal-prompt {
+  background-color: rgb(60, 60, 60);
+  color: white;
+}

@@ -4,6 +4,13 @@ using Remotely.Desktop.Shared.Enums;
 using Remotely.Desktop.Shared.Services;
 using Remotely.Desktop.UI.Services;
 using Remotely.Shared.Models;
+using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
+using Remotely.Desktop.Win;   // <— add this if not already present
+
+
+
 
 namespace Remotely.Desktop.Win.Services;
 
@@ -21,6 +28,9 @@ internal class AppStartup : IAppStartup
     private readonly IShutdownService _shutdownService;
     private readonly IBrandingProvider _brandingProvider;
     private readonly ILogger<AppStartup> _logger;
+    private NotifyIcon? _tray;
+    private ToolStripMenuItem? _privacyItem;
+
 
     public AppStartup(
         IAppState appState,
@@ -54,7 +64,64 @@ internal class AppStartup : IAppStartup
     {
         await _brandingProvider.Initialize();
 
+
         _messageLoop.StartMessageLoop();
+        // ===== Tray icon + Privacy toggle =====
+        if (_tray is null)
+        {
+            _tray = new NotifyIcon();
+
+            // Try to load an icon from Assets; fallback to default
+            var iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "favicon.ico");
+            _tray.Icon = File.Exists(iconPath) ? new Icon(iconPath) : SystemIcons.Application;
+            _tray.Visible = true;
+            _tray.Text = "Remotely Agent";
+
+            var menu = new ContextMenuStrip();
+
+            _privacyItem = new ToolStripMenuItem("Privacy Mode (Black Screen)")
+            {
+                CheckOnClick = true
+            };
+            _privacyItem.CheckedChanged += (s, e) =>
+            {
+                if (_privacyItem.Checked)
+                {
+                    PrivacyOverlay.Enable();
+                }
+                else
+                {
+                    PrivacyOverlay.Disable();
+                }
+            };
+
+            var exitItem = new ToolStripMenuItem("Exit Agent");
+            exitItem.Click += (s, e) =>
+            {
+                try { PrivacyOverlay.Disable(); } catch { }
+                if (_tray is not null) { _tray.Visible = false; }
+                Application.Exit();
+            };
+
+            menu.Items.Add(_privacyItem);
+            menu.Items.Add(new ToolStripSeparator());
+            menu.Items.Add(exitItem);
+
+            _tray.ContextMenuStrip = menu;
+        }
+
+        // Ensure cleanup when the app is exiting (service stop / app exit)
+        _uiDispatcher.ApplicationExitingToken.Register(() =>
+        {
+            try { PrivacyOverlay.Disable(); } catch { }
+            if (_tray is not null)
+            {
+                _tray.Visible = false;
+                _tray.Dispose();
+                _tray = null;
+            }
+        });
+
 
         if (_appState.Mode is AppMode.Unattended or AppMode.Attended)
         {
