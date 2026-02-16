@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Agent.Models;
@@ -19,12 +19,13 @@ public interface IChatClientService
     Task SendMessage(string senderName, string message, string orgName, string orgId, bool disconnected, string senderConnectionID, HubConnection hubConnection);
 }
 
-public class ChatClientService : IChatClientService
+public class ChatClientService : IChatClientService, IDisposable
 {
     private readonly IAppLauncher _appLauncher;
     private readonly ILogger<ChatClientService> _logger;
     private readonly MemoryCache _chatClients = new("ChatClients");
     private readonly SemaphoreSlim _messageLock = new(1, 1);
+    private bool _disposed;
 
     private readonly CacheItemPolicy _cacheItemPolicy = new()
     {
@@ -44,7 +45,10 @@ public class ChatClientService : IChatClientService
                     chatProcess.Kill();
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Error removing chat client from cache.");
+            }
         })
     };
 
@@ -145,5 +149,29 @@ public class ChatClientService : IChatClientService
         }
         await hubConnection.SendAsync("Chat", string.Empty, true, senderConnectionID);
         _chatClients.Remove(senderConnectionID);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _messageLock?.Dispose();
+                _chatClients?.Dispose();
+            }
+            _disposed = true;
+        }
+    }
+
+    ~ChatClientService()
+    {
+        Dispose(false);
     }
 }

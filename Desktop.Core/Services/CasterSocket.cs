@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Desktop.Core.Interfaces;
 using Remotely.Shared.Models;
@@ -63,7 +63,10 @@ namespace Remotely.Desktop.Core.Services
                         await Connection.StopAsync();
                         await Connection.DisposeAsync();
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        Logger.Log(ex);
+                    }
                 }
                 Connection = new HubConnectionBuilder()
                     .WithUrl($"{host.Trim().TrimEnd('/')}/hubs/desktop")

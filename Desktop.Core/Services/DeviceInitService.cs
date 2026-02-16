@@ -1,4 +1,4 @@
-﻿using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Interfaces;
 using Remotely.Shared.Utilities;
 using Remotely.Shared.Models;
 using System;
@@ -25,6 +25,7 @@ namespace Remotely.Desktop.Core.Services
     public class DeviceInitService : IDeviceInitService
     {
         private static BrandingInfo _brandingInfo = new();
+        private static bool _brandingInfoLoaded;
 
         private readonly Conductor _conductor;
         private readonly IConfigService _configService;
@@ -38,7 +39,7 @@ namespace Remotely.Desktop.Core.Services
         {
             try
             {
-                if (_brandingInfo is not null)
+                if (_brandingInfoLoaded)
                 {
                     return _brandingInfo;
                 }
@@ -78,6 +79,7 @@ namespace Remotely.Desktop.Core.Services
 
                                 var brandingUrl = $"{config.Host.TrimEnd('/')}/api/branding/{config.OrganizationId}";
                                 _brandingInfo = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
+                                _brandingInfoLoaded = true;
                                 return _brandingInfo;
                             }
                         }
@@ -91,6 +93,7 @@ namespace Remotely.Desktop.Core.Services
                     _configService.Save(config);
                     var brandingUrl = $"{host.TrimEnd('/')}/api/branding/{_conductor.OrganizationId}";
                     _brandingInfo = await httpClient.GetFromJsonAsync<BrandingInfo>(brandingUrl).ConfigureAwait(false);
+                    _brandingInfoLoaded = true;
                 }
             }
             catch (Exception ex)
@@ -106,6 +109,7 @@ namespace Remotely.Desktop.Core.Services
             if (branding != null)
             {
                 _brandingInfo = branding;
+                _brandingInfoLoaded = true;
             }
         }
     }

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Remotely.Agent.Services.MacOS;
 
-public class UpdaterMac : IUpdater
+public class UpdaterMac : IUpdater, IDisposable
 {
     private readonly string _achitecture = RuntimeInformation.OSArchitecture.ToString().ToLower();
     private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
@@ -163,9 +163,17 @@ public class UpdaterMac : IUpdater
         }
     }
 
-    private async void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    private void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        await CheckForUpdates();
+        _ = Task.Run(() => CheckForUpdates());
+    }
+
+    public void Dispose()
+    {
+        _updateTimer?.Stop();
+        _updateTimer?.Dispose();
+        _checkForUpdatesLock.Dispose();
+        _installLatestVersionLock.Dispose();
     }
 
 }

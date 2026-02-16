@@ -1,4 +1,4 @@
-﻿using Remotely.Desktop.Core.Enums;
+using Remotely.Desktop.Core.Enums;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -47,6 +47,12 @@ namespace Remotely.Desktop.Core
             {
                 try
                 {
+                    if (i + 1 >= args.Length)
+                    {
+                        Logger.Write($"Command line argument '{args[i]}' has no value.");
+                        continue;
+                    }
+
                     var key = args?[i];
                     if (key != null)
                     {
@@ -112,6 +118,11 @@ namespace Remotely.Desktop.Core
         public void UpdateOrganizationId(string organizationId)
         {
             OrganizationId = organizationId;
+        }
+
+        public void RequestShutdown()
+        {
+            System.Diagnostics.Process.GetCurrentProcess().Kill();
         }
     }
 }

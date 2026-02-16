@@ -1,4 +1,4 @@
-﻿using Remotely.Shared.Services;
+using Remotely.Shared.Services;
 
 namespace Remotely.Server.Services;
 
@@ -95,5 +95,16 @@ public class DataCleanupService : BackgroundService, IDisposable
                 _logger.LogError(ex, "Error while deleting expired recording: {file}", file);
             }
         }
+    }
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
+}
+
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
     }
 }

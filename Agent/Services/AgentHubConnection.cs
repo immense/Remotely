@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -569,9 +569,9 @@ public class AgentHubConnection : IAgentHubConnection, IDisposable
             throw new InvalidOperationException("Hub connection is not established.");
         }
     }
-    private async void HeartbeatTimer_Elapsed(object? sender, ElapsedEventArgs e)
+    private void HeartbeatTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
-        await SendHeartbeat();
+        _ = SendHeartbeat();
     }
 
     private async Task HubConnection_Reconnected(string? arg)

@@ -5,7 +5,7 @@ namespace Remotely.Shared.Services;
 
 public interface IProcessInvoker
 {
-    string InvokeProcessOutput(string command, string arguments);
+    string InvokeProcessOutput(string command, string arguments, bool runAsAdmin = false);
 }
 
 public class ProcessInvoker : IProcessInvoker
@@ -17,22 +17,42 @@ public class ProcessInvoker : IProcessInvoker
         _logger = logger;
     }
 
-    public string InvokeProcessOutput(string command, string arguments)
+    public string InvokeProcessOutput(string command, string arguments, bool runAsAdmin = false)
     {
         try
         {
             var psi = new ProcessStartInfo(command, arguments)
             {
                 WindowStyle = ProcessWindowStyle.Hidden,
-                Verb = "RunAs",
                 UseShellExecute = false,
-                RedirectStandardOutput = true
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
             };
 
-            var proc = Process.Start(psi);
-            proc?.WaitForExit();
+            // Only run as admin when explicitly requested
+            if (runAsAdmin)
+            {
+                psi.Verb = "RunAs";
+                psi.UseShellExecute = true;
+                psi.RedirectStandardOutput = false;
+                psi.RedirectStandardError = false;
+            }
 
-            return proc?.StandardOutput.ReadToEnd() ?? string.Empty;
+            var proc = Process.Start(psi);
+            
+            if (proc == null)
+            {
+                _logger.LogWarning("Failed to start process: {Command}", command);
+                return string.Empty;
+            }
+
+            if (!runAsAdmin)
+            {
+                proc.WaitForExit();
+                return proc.StandardOutput.ReadToEnd();
+            }
+
+            return string.Empty;
         }
         catch (Exception ex)
         {

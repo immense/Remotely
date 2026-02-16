@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Remotely.Shared.Entities;
@@ -10,6 +10,7 @@ public class SharedFile
     public string ID { get; set; } = null!;
     public string? FileName { get; set; }
     public string? ContentType { get; set; }
+    [MaxLength(100_000_000)] // 100MB limit
     public byte[] FileContents { get; set; } = Array.Empty<byte>();
     public DateTimeOffset Timestamp { get; set; } = DateTimeOffset.Now;
     public Organization? Organization { get; set; }

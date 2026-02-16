@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Dtos;
 using Remotely.Shared.Enums;
@@ -125,7 +125,7 @@ public class ExternalScriptingShell : IExternalScriptingShell
             ShellProcess.StandardInput.Write(input + _lineEnding);
             ShellProcess.StandardInput.Write("echo " + _lastInputID + _lineEnding);
 
-            var result = await Task.WhenAny(
+            var resultTask = Task.WhenAny(
                 Task.Run(() =>
                 {
                     return ShellProcess.WaitForExit((int)timeout.TotalMilliseconds);
@@ -134,7 +134,9 @@ public class ExternalScriptingShell : IExternalScriptingShell
                 {
                     return _outputDone.WaitOne();
 
-                })).ConfigureAwait(false).GetAwaiter().GetResult();
+                }));
+
+            var result = await resultTask.ConfigureAwait(false);
 
             if (!result)
             {
@@ -177,6 +179,10 @@ public class ExternalScriptingShell : IExternalScriptingShell
                 {
                     _logger.LogError(ex, "Error while disposing scripting shell process.");
                 }
+
+                _outputDone?.Dispose();
+                _writeLock?.Dispose();
+                _processIdleTimeout?.Dispose();
             }
 
             _disposedValue = true;

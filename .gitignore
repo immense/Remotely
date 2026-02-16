@@ -297,3 +297,7 @@ Server.Installer/Properties/launchSettings.json
 !/.vscode/tasks.json
 /Server/appsettings.Development.json
 /Server/AppData
+ #AGENTS
+ .agents/
+ .claude/
+ .cursor/

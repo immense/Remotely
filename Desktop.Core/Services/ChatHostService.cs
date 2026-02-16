@@ -1,4 +1,4 @@
-﻿using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Interfaces;
 using Remotely.Shared.Models;
 using Remotely.Shared.Utilities;
 using System;
@@ -40,7 +40,7 @@ namespace Remotely.Desktop.Core.Services
             catch (TaskCanceledException)
             {
                 Logger.Write("A chat session was attempted, but the client failed to connect in time.", Shared.Enums.EventType.Warning);
-                Environment.Exit(0);
+                return;
             }
 
             _chatUiService.ChatWindowClosed += OnChatWindowClosed;
@@ -54,9 +54,14 @@ namespace Remotely.Desktop.Core.Services
         {
             try
             {
+                Reader?.Dispose();
+                Writer?.Dispose();
                 NamedPipeStream?.Dispose();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Error disposing pipe resources.");
+            }
         }
 
         private async Task ReadFromStream()

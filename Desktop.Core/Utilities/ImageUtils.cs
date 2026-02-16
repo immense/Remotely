@@ -1,4 +1,4 @@
-﻿using Microsoft.IO;
+using Microsoft.IO;
 using Remotely.Desktop.Core.Extensions;
 using Remotely.Shared;
 using Remotely.Shared.Utilities;
@@ -101,10 +101,15 @@ namespace Remotely.Desktop.Core.Utilities
 
                 if (anyChanges)
                 {
-                    return Result.Ok(diffFrame);
+                    var result = diffFrame;
+                    previousFrame.Dispose();
+                    currentFrame.Dispose();
+                    return Result.Ok(result);
                 }
 
                 diffFrame.Dispose();
+                previousFrame.Dispose();
+                currentFrame.Dispose();
                 return Result.Fail<SKBitmap>("No difference found.");
             }
             catch (Exception ex)
@@ -186,12 +191,13 @@ namespace Remotely.Desktop.Core.Utilities
                     }
 
                     // Check for valid bounding box.
+                    const int DiffPadding = 2;
                     if (left <= right && top <= bottom)
                     {
-                        left = Math.Max(left - 2, 0);
-                        top = Math.Max(top - 2, 0);
-                        right = Math.Min(right + 2, width);
-                        bottom = Math.Min(bottom + 2, height);
+                        left = Math.Max(left - DiffPadding, 0);
+                        top = Math.Max(top - DiffPadding, 0);
+                        right = Math.Min(right + DiffPadding, width);
+                        bottom = Math.Min(bottom + DiffPadding, height);
                         return new SKRect(left, top, right, bottom);
                     }
 

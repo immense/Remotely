@@ -1,4 +1,4 @@
-﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Models;
 using System.IO.Pipes;
@@ -40,7 +40,7 @@ public class ChatHostService : IChatHostService
         catch (OperationCanceledException)
         {
             _logger.LogWarning("A chat session was attempted, but the client failed to connect in time.");
-            Environment.Exit(0);
+            return;
         }
 
         _logger.LogInformation("Chat client connected.");
@@ -57,7 +57,10 @@ public class ChatHostService : IChatHostService
         {
             _namedPipeStream?.Dispose();
         }
-        catch { }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Error disposing pipe stream.");
+        }
     }
 
     private async Task ReadFromStream()

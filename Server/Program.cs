@@ -29,6 +29,12 @@ var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var services = builder.Services;
 
+TaskScheduler.UnobservedTaskException += (sender, args) =>
+{
+    Log.Error(args.Exception, "Unobserved task exception");
+    args.SetObserved();
+};
+
 configuration.AddEnvironmentVariables("Remotely_");
 
 services.Configure<ApplicationOptions>(

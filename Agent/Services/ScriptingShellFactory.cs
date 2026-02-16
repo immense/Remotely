@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Remotely.Shared.Enums;
 using System;
@@ -12,10 +12,11 @@ public interface IScriptingShellFactory
     IPsCoreShell GetOrCreatePsCoreShell(string senderConnectionId);
 }
 
-internal class ScriptingShellFactory : IScriptingShellFactory
+internal class ScriptingShellFactory : IScriptingShellFactory, IDisposable
 {
     private readonly MemoryCache _sessionCache = new(new MemoryCacheOptions());
     private readonly IServiceProvider _serviceProvider;
+    private bool _disposed;
 
     public ScriptingShellFactory(IServiceProvider serviceProvider)
     {
@@ -84,11 +85,37 @@ internal class ScriptingShellFactory : IScriptingShellFactory
                     {
                         disposable.Dispose();
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error disposing scripting shell: {ex.Message}");
+                    }
                 }
             }
         });
 
         return options;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _sessionCache?.Dispose();
+            }
+            _disposed = true;
+        }
+    }
+
+    ~ScriptingShellFactory()
+    {
+        Dispose(false);
     }
 }

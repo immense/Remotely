@@ -1,4 +1,4 @@
-﻿using Bitbound.SimpleMessenger;
+using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Concurrent;
 
@@ -19,7 +19,10 @@ public class MessengerSubscriber : ComponentBase, IDisposable
             {
                 registration.Dispose();
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error disposing registration: {ex.Message}");
+            }
         }
         GC.SuppressFinalize(this);
     }

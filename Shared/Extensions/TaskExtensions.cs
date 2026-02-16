@@ -1,4 +1,4 @@
-﻿namespace Remotely.Shared.Extensions;
+namespace Remotely.Shared.Extensions;
 
 public static class TaskExtensions
 {
@@ -19,7 +19,10 @@ public static class TaskExtensions
             {
                 await exceptionHandler(ex);
             }
-            catch { }
+            catch
+            {
+                // Swallow handler exceptions to prevent secondary crashes in fire-and-forget
+            }
         }
     }
 
@@ -40,7 +43,10 @@ public static class TaskExtensions
             {
                 await exceptionHandler(ex);
             }
-            catch { }
+            catch
+            {
+                // Swallow handler exceptions to prevent secondary crashes in fire-and-forget
+            }
         }
     }
 }

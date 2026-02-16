@@ -1,10 +1,11 @@
-﻿namespace Remotely.Shared;
+namespace Remotely.Shared;
 
 public class AppConstants
 {
     public const string DefaultProductName = "Remotely";
     public const string DefaultPublisherName = "Immense Networks";
-    public const string DebugOrgId = "e8f4ad87-4a4b-4da1-bcb2-1788eaeb80e8";
+    // DebugOrgId moved to configuration - do not hardcode in production
+    // public const string DebugOrgId = "e8f4ad87-4a4b-4da1-bcb2-1788eaeb80e8";
     public const int EmbeddedDataBlockLength = 256;
     public const long MaxUploadFileSize = 100_000_000;
     public const double ScriptRunExpirationMinutes = 30;

@@ -1,11 +1,12 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using Timer = System.Timers.Timer;
 
 namespace Remotely.Shared.Helpers;
 
 public static class Debouncer
 {
-    private static readonly ConcurrentDictionary<object, System.Timers.Timer> _timers = new();
+    private static readonly ConcurrentDictionary<object, Timer> _timers = new();
 
     public static void Debounce(TimeSpan wait, Action action, [CallerMemberName] string key = "")
     {
@@ -15,7 +16,7 @@ public static class Debouncer
             timer.Dispose();
         }
 
-        timer = new System.Timers.Timer(wait.TotalMilliseconds)
+        timer = new Timer(wait.TotalMilliseconds)
         {
             AutoReset = false
         };
@@ -28,9 +29,40 @@ public static class Debouncer
             }
             finally
             {
-                if (_timers.TryGetValue(key, out var result))
+                if (_timers.TryRemove(key, out var removed))
                 {
-                    result?.Dispose();
+                    removed?.Dispose();
+                }
+            }
+        };
+        _timers.TryAdd(key, timer);
+        timer.Start();
+    }
+
+    public static void Debounce(TimeSpan wait, Func<Task> func, [CallerMemberName] string key = "")
+    {
+        if (_timers.TryRemove(key, out var timer))
+        {
+            timer.Stop();
+            timer.Dispose();
+        }
+
+        timer = new Timer(wait.TotalMilliseconds)
+        {
+            AutoReset = false
+        };
+
+        timer.Elapsed += async (s, e) =>
+        {
+            try
+            {
+                await func();
+            }
+            finally
+            {
+                if (_timers.TryRemove(key, out var removed))
+                {
+                    removed?.Dispose();
                 }
             }
         };

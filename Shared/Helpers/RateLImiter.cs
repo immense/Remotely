@@ -1,11 +1,15 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.Memory;
 using System.Runtime.CompilerServices;
 
 namespace Remotely.Shared.Helpers;
 
 public static class RateLimiter
 {
-    private static readonly MemoryCache _cache = new(new MemoryCacheOptions());
+    private static readonly MemoryCache _cache = new(new MemoryCacheOptions
+    {
+        SizeLimit = 1000,
+        ExpirationScanInterval = TimeSpan.FromMinutes(5)
+    });
     private static readonly SemaphoreSlim _cacheLock = new(1, 1);
 
     /// <summary>
@@ -70,9 +74,13 @@ public static class RateLimiter
                 return;
             }
 
-            await func.Invoke();
+            _cache.Set(key, string.Empty, new MemoryCacheEntryOptions
+            {
+                Size = 1,
+                AbsoluteExpirationRelativeToNow = duration
+            });
 
-            _cache.Set(key, string.Empty, duration);
+            await func.Invoke();
         }
         finally
         {

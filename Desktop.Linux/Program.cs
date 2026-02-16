@@ -1,4 +1,4 @@
-﻿using Remotely.Desktop.Shared.Abstractions;
+using Remotely.Desktop.Shared.Abstractions;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -86,6 +86,7 @@ public class Program
         var shutdownService = provider.GetRequiredService<IShutdownService>();
         Console.CancelKeyPress += async (s, e) =>
         {
+            e.Cancel = true;
             await shutdownService.Shutdown();
         };
 

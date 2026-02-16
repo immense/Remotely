@@ -1,12 +1,14 @@
-﻿using Remotely.Shared.Extensions;
+using Remotely.Shared.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Services;
 using Remotely.Shared.Entities;
+using Remotely.Server.Auth;
 
 namespace Remotely.Server.API;
 
 [Route("api/[controller]")]
 [ApiController]
+[ServiceFilter(typeof(ApiAuthorizationFilter))]
 public class BrandingController : ControllerBase
 {
     private readonly IDataService _dataService;
@@ -47,7 +49,7 @@ public class BrandingController : ControllerBase
         var brandingResult = await _dataService.GetBrandingInfo(orgResult.Value.ID);
         _logger.LogResult(brandingResult);
 
-        if (!orgResult.IsSuccess || 
+        if (!brandingResult.IsSuccess || 
             brandingResult.Value is null)
         {
             return new();

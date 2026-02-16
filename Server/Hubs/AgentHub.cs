@@ -1,4 +1,4 @@
-﻿using Remotely.Server.Services;
+using Remotely.Server.Services;
 using Bitbound.SimpleMessenger;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
@@ -45,7 +45,11 @@ public class AgentHub : Hub<IAgentHubClient>
     }
 
     // TODO: Replace with new invoke capability in .NET 7 in ScriptingController.
-    public static IMemoryCache ApiScriptResults { get; } = new MemoryCache(new MemoryCacheOptions());
+    public static IMemoryCache ApiScriptResults { get; } = new MemoryCache(new MemoryCacheOptions
+    {
+        SizeLimit = 1000,
+        ExpirationScanInterval = TimeSpan.FromMinutes(5)
+    });
 
     private Device? Device
     {

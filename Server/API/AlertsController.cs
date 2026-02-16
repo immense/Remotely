@@ -1,10 +1,11 @@
-﻿using Remotely.Shared.Extensions;
+using Remotely.Shared.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Remotely.Server.Auth;
 using Remotely.Server.Extensions;
 using Remotely.Server.Services;
 using Remotely.Shared.Models;
 using System.Text.Json;
+using System.Net;
 
 namespace Remotely.Server.API;
 
@@ -13,6 +14,21 @@ namespace Remotely.Server.API;
 [ServiceFilter(typeof(ApiAuthorizationFilter))]
 public class AlertsController : ControllerBase
 {
+    private static readonly HashSet<string> AllowedUrlSchemes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "https"
+    };
+
+    private static readonly HashSet<string> BlockedHosts = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "localhost",
+        "127.0.0.1",
+        "0.0.0.0",
+        "::1",
+        "metadata.google.internal",
+        "metadata.google"
+    };
+
     private readonly IDataService _dataService;
     private readonly IEmailSenderEx _emailSender;
     private readonly IHttpClientFactory _httpClientFactory;
@@ -38,7 +54,17 @@ public class AlertsController : ControllerBase
             return Unauthorized();
         }
 
-        _logger.LogInformation("Alert created.  Alert Options: {options}", JsonSerializer.Serialize(alertOptions));
+        var sanitizedOptions = new
+        {
+            alertOptions.AlertDeviceID,
+            alertOptions.AlertMessage,
+            alertOptions.EmailTo,
+            alertOptions.ShouldAlert,
+            alertOptions.ShouldEmail,
+            alertOptions.ShouldSendApiRequest,
+            alertOptions.ApiRequestUrl
+        };
+        _logger.LogInformation("Alert created. Alert Options: {options}", JsonSerializer.Serialize(sanitizedOptions));
 
         if (alertOptions.ShouldAlert)
         {
@@ -89,6 +115,13 @@ public class AlertsController : ControllerBase
                 {
                     return BadRequest("API request URL is required to send API request.");
                 }
+
+                var urlValidationResult = ValidateUrl(alertOptions.ApiRequestUrl);
+                if (!urlValidationResult.IsValid)
+                {
+                    return BadRequest(urlValidationResult.ErrorMessage);
+                }
+
                 if (string.IsNullOrWhiteSpace(alertOptions.ApiRequestMethod))
                 {
                     return BadRequest("API request method is required to send API request.");
@@ -166,5 +199,30 @@ public class AlertsController : ControllerBase
         }
 
         return Ok();
+    }
+
+    private static (bool IsValid, string? ErrorMessage) ValidateUrl(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+        {
+            return (false, "Invalid URL format.");
+        }
+
+        if (!AllowedUrlSchemes.Contains(uri.Scheme))
+        {
+            return (false, "Only HTTPS URLs are allowed.");
+        }
+
+        if (uri.IsLoopback || BlockedHosts.Contains(uri.Host))
+        {
+            return (false, "Loopback and localhost addresses are not allowed.");
+        }
+
+        if (uri.Port == 25 || uri.Port == 22 || uri.Port == 23)
+        {
+            return (false, "Mail (25), SSH (22), and Telnet (23) ports are not allowed.");
+        }
+
+        return (true, null);
     }
 }

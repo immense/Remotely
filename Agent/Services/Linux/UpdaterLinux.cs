@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Remotely.Agent.Interfaces;
 using Remotely.Shared.Utilities;
 using System;
@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Remotely.Agent.Services.Linux;
 
 
-public class UpdaterLinux : IUpdater
+public class UpdaterLinux : IUpdater, IDisposable
 {
     private readonly SemaphoreSlim _checkForUpdatesLock = new(1, 1);
     private readonly IConfigService _configService;
@@ -24,6 +24,7 @@ public class UpdaterLinux : IUpdater
     private readonly SemaphoreSlim _installLatestVersionLock = new(1, 1);
     private readonly System.Timers.Timer _updateTimer = new(TimeSpan.FromHours(6).TotalMilliseconds);
     private DateTimeOffset _lastUpdateFailure;
+    private bool _disposed;
 
     public UpdaterLinux(
         IConfigService configService,
@@ -177,9 +178,34 @@ public class UpdaterLinux : IUpdater
         }
     }
 
-    private async void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    private void UpdateTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        await CheckForUpdates();
+        _ = Task.Run(() => CheckForUpdates());
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            if (disposing)
+            {
+                _updateTimer?.Dispose();
+                _checkForUpdatesLock?.Dispose();
+                _installLatestVersionLock?.Dispose();
+            }
+            _disposed = true;
+        }
+    }
+
+    ~UpdaterLinux()
+    {
+        Dispose(false);
     }
 
 }

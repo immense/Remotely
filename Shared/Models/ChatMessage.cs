@@ -1,4 +1,6 @@
-﻿namespace Remotely.Shared.Models;
+using System.Net.TextEncoding;
+
+namespace Remotely.Shared.Models;
 
 public class ChatMessage
 {
@@ -6,8 +8,8 @@ public class ChatMessage
 
     public ChatMessage(string senderName, string message, bool disconnected = false)
     {
-        SenderName = senderName;
-        Message = message;
+        SenderName = HtmlEncoder.Default.Encode(senderName);
+        Message = HtmlEncoder.Default.Encode(message);
         Disconnected = disconnected;
     }
 

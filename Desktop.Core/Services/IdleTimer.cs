@@ -1,4 +1,4 @@
-﻿using Remotely.Shared.Utilities;
+using Remotely.Shared.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Timers;
@@ -10,6 +10,7 @@ namespace Remotely.Desktop.Core.Services
         public IdleTimer(Conductor conductor)
         {
             ViewerList = conductor.Viewers;
+            _conductor = conductor;
         }
 
         public ConcurrentDictionary<string, Services.Viewer> ViewerList { get; }
@@ -17,6 +18,9 @@ namespace Remotely.Desktop.Core.Services
         public DateTimeOffset ViewersLastSeen { get; private set; } = DateTimeOffset.Now;
 
         private Timer Timer { get; set; }
+        private readonly Conductor? _conductor;
+
+        public event EventHandler? ShutdownRequested;
 
         public void Start()
         {
@@ -41,7 +45,7 @@ namespace Remotely.Desktop.Core.Services
             else if (DateTimeOffset.Now - ViewersLastSeen > TimeSpan.FromSeconds(30))
             {
                 Logger.Write("No viewers connected after 30 seconds.  Shutting down.");
-                Environment.Exit(0);
+                ShutdownRequested?.Invoke(this, EventArgs.Empty);
             }
         }
     }

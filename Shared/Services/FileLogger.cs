@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using Microsoft.Extensions.Logging;
 using Remotely.Shared.Utilities;
@@ -40,16 +40,21 @@ public class FileLogger : ILogger
             _ => false,
         };
     }
-    public async void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
-    {
-        using var logLock = await FileLoggerDefaults.AcquireLock();
 
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
+        _ = LogAsync(logLevel, eventId, state, exception, formatter);
+    }
+
+    private async Task LogAsync<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    {
         try
         {
+            using var logLock = await FileLoggerDefaults.AcquireLock();
 
             var message = FormatLogEntry(logLevel, _categoryName, $"{state}", exception, _scopeStack.ToArray());
             CheckLogFileExists();
-            File.AppendAllText(LogPath, message);
+            await File.AppendAllTextAsync(LogPath, message);
             CleanupLogs();
         }
         catch (Exception ex)

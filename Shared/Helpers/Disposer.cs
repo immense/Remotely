@@ -1,4 +1,4 @@
-﻿namespace Remotely.Shared.Helpers;
+namespace Remotely.Shared.Helpers;
 
 public static class Disposer
 {
@@ -15,7 +15,10 @@ public static class Disposer
             {
                 disposable?.Dispose();
             }
-            catch { }
+            catch
+            {
+                // Swallow disposal exceptions - best effort cleanup
+            }
         }
     }
 }

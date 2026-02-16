@@ -1,4 +1,4 @@
-﻿using Remotely.Shared.Services;
+using Remotely.Shared.Services;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -62,7 +62,10 @@ public class FileLogsManager : IFileLogsManager
                 {
                     File.Delete(file);
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error deleting log file {file}: {ex.Message}");
+                }
             }
         }
     }

@@ -1,10 +1,10 @@
-﻿using Remotely.Shared.Utilities;
+using Remotely.Shared.Utilities;
 
 namespace Remotely.Server.Services;
 
 public class ScriptScheduler : IHostedService, IDisposable
 {
-    private static readonly SemaphoreSlim _dispatchLock = new(1, 1);
+    private readonly SemaphoreSlim _dispatchLock = new(1, 1);
 
     private readonly TimeSpan _timerInterval = EnvironmentHelper.IsDebug ?
         TimeSpan.FromSeconds(30) :
@@ -23,6 +23,7 @@ public class ScriptScheduler : IHostedService, IDisposable
     public void Dispose()
     {
         _schedulerTimer?.Dispose();
+        _dispatchLock.Dispose();
         GC.SuppressFinalize(this);
     }
 

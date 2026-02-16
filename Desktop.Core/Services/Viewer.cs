@@ -1,4 +1,4 @@
-﻿using Remotely.Desktop.Core.Interfaces;
+using Remotely.Desktop.Core.Interfaces;
 using Remotely.Desktop.Core.Models;
 using Remotely.Desktop.Core.ViewModels;
 using Remotely.Shared.Utilities;
@@ -78,7 +78,9 @@ namespace Remotely.Desktop.Core.Services
                 TimeSpan.FromSeconds(5));
 
             // Delay based on roundtrip time to prevent too many frames from queuing up on slow connections.
-            _ = TaskHelper.DelayUntil(() => PendingSentFrames.Count < 1 / RoundTripLatency.TotalSeconds,
+            _ = TaskHelper.DelayUntil(() => 
+                RoundTripLatency.TotalSeconds > 0 && 
+                PendingSentFrames.Count < 1 / RoundTripLatency.TotalSeconds,
                 TimeSpan.FromSeconds(5));
 
             // Wait until oldest pending frame is within the past 1 second.
@@ -279,14 +281,14 @@ namespace Remotely.Desktop.Core.Services
             }
         }
 
-        private async void AudioCapturer_AudioSampleReady(object sender, byte[] sample)
+        private void AudioCapturer_AudioSampleReady(object sender, byte[] sample)
         {
-            await SendAudioSample(sample);
+            _ = SendAudioSample(sample);
         }
 
-        private async void ClipboardService_ClipboardTextChanged(object sender, string clipboardText)
+        private void ClipboardService_ClipboardTextChanged(object sender, string clipboardText)
         {
-            await SendClipboardText(clipboardText);
+            _ = SendClipboardText(clipboardText);
         }
 
         private Task TrySendToViewer(Func<Task> websocketSend)
