@@ -134,7 +134,7 @@ You can change database by changing `DBProvider` in `ApplicationOptions` to `SQL
 
 ## Logging
 
-- On clients, logs are kept in `%ProgramData%\Remotely\Logs`
+- On clients, logs are kept in `%ProgramData%\\Remotely\\Logs`
 - Within the server container, logs will be written to `/app/AppData/logs`, which (by default) will be mounted to `/var/www/remotely/Logs` on the host.
 - Built-in ASP.NET Core logs are written to the console (stdout). You can redirect this to a file if desired.
   - In IIS, this can be done in the web.config file by setting stdoutLogEnabled to true.
@@ -167,7 +167,7 @@ Ideally, you'd be doing remote control from an actual computer or laptop. Howeve
 
 There's a page at `/get-support` where end users can request support. When the form is submitted, an alert appears on the main page, above the grid.
 
-A shortcut to this page is placed in the `\Program Files\Remotely\` folder. You can copy it anywhere you like. You can also have it copied to the desktop automatically by using the `-supportshortcut` switch on the installer.
+A shortcut to this page is placed in the `\\Program Files\\Remotely\\` folder. You can copy it anywhere you like. You can also have it copied to the desktop automatically by using the `-supportshortcut` switch on the installer.
 
 ## .NET Deployments
 
@@ -193,7 +193,7 @@ The host port (left side) can be configured in `docker-compose.yml`.  The contai
 
 Remotely has a basic API, which can be browsed at `https://{your_server_url}/swagger`. Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
 
-When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array. If you're not familiar with how CORS works, I recommend reading up on it before proceeding. For example, if I wanted to create a login form on https://exmaple.com that logged into the Remotely API, I'd need to add "https://example.com" to the TrustedCorsOrigins.
+When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array. If you're not familiar with how CORS works, I recommend reading up on it before proceeding. For example, if I wanted to create a login form on https://example.com that logged into the Remotely API, I'd need to add "https://example.com" to the TrustedCorsOrigins.
 
 Each request to the API must have a header named "X-Api-Key". The value should be the API key's ID and secret, separated by a colon (i.e. [ApiKey]:[ApiSecret]).
 
