@@ -74,7 +74,7 @@ public partial class DevicesFrame : AuthComponentBase
 
     public async Task Refresh()
     {
-        _lastFilterState = string.Empty;
+        //_lastFilterState = string.Empty;
         await LoadDevices();
         await InvokeAsync(StateHasChanged);
     }
