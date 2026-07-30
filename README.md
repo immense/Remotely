@@ -193,7 +193,7 @@ The host port (left side) can be configured in `docker-compose.yml`.  The contai
 
 Remotely has a basic API, which can be browsed at `https://{your_server_url}/swagger`. Most endpoints require authentication via an API access token, which can be created by going to Account - API Access.
 
-When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array. If you're not familiar with how CORS works, I recommend reading up on it before proceeding. For example, if I wanted to create a login form on https://exmaple.com that logged into the Remotely API, I'd need to add "https://example.com" to the TrustedCorsOrigins.
+When accessing the API from the browser on another website, you'll need to set up CORS in appsettings by adding the website origin URL to the TrustedCorsOrigins array. If you're not familiar with how CORS works, I recommend reading up on it before proceeding. For example, if I wanted to create a login form on https://example.com that logged into the Remotely API, I'd need to add "https://example.com" to the TrustedCorsOrigins.
 
 Each request to the API must have a header named "X-Api-Key". The value should be the API key's ID and secret, separated by a colon (i.e. [ApiKey]:[ApiSecret]).
 
